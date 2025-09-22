@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Qyzgylt Taspa — Маммография в Астане</title>
+<meta name="description" content="Qyzgylt Taspa: карта клиник маммографии в Астане, самообследование, статьи. Демо-приложение без сервера для GitHub Pages." />
+
+<!-- Leaflet (карта) -->
+<link
+  rel="stylesheet"
+  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+  crossorigin=""
+/>
+<script
+  src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+  integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+  crossorigin=""
+></script>
+
+<style>
+  :root{
+    /* розовая тема */
+    --bg:#fff6fb;
+    --card:#ffffff;
+    --ink:#1f2430;
+    --muted:#6a7280;
+    --border:#ffd7ea;
+    --accent:#ff4fa3;     /* главный розовый */
+    --accent-2:#845ef7;   /* фиолетовый */
+    --good:#18a999;
+    --warn:#ff9800;
+    --danger:#e03b5a;
+    --soft:#ffe3f1;
+    --radius:16px;
+    --pad:16px;
+    --shadow:0 10px 26px rgba(255,79,163,.17);
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",Roboto,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased; line-height:1.45;
+  }
+  a{color:var(--accent); text-decoration:none}
+  a:hover{text-decoration:underline}
+
+  header{
+    position:sticky; top:0; z-index:50;
+    background:rgba(255,246,251,.75);
+    backdrop-filter:saturate(180%) blur(10px);
+    border-bottom:1px solid var(--border);
+  }
+  .wrap{max-width:1100px; margin:0 auto; padding:0 14px}
+  .topbar{display:flex; align-items:center; gap:12px; padding:12px 0}
+  .brand{font-weight:800; letter-spacing:.3px}
+  .brand .ribbon{display:inline-block; background:var(--accent); color:#fff; padding:2px 10px; border-radius:999px; margin-left:6px; font-size:12px}
+  nav{margin-left:auto; display:flex; gap:8px; flex-wrap:wrap}
+  nav a{
+    display:inline-flex; align-items:center; gap:6px;
+    padding:8px 12px; border-radius:12px;
+    border:1px solid transparent; color:var(--ink); text-decoration:none;
+  }
+  nav a.active{background:#fff; border-color:var(--border); box-shadow:var(--shadow)}
+
+  main{padding:20px 0 88px}
+  .grid{display:grid; gap:16px}
+  @media(min-width:960px){ .grid-2{grid-template-columns:1.2fr .8fr} .grid-3{grid-template-columns:repeat(3,1fr)} }
+
+  .card{
+    background:var(--card); border:1px solid var(--border); border-radius:var(--radius);
+    padding:var(--pad); box-shadow:var(--shadow);
+  }
+  h1,h2,h3{margin:.2em 0 .6em}
+  .muted{color:var(--muted)}
+  .pill{display:inline-block; padding:6px 10px; border-radius:999px; background:var(--soft); font-size:12px}
+  .chip{display:inline-flex; align-items:center; gap:6px; padding:6px 10px; border-radius:999px; border:1px solid var(--border); background:#fff; font-size:13px}
+
+  label{display:block; font-size:13px; color:var(--muted); margin-bottom:6px}
+  input[type="text"], input[type="number"], input[type="date"], select, textarea{
+    width:100%; padding:12px; border:1px solid var(--border); border-radius:12px; background:#fff; font-size:16px;
+  }
+
+  .row{display:flex; gap:10px; align-items:center; flex-wrap:wrap}
+  .btn{
+    display:inline-flex; align-items:center; gap:8px; padding:10px 14px; border-radius:12px;
+    border:1px solid var(--border); background:#fff; cursor:pointer; text-decoration:none; color:var(--ink);
+  }
+  .btn.primary{background:var(--accent); color:#fff; border-color:transparent}
+  .btn.safe{background:var(--good); color:#fff; border-color:transparent}
+  .btn.warn{background:var(--warn); color:#fff; border-color:transparent}
+  .btn.danger{background:var(--danger); color:#fff; border-color:transparent}
+
+  .list{display:grid; gap:12px}
+  .item{
+    padding:12px; border:1px solid var(--border); border-radius:12px; background:#fff;
+  }
+  .item .t{font-weight:700}
+  .item .s{color:var(--muted); font-size:14px}
+  .item .tag{font-size:12px; background:#fff; border:1px solid var(--border); border-radius:999px; padding:2px 8px}
+
+  footer{
+    position:fixed; bottom:0; left:0; right:0; background:#fff; border-top:1px solid var(--border); z-index:60;
+  }
+  .tabs{max-width:1100px; margin:0 auto; display:grid; grid-template-columns:repeat(6,1fr)}
+  .tab{padding:12px; text-align:center; color:var(--ink); text-decoration:none; font-size:14px}
+  .tab.active{background:var(--bg); font-weight:700}
+
+  .share-url{word-break:break-all; font-size:13px; color:var(--muted)}
+  .hint{font-size:13px; color:var(--muted)}
+  .hidden{display:none !important}
+
+  /* карта */
+  #map{width:100%; height:420px; border-radius:14px; border:1px solid var(--border)}
+  .map-toolbar{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:8px}
+  .form-inline input, .form-inline select{min-width:160px}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap topbar">
+    <div class="brand">Qyzgylt Taspa <span class="ribbon">🎀</span></div>
+    <nav>
+      <a href="#/home"    data-view="home">Главная</a>
+      <a href="#/clinics" data-view="clinics">Карта клиник</a>
+      <a href="#/media"   data-view="media">Видео/Статьи</a>
+      <a href="#/about"   data-view="about">О проекте</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <!-- HOME -->
+  <section id="view-home" class="grid grid-2">
+    <div class="card">
+      <h1>Маммография в Астане — карта</h1>
+      <p class="muted">Карта клиник, где делают маммографию; переходы на видео по самообследованию и подборка статей. Всё без сервера — можно залить на GitHub Pages, и любой сможет открыть по ссылке.</p>
+      <div class="row" style="margin-top:8px">
+        <a class="btn primary" href="#/clinics">🏥 Открыть карту</a>
+        <a class="btn" href="#/media">📺 Видео и статьи</a>
+      </div>
+      <p class="hint">⚠️ Прототип для ориентирования. За точной информацией и показаниями — к врачу.</p>
+    </div>
+    <div class="card">
+      <h2>Быстрые советы</h2>
+      <div class="list">
+        <div class="chip">👩 40+ — обсуди скрининг с врачом</div>
+        <div class="chip">🗓 Самообследование — раз в месяц</div>
+        <div class="chip">🏃‍♀️ Активность и контроль веса</div>
+        <div class="chip">🚫 Ограничить алкоголь/курение</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CLINICS + MAP -->
+  <section id="view-clinics" class="grid grid-2 hidden">
+    <div class="card">
+      <div class="map-toolbar">
+        <div class="form-inline row">
+          <input id="q" type="text" placeholder="Поиск: клиника/адрес…" />
+          <select id="filter-tag">
+            <option value="">Все</option>
+            <option value="гос">Государственные</option>
+            <option value="частная">Частные</option>
+          </select>
+          <button class="btn" id="btn-find">Найти</button>
+          <button class="btn" id="btn-reset">Сброс</button>
+        </div>
+        <div class="row" style="margin-left:auto">
+          <button class="btn safe" id="btn-add">+ Клиника</button>
+        </div>
+      </div>
+      <div id="map"></div>
+      <p class="hint" style="margin-top:8px">⌚ Нужен интернет для загрузки тайлов карты. Маркеры кликабельны: есть адрес и «Маршрут» (Google Maps).</p>
+    </div>
+    <div class="card">
+      <h2>Список клиник</h2>
+      <div id="clinics-list" class="list"></div>
+    </div>
+  </section>
+
+  <!-- MEDIA -->
+  <section id="view-media" class="grid grid-2 hidden">
+    <div class="card">
+      <h2>🎥 Самообследование (YouTube)</h2>
+      <div class="row" style="margin-bottom:10px">
+        <a class="btn primary" target="_blank" rel="noopener"
+           href="https://www.youtube.com/results?search_query=%D1%81%D0%B0%D0%BC%D0%BE%D0%BE%D0%B1%D1%81%D0%BB%D0%B5%D0%B4%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5+%D0%B3%D1%80%D1%83%D0%B4%D0%B8">
+          🔗 Открыть подборку на YouTube
+        </a>
+      </div>
+      <!-- Пример встраивания одного ролика (можно заменить на свой ID) -->
+      <div style="position:relative; padding-bottom:56.25%; height:0; overflow:hidden; border-radius:12px; border:1px solid var(--border)">
+        <iframe
+          src="https://www.youtube.com/embed/5Q5G1n3F3fM?rel=0"
+          title="Самообследование груди — обучающее видео"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowfullscreen
+          style="position:absolute; top:0; left:0; width:100%; height:100%; border:0"
+        ></iframe>
+      </div>
+      <p class="hint">Если хочешь другие ролики — скажи ссылки, подставлю их в iframe.</p>
+    </div>
+
+    <div class="card">
+      <h2>📚 Полезные статьи (кликабельные)</h2>
+      <div id="articles-list" class="list"></div>
+      <p class="hint">Ссылки открываются в новой вкладке. Список можно расширять.</p>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="view-about" class="grid hidden">
+    <div class="card">
+      <h2>О проекте</h2>
+      <p>Qyzgylt Taspa — учебный прототип: карта клиник маммографии в Астане, видео и статьи по теме. Можно свободно использовать как демо и расширять.</p>
+      <p class="muted">Нет сбора персональных данных, всё работает на фронтенде.</p>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="tabs">
+    <a class="tab" data-view="home"    href="#/home">🏠</a>
+    <a class="tab" data-view="clinics" href="#/clinics">🗺</a>
+    <a class="tab" data-view="media"   href="#/media">📺</a>
+    <a class="tab" data-view="about"   href="#/about">ℹ️</a>
+  </div>
+</footer>
+
+<script>
+(function(){
+  const routes = ["home","clinics","media","about"];
+
+  function show(view){
+    routes.forEach(v=>{
+      const sec = document.getElementById('view-'+v);
+      if(sec) sec.classList.add('hidden');
+      document.querySelectorAll('[data-view="'+v+'"]').forEach(a=>a.classList.remove('active'));
+    });
+    const active = document.getElementById('view-'+view);
+    if(active) active.classList.remove('hidden');
+    document.querySelectorAll('[data-view="'+view+'"]').forEach(a=>a.classList.add('active'));
+    localStorage.setItem('qt_last_view', view);
+    if(view==='clinics') setTimeout(initMapIfNeeded, 0);
+  }
+
+  function parseRoute(){
+    const hash = location.hash || "#/home";
+    const view = (hash.split("/")[1] || "home").toLowerCase();
+    if(!routes.includes(view)) return show("home");
+    show(view);
+  }
+
+  window.addEventListener('hashchange', parseRoute);
+  document.addEventListener('DOMContentLoaded', ()=>{
+    parseRoute();
+    renderArticles();
+    renderClinicsList();
+    attachHandlers();
+  });
+
+  /* ---------- Данные: клиники ---------- */
+  // Базовый набор (можно редактировать в UI; правки сохраняются в localStorage)
+  const BASE_CLINICS = [
+    // Примерный стартовый список (координаты ориентировочные для демо)
+    { id: 1, t:'Городская больница №2', addr:'ул. Турара Рыскулова, 6', tag:'гос', lat:51.1477, lng:71.4216 },
+    { id: 2, t:'Городская поликлиника №9', addr:'пр. Мангилик Ел, 16/1', tag:'гос', lat:51.0899, lng:71.4165 },
+    { id: 3, t:'Многопрофильный медцентр', addr:'ул. Манаса, 17', tag:'частная', lat:51.1260, lng:71.4000 },
+    { id: 4, t:'Президентская клиника', addr:'пр. Мангилик Ел', tag:'частная', lat:51.0954, lng:71.4218 }
+  ];
+
+  function getClinics(){
+    const saved = localStorage.getItem('qt_clinics');
+    if(saved){
+      try{ return JSON.parse(saved); }catch(e){}
+    }
+    return BASE_CLINICS;
+  }
+  function setClinics(arr){
+    localStorage.setItem('qt_clinics', JSON.stringify(arr));
+  }
+
+  /* ---------- Карта ---------- */
+  let map, markersLayer;
+  function initMapIfNeeded(){
+    if(map) return;
+    const astana = [51.169392, 71.449074];
+    map = L.map('map').setView(astana, 12);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; OpenStreetMap'
+    }).addTo(map);
+    markersLayer = L.layerGroup().addTo(map);
+    refreshMarkers();
+  }
+
+  function refreshMarkers(filter = {}){
+    if(!markersLayer) return;
+    markersLayer.clearLayers();
+    const list = filterClinics(filter);
+    list.forEach(c=>{
+      const m = L.marker([c.lat, c.lng]).addTo(markersLayer);
+      const gmaps = `https://www.google.com/maps?q=${c.lat},${c.lng}`;
+      m.bindPopup(`
+        <div style="min-width:220px">
+          <div style="font-weight:700;margin-bottom:6px">${escapeHTML(c.t)}</div>
+          <div style="color:#6a7280;margin-bottom:8px">${escapeHTML(c.addr)}</div>
+          <div style="display:flex; gap:8px; flex-wrap:wrap">
+            <a href="${gmaps}" target="_blank" rel="noopener" class="leaflet-popup-close-button" style="text-decoration:none;color:#ff4fa3">🧭 Маршрут</a>
+            <span class="pill">${escapeHTML(c.tag)}</span>
+          </div>
+        </div>
+      `);
+    });
+    // если есть что показывать — центрируем вокруг первой найденной
+    if(list.length>0){
+      const b = L.latLngBounds(list.map(c=>[c.lat, c.lng]));
+      map.fitBounds(b.pad(0.2));
+    }
+  }
+
+  function filterClinics({q='', tag=''}){
+    const text = q.trim().toLowerCase();
+    const arr = getClinics();
+    return arr.filter(c=>{
+      const okTag = !tag || c.tag===tag;
+      const okText = !text || (c.t.toLowerCase().includes(text) || c.addr.toLowerCase().includes(text));
+      return okTag && okText;
+    });
+  }
+
+  /* ---------- Список клиник справа ---------- */
+  function renderClinicsList(filter = {}){
+    const box = document.getElementById('clinics-list');
+    if(!box) return;
+    const list = filterClinics(filter);
+    box.innerHTML = '';
+    if(list.length===0){
+      box.innerHTML = `<div class="muted">Ничего не найдено. Попробуйте сбросить фильтры.</div>`;
+    }
+    list.forEach(c=>{
+      const el = document.createElement('div');
+      el.className='item';
+      const gmaps = `https://www.google.com/maps?q=${c.lat},${c.lng}`;
+      el.innerHTML = `
+        <div class="row" style="justify-content:space-between">
+          <div>
+            <div class="t">🏥 ${escapeHTML(c.t)}</div>
+            <div class="s">${escapeHTML(c.addr)}</div>
+          </div>
+          <div class="tag">${escapeHTML(c.tag)}</div>
+        </div>
+        <div class="row" style="margin-top:8px">
+          <a class="btn" target="_blank" rel="noopener" href="${gmaps}">🧭 Маршрут</a>
+          <button class="btn" data-focus="${c.id}">Показать на карте</button>
+          <button class="btn warn" data-edit="${c.id}">Редактировать</button>
+          <button class="btn danger" data-del="${c.id}">Удалить</button>
+        </div>
+      `;
+      box.appendChild(el);
+    });
+
+    box.querySelectorAll('button[data-focus]').forEach(b=>{
+      b.addEventListener('click', ()=>{
+        const id = +b.getAttribute('data-focus');
+        const c = getClinics().find(x=>x.id===id);
+        location.hash = '#/clinics';
+        show('clinics');
+        initMapIfNeeded();
+        if(c){
+          map.setView([c.lat, c.lng], 15);
+          // запускаем рефреш чтобы точно был маркер
+          refreshMarkers({q:document.getElementById('q').value, tag:document.getElementById('filter-tag').value});
+        }
+      });
+    });
+
+    box.querySelectorAll('button[data-del]').forEach(b=>{
+      b.addEventListener('click', ()=>{
+        const id = +b.getAttribute('data-del');
+        const arr = getClinics().filter(x=>x.id!==id);
+        setClinics(arr);
+        renderClinicsList({q:document.getElementById('q').value, tag:document.getElementById('filter-tag').value});
+        refreshMarkers({q:document.getElementById('q').value, tag:document.getElementById('filter-tag').value});
+      });
+    });
+
+    box.querySelectorAll('button[data-edit]').forEach(b=>{
+      b.addEventListener('click', ()=>{
+        const id = +b.getAttribute('data-edit');
+        const c = getClinics().find(x=>x.id===id);
+        if(!c) return;
+        openClinicEditor(c);
+      });
+    });
+  }
+
+  function openClinicEditor(existing=null){
+    const t = existing ? 'Редактировать клинику' : 'Добавить клинику';
+    const def = Object.assign({t:'',addr:'',tag:'гос',lat:51.1694,lng:71.4491}, existing||{});
+    const html = `
+      <div style="display:grid; gap:10px">
+        <label>Название<input id="dlg-t" type="text" value="${escapeAttr(def.t)}"/></label>
+        <label>Адрес<input id="dlg-addr" type="text" value="${escapeAttr(def.addr)}"/></label>
+        <label>Тип<select id="dlg-tag">
+          <option value="гос" ${def.tag==='гос'?'selected':''}>гос</option>
+          <option value="частная" ${def.tag==='частная'?'selected':''}>частная</option>
+        </select></label>
+        <label>Широта (lat)<input id="dlg-lat" type="number" step="0.000001" value="${def.lat}"/></label>
+        <label>Долгота (lng)<input id="dlg-lng" type="number" step="0.000001" value="${def.lng}"/></label>
+      </div>
+    `;
+    const wrapper = document.createElement('div');
+    wrapper.className='card';
+    wrapper.style.position='fixed';
+    wrapper.style.left='50%';
+    wrapper.style.top='50%';
+    wrapper.style.transform='translate(-50%,-50%)';
+    wrapper.style.zIndex='1000';
+    wrapper.style.maxWidth='520px';
+    wrapper.innerHTML = `
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px">
+        <h3 style="margin:0">${t}</h3>
+        <button class="btn danger" id="dlg-close">✕</button>
+      </div>
+      ${html}
+      <div class="row" style="margin-top:12px; justify-content:flex-end">
+        <button class="btn" id="dlg-cancel">Отмена</button>
+        <button class="btn safe" id="dlg-save">Сохранить</button>
+      </div>
+    `;
+    document.body.appendChild(wrapper);
+
+    function close(){ document.body.removeChild(wrapper); }
+
+    wrapper.querySelector('#dlg-close').addEventListener('click', close);
+    wrapper.querySelector('#dlg-cancel').addEventListener('click', close);
+    wrapper.querySelector('#dlg-save').addEventListener('click', ()=>{
+      const obj = {
+        id: existing?.id ?? Date.now(),
+        t: wrapper.querySelector('#dlg-t').value.trim(),
+        addr: wrapper.querySelector('#dlg-addr').value.trim(),
+        tag: wrapper.querySelector('#dlg-tag').value,
+        lat: +wrapper.querySelector('#dlg-lat').value,
+        lng: +wrapper.querySelector('#dlg-lng').value
+      };
+      if(!obj.t || !obj.addr || isNaN(obj.lat) || isNaN(obj.lng)){
+        alert('Проверьте название, адрес и координаты.');
+        return;
+      }
+      const arr = getClinics();
+      const i = arr.findIndex(x=>x.id===obj.id);
+      if(i>=0) arr[i]=obj; else arr.push(obj);
+      setClinics(arr);
+      renderClinicsList({q:document.getElementById('q').value, tag:document.getElementById('filter-tag').value});
+      refreshMarkers({q:document.getElementById('q').value, tag:document.getElementById('filter-tag').value});
+      close();
+    });
+  }
+
+  /* ---------- Статьи ---------- */
+  const ARTICLES = [
+    { t:'WHO — Breast cancer (EN)', url:'https://www.who.int/news-room/fact-sheets/detail/breast-cancer' },
+    { t:'NHS — Breast cancer overview (EN)', url:'https://www.nhs.uk/conditions/breast-cancer/' },
+    { t:'ACS — Screening & Early Detection (EN)', url:'https://www.cancer.org/healthy/find-cancer-early/breast-cancer-screening.html' }
+  ];
+  function renderArticles(){
+    const box = document.getElementById('articles-list');
+    if(!box) return;
+    box.innerHTML='';
+    ARTICLES.forEach(a=>{
+      const el = document.createElement('a');
+      el.className='item';
+      el.href=a.url; el.target='_blank'; el.rel='noopener';
+      el.innerHTML = `<div class="t">📚 ${escapeHTML(a.t)}</div><div class="s">${escapeHTML(a.url)}</div>`;
+      box.appendChild(el);
+    });
+  }
+
+  /* ---------- Поиск/фильтр ---------- */
+  function attachHandlers(){
+    document.getElementById('btn-find').addEventListener('click', ()=>{
+      const q = document.getElementById('q').value;
+      const tag = document.getElementById('filter-tag').value;
+      renderClinicsList({q, tag});
+      initMapIfNeeded();
+      refreshMarkers({q, tag});
+    });
+    document.getElementById('btn-reset').addEventListener('click', ()=>{
+      document.getElementById('q').value='';
+      document.getElementById('filter-tag').value='';
+      renderClinicsList();
+      initMapIfNeeded();
+      refreshMarkers();
+    });
+    document.getElementById('btn-add').addEventListener('click', ()=>openClinicEditor());
+  }
+
+  /* ---------- Утилиты ---------- */
+  function escapeHTML(str){
+    return String(str).replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]));
+  }
+  function escapeAttr(str){
+    return escapeHTML(String(str)).replace(/"/g,'&quot;');
+  }
+})();
+</script>
+</body>
+</html>
