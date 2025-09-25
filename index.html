@@ -60,7 +60,9 @@
         <div class="flex items-center space-x-2">
           <div class="text-2xl text-primary"><i data-feather="heart"></i></div>
           <h1 class="text-xl font-bold text-gray-800">MammoCare</h1>
-          <span class="px-2 py-1 text-xs rounded-full bg-primary text-white"><span id="current-city" data-i18n="city">Astana</span></span>
+          <span class="px-2 py-1 text-xs rounded-full bg-primary text-white">
+            <span id="current-city" data-i18n="city">Astana</span>
+          </span>
         </div>
 
         <nav class="hidden md:flex space-x-1">
@@ -249,7 +251,7 @@
                 <label for="search-clinics" class="block text-sm font-medium text-gray-700 mb-1" data-i18n="search_label">Search</label>
                 <div class="relative">
                   <input type="text" id="search-clinics" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary"
-                    data-i18n-placeholder="search_ph" placeholder="Clinic name or address..." />
+                         data-i18n-placeholder="search_ph" placeholder="Clinic name or address..." />
                   <i data-feather="search" class="absolute right-3 top-2.5 text-gray-400 w-5 h-5"></i>
                 </div>
               </div>
@@ -308,9 +310,7 @@
                 </div>
                 <h4 class="font-medium text-gray-800 mb-1" data-i18n="video1_title">How to Perform Breast Self-Examination</h4>
                 <p class="text-sm text-gray-600 mb-2" data-i18n="video1_desc">Step-by-step guide for monthly self-checks</p>
-                <div class="flex justify-between items-center text-xs text-gray-500">
-                  <span>WHO Health Channel</span><span>8 min</span>
-                </div>
+                <div class="flex justify-between items-center text-xs text-gray-500"><span>WHO Health Channel</span><span>8 min</span></div>
               </div>
 
               <div class="article-card p-4 border border-gray-200 rounded-lg hover:border-primary transition cursor-pointer">
@@ -326,9 +326,7 @@
                 </div>
                 <h4 class="font-medium text-gray-800 mb-1" data-i18n="video2_title">Understanding Mammography</h4>
                 <p class="text-sm text-gray-600 mb-2" data-i18n="video2_desc">What to expect during your screening</p>
-                <div class="flex justify-between items-center text-xs text-gray-500">
-                  <span>National Cancer Institute</span><span>12 min</span>
-                </div>
+                <div class="flex justify-between items-center text-xs text-gray-500"><span>National Cancer Institute</span><span>12 min</span></div>
               </div>
             </div>
 
@@ -485,9 +483,9 @@
     </div>
   </div>
 
-  <!-- Scripts -->
+  <!-- App Scripts -->
   <script>
-    // Translations
+    // -------------------- Translations --------------------
     const translations = {
       en: {
         home: "Home", clinics: "Clinics", resources: "Resources", about: "About", city: "Astana", rights: "All rights reserved.",
@@ -507,7 +505,7 @@
         search_ph: "Clinic name or address...", filter_label: "Filter by type", type_all: "All types", type_public: "Public", type_private: "Private", type_research: "Research Center", apply_btn: "Apply",
         map_hint: "Click on map markers for more information. Use the \"Directions\" button to open in Google Maps.",
         clinic_list: "Clinic List", no_results: "No clinics found matching your criteria",
-        show_on_map: "Show on map", directions: "Directions", get_directions: "Get Directions",
+        show_on_map: "Show on map", directions: "Directions", get_directions: "Get Directions", read_article: "Read article",
         resources_title: "Educational Resources", videos_heading: "Instructional Videos",
         video1_title: "How to Perform Breast Self-Examination", video1_desc: "Step-by-step guide for monthly self-checks",
         video2_title: "Understanding Mammography", video2_desc: "What to expect during your screening",
@@ -542,7 +540,7 @@
         search_ph: "Название клиники или адрес…", filter_label: "Фильтр по типу", type_all: "Все типы", type_public: "Государственная", type_private: "Частная", type_research: "Научный центр", apply_btn: "Применить",
         map_hint: "Кликните по маркеру, чтобы увидеть детали. Кнопка «Маршрут» откроет Google Maps.",
         clinic_list: "Список клиник", no_results: "Под критерии ничего не найдено",
-        show_on_map: "Показать на карте", directions: "Маршрут", get_directions: "Маршрут",
+        show_on_map: "Показать на карте", directions: "Маршрут", get_directions: "Маршрут", read_article: "Читать статью",
         resources_title: "Образовательные материалы", videos_heading: "Обучающие видео",
         video1_title: "Как проводить самообследование груди", video1_desc: "Пошаговая инструкция для ежемесячной проверки",
         video2_title: "Что такое маммография", video2_desc: "Чего ожидать во время скрининга",
@@ -577,7 +575,7 @@
         search_ph: "Клиника атауы немесе мекенжайы…", filter_label: "Түрі бойынша сүзгі", type_all: "Барлығы", type_public: "Мемлекеттік", type_private: "Жекеменшік", type_research: "Ғылыми орталық", apply_btn: "Қолдану",
         map_hint: "Маркерді басып, мәліметті қараңыз. «Маршрут» Google Maps-та ашылады.",
         clinic_list: "Клиникалар тізімі", no_results: "Сүзгіге сай клиника табылмады",
-        show_on_map: "Картадан көрсету", directions: "Маршрут", get_directions: "Маршрут",
+        show_on_map: "Картадан көрсету", directions: "Маршрут", get_directions: "Маршрут", read_article: "Мақаланы оқу",
         resources_title: "Білім ресустары", videos_heading: "Нұсқаулық видеолар",
         video1_title: "Өзін-өзі тексеруді қалай жасау керек", video1_desc: "Ай сайынғы тексеруге арналған қадамдық нұсқаулық",
         video2_title: "Маммографияны түсіну", video2_desc: "Скрининг кезінде не күту керек",
@@ -596,254 +594,280 @@
       }
     };
 
-    // AOS
-    AOS.init({ duration: 600, once: true });
+    // -------------------- Data --------------------
+    const clinics = [
+      { id: 1, name: "City Hospital №2", address: "Turar Ryskulov St, 6", type: "public",  lat: 51.1477, lng: 71.4216, notes: "Government hospital with mammography services" },
+      { id: 2, name: "City Polyclinic №9", address: "Mangilik El Ave, 16/1", type: "public",  lat: 51.0899, lng: 71.4165, notes: "Primary care facility with screening services" },
+      { id: 3, name: "Multidisciplinary Medical Center", address: "Manas St, 17", type: "private", lat: 51.1260, lng: 71.4000, notes: "Private clinic with digital mammography" },
+      { id: 4, name: "Presidential Clinic", address: "Mangilik El Ave, 80", type: "private", lat: 51.0954, lng: 71.4218, notes: "High-end private medical facility" },
+      { id: 5, name: "Big Tau Clinic", address: "Turan Ave, 50", type: "private", lat: 51.1325, lng: 71.4301, notes: "Modern private clinic with advanced equipment" },
+      { id: 6, name: "Sak Medical Centre", address: "Saryarka Ave, 42", type: "private", lat: 51.1428, lng: 71.4389, notes: "Specialized women's health center" },
+      { id: 7, name: "DiVera", address: "Kabanbay Batyr Ave, 47/2", type: "private", lat: 51.1187, lng: 71.4456, notes: "Private diagnostic center" },
+      { id: 8, name: "International Oncology Center 'UMIT'", address: "Abylay Khan Ave, 42/1", type: "research", lat: 51.1253, lng: 71.4328, notes: "Comprehensive cancer diagnosis and treatment" },
+      { id: 9, name: "Republican Diagnostic Center (UMC)", address: "Sygynak St, 46", type: "public", lat: 51.1356, lng: 71.4254, notes: "National-level diagnostic facility" },
+      { id:10, name: "Maternal and Child Health Research Center (UMC)", address: "Turan Ave, 32", type: "research", lat: 51.1298, lng: 71.4287, notes: "Specialized in women's and children's health" },
+      { id:11, name: "EMIRMED (Health Research Institute)", address: "Kuishi Dina St, 9", type: "research", lat: 51.1224, lng: 71.4193, notes: "Research institute with diagnostic services" },
+      { id:12, name: "Meyirim Medical Center", address: "Koshkarbayev St, 15", type: "private", lat: 51.1312, lng: 71.4356, notes: "Has digital mammography equipment" },
+      { id:13, name: "Emergency Medicine Research Institute", address: "Hussein bin Talal St, 14, 3rd floor", type: "research", lat: 51.1276, lng: 71.4372, notes: "Specialized diagnostic services" },
+      { id:14, name: "NROC (National Research Oncology Center)", address: "Kabanbay Batyr Ave, 53", type: "research", lat: 51.1201, lng: 71.4428, notes: "Modern equipment, integrated cancer programs" }
+    ];
 
-    document.addEventListener('DOMContentLoaded', () => {
-      feather.replace();
+    const articles = [
+      { id:1, title:"WHO — Breast cancer facts", url:"https://www.who.int/news-room/fact-sheets/detail/breast-cancer", source:"World Health Organization" },
+      { id:2, title:"NHS — Breast cancer overview", url:"https://www.nhs.uk/conditions/breast-cancer/", source:"UK National Health Service" },
+      { id:3, title:"ACS — Screening Guidelines", url:"https://www.cancer.org/healthy/find-cancer-early/breast-cancer-screening.html", source:"American Cancer Society" },
+      { id:4, title:"Breast self-examination guide", url:"https://www.breastcancer.org/screening-testing/breast-self-exam", source:"BreastCancer.org" },
+      { id:5, title:"Mammography: What to expect", url:"https://www.mayoclinic.org/tests-procedures/mammogram/about/pac-20384806", source:"Mayo Clinic" },
+      { id:6, title:"Reducing breast cancer risk", url:"https://www.cdc.gov/cancer/breast/basic_info/prevention.htm", source:"CDC" }
+    ];
 
-      // Mobile menu
-      const mobileMenuButton = document.getElementById('mobile-menu-button');
-      const mobileMenu = document.getElementById('mobile-menu');
-      const closeMobileMenu = document.getElementById('close-mobile-menu');
-      mobileMenuButton?.addEventListener('click', ()=>{ mobileMenu.classList.remove('hidden'); document.body.style.overflow='hidden'; });
-      closeMobileMenu?.addEventListener('click', ()=>{ mobileMenu.classList.add('hidden'); document.body.style.overflow=''; });
+    // -------------------- Utilities --------------------
+    function escapeHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;'); }
+    function $all(sel){ return Array.from(document.querySelectorAll(sel)); }
 
-      // Routing
-      const routes = ["home","clinics","resources","about"];
-      function showView(view){
-        routes.forEach(v=>{
-          document.getElementById(`view-${v}`).classList.add('hidden');
-          document.querySelectorAll(`[data-view="${v}"]`).forEach(el=>{
-            el.classList.remove('active'); if(el.classList.contains('tab-button')) el.classList.remove('active');
-          });
-        });
-        document.getElementById(`view-${view}`).classList.remove('hidden');
-        document.querySelectorAll(`[data-view="${view}"]`).forEach(el=>{
-          el.classList.add('active'); if(el.classList.contains('tab-button')) el.classList.add('active');
-        });
-        localStorage.setItem('lastView', view);
-        if(view==='clinics') initMap();
-      }
-      function parseRoute(){ const hash=(window.location.hash.substring(1)||'home'); showView(routes.includes(hash)?hash:'home'); }
-      window.addEventListener('hashchange', parseRoute); parseRoute();
+    // -------------------- App State --------------------
+    let map; let markers = [];
+    window.__lastFilter = { search:'', type:'' };
+    let currentLanguage = 'en';
 
-      // Language switcher
-      const langSwitcher = document.getElementById('language-switcher');
-      const langDropdown = document.getElementById('language-dropdown');
-      const currentLangEl = document.getElementById('current-lang');
-      const currentCity = document.getElementById('current-city');
+    // -------------------- Map + List Renders --------------------
+    function initMap(){
+      if(map) return;
+      map = L.map('map').setView([51.169392,71.449074], 12);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution:'&copy; OpenStreetMap contributors' }).addTo(map);
+      renderClinicsOnMap();
+    }
 
-      let currentLanguage = localStorage.getItem('preferredLanguage') || 'en';
-      updateLanguage(currentLanguage);
+    function filterClinics({search='', type=''}){
+      const s = (search||'').toLowerCase(); const t = (type||'').toLowerCase();
+      return clinics.filter(c=>{
+        const mS = !s || c.name.toLowerCase().includes(s) || c.address.toLowerCase().includes(s) || (c.notes||'').toLowerCase().includes(s);
+        const mT = !t || c.type===t;
+        return mS && mT;
+      });
+    }
 
-      langSwitcher?.addEventListener('click', (e)=>{ e.stopPropagation(); langDropdown.classList.toggle('hidden'); });
-      document.addEventListener('click', ()=> langDropdown.classList.add('hidden'));
-      document.querySelectorAll('#language-dropdown button').forEach(btn=>{
-        btn.addEventListener('click', ()=>{
-          const lang = btn.getAttribute('data-lang');
-          currentLanguage = lang; localStorage.setItem('preferredLanguage', lang);
-          updateLanguage(lang);
-          langDropdown.classList.add('hidden');
-        });
+    function renderClinicsOnMap(filter = window.__lastFilter){
+      window.__lastFilter = filter;
+      if(!map) return;
+      markers.forEach(m => map.removeLayer(m)); markers = [];
+
+      const list = filterClinics(filter);
+      const t = translations[currentLanguage] || translations.en;
+
+      list.forEach(clinic=>{
+        const marker = L.marker([clinic.lat, clinic.lng]).addTo(map);
+        const typeLabel = clinic.type==='public' ? t.card_public : clinic.type==='private' ? t.card_private : t.card_research;
+        const typeColor = clinic.type==='public' ? '#3b82f6' : clinic.type==='private' ? '#ec4899' : '#8b5cf6';
+        marker.bindPopup(`
+          <div class="space-y-2" style="min-width:200px;">
+            <h4 class="font-semibold text-gray-800">${escapeHtml(clinic.name)}</h4>
+            <p class="text-sm text-gray-600">${escapeHtml(clinic.address)}</p>
+            <div class="flex items-center gap-2">
+              <span class="inline-block w-3 h-3 rounded-full" style="background-color:${typeColor};"></span>
+              <span class="text-xs font-medium text-gray-700">${typeLabel}</span>
+            </div>
+            ${clinic.notes ? `<p class="text-xs text-gray-500 mt-2">${escapeHtml(clinic.notes)}</p>` : ''}
+            <div class="mt-2">
+              <a href="https://www.google.com/maps?q=${clinic.lat},${clinic.lng}" target="_blank" rel="noopener" class="inline-flex items-center gap-1 text-sm text-primary hover:underline">
+                <i data-feather="map-pin" class="w-3 h-3"></i>${t.get_directions}
+              </a>
+            </div>
+          </div>
+        `);
+        markers.push(marker);
       });
 
-      // Update language
-      function updateLanguage(lang){
-        const dict = translations[lang] || translations.en;
-        currentLangEl.textContent = lang.toUpperCase();
-        if(dict.city) currentCity.textContent = dict.city;
+      if(list.length>0){
+        const bounds = L.latLngBounds(list.map(c=>[c.lat,c.lng]));
+        map.fitBounds(bounds,{ padding:[50,50] });
+      }
+      if (window.feather && typeof feather.replace==='function') feather.replace();
+    }
 
+    function renderClinicsList(filter = window.__lastFilter){
+      window.__lastFilter = filter;
+      const container = document.getElementById('clinics-list'); if(!container) return;
+      const list = filterClinics(filter);
+      const dict = translations[currentLanguage] || translations.en;
+
+      if(list.length===0){
+        container.innerHTML = `<div class="card p-4 text-center text-gray-500">${dict.no_results}</div>`;
+        return;
+      }
+
+      container.innerHTML = list.map(clinic=>{
+        let badgeClass, typeText;
+        if(clinic.type==='public'){ badgeClass='bg-blue-100 text-blue-800'; typeText=dict.card_public; }
+        else if(clinic.type==='private'){ badgeClass='bg-pink-100 text-pink-800'; typeText=dict.card_private; }
+        else { badgeClass='bg-purple-100 text-purple-800'; typeText=dict.card_research; }
+
+        return `
+          <div class="clinic-item card p-4" data-id="${clinic.id}">
+            <div class="flex justify-between items-start mb-2">
+              <h4 class="font-medium text-gray-800">${escapeHtml(clinic.name)}</h4>
+              <span class="text-xs px-2 py-1 rounded-full ${badgeClass}">${typeText}</span>
+            </div>
+            <p class="text-sm text-gray-600 mb-3">${escapeHtml(clinic.address)}</p>
+            ${clinic.notes ? `<p class="text-xs text-gray-500 mb-3">${escapeHtml(clinic.notes)}</p>` : ''}
+            <div class="flex flex-wrap gap-2">
+              <button class="focus-clinic px-3 py-1 text-xs bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition" data-i18n="show_on_map">${dict.show_on_map}</button>
+              <a href="https://www.google.com/maps?q=${clinic.lat},${clinic.lng}" target="_blank" rel="noopener" class="px-3 py-1 text-xs bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition">${dict.directions}</a>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      document.querySelectorAll('.focus-clinic').forEach(btn=>{
+        btn.addEventListener('click', function(){
+          const id = parseInt(this.closest('.clinic-item').getAttribute('data-id'));
+          const c = clinics.find(x=>x.id===id);
+          if(c && map){
+            map.setView([c.lat, c.lng], 15);
+            markers.forEach(m=>{ const p=m.getLatLng(); if(p.lat===c.lat && p.lng===c.lng) m.openPopup(); });
+          }
+        });
+      });
+      if (window.feather && typeof feather.replace==='function') feather.replace();
+    }
+
+    function renderArticlesList(){
+      const container = document.getElementById('articles-list'); if(!container) return;
+      const dict = translations[currentLanguage] || translations.en;
+      container.innerHTML = articles.map(a => `
+        <a href="${escapeHtml(a.url)}" target="_blank" rel="noopener" class="article-card block p-4 border border-gray-200 rounded-lg hover:border-primary transition">
+          <h4 class="font-medium text-gray-800 mb-1">${escapeHtml(a.title)}</h4>
+          <p class="text-xs text-gray-500">${escapeHtml(a.source)}</p>
+          <div class="mt-2 flex justify-between items-center">
+            <span class="text-xs text-primary">${dict.read_article || 'Read article'}</span>
+            <i data-feather="external-link" class="w-4 h-4 text-gray-400"></i>
+          </div>
+        </a>
+      `).join('');
+      if (window.feather && typeof feather.replace==='function') feather.replace();
+    }
+
+    // -------------------- I18N Wiring (robust) --------------------
+    (function(){
+      const langFromStorage = localStorage.getItem('preferredLanguage');
+      const langFromBrowser = (navigator.language || navigator.userLanguage || 'en').slice(0,2).toLowerCase();
+      currentLanguage = (['en','ru','kz'].includes(langFromStorage||'')) ? langFromStorage
+                       : (['en','ru','kz'].includes(langFromBrowser) ? langFromBrowser : 'en');
+
+      const currentLangEl = document.getElementById('current-lang');
+      const currentCityEl = document.getElementById('current-city');
+
+      function applyTranslations(){
+        const dict = translations[currentLanguage] || translations.en;
         // Text nodes
-        document.querySelectorAll('[data-i18n]').forEach(el=>{
+        $all('[data-i18n]').forEach(el=>{
           const key = el.getAttribute('data-i18n');
-          if(dict[key]) el.textContent = dict[key];
+          if (dict[key] != null) el.textContent = dict[key];
         });
         // Placeholders
-        document.querySelectorAll('[data-i18n-placeholder]').forEach(el=>{
+        $all('[data-i18n-placeholder]').forEach(el=>{
           const key = el.getAttribute('data-i18n-placeholder');
-          if(dict[key]) el.setAttribute('placeholder', dict[key]);
+          if (dict[key] != null) el.setAttribute('placeholder', dict[key]);
         });
         // Titles
-        document.querySelectorAll('[data-i18n-title]').forEach(el=>{
+        $all('[data-i18n-title]').forEach(el=>{
           const key = el.getAttribute('data-i18n-title');
-          if(dict[key]) el.setAttribute('title', dict[key]);
+          if (dict[key] != null) el.setAttribute('title', dict[key]);
         });
+        if (currentLangEl) currentLangEl.textContent = currentLanguage.toUpperCase();
+        if (currentCityEl && dict.city) currentCityEl.textContent = dict.city;
 
-        // Re-render dynamic pieces that carry localized labels
-        renderClinicsOnMap(lastFilter);
-        renderClinicsList(lastFilter);
-        renderArticlesList();
+        // Refresh dynamic UI
+        try {
+          renderClinicsOnMap(window.__lastFilter || {search:'',type:''});
+          renderClinicsList(window.__lastFilter || {search:'',type:''});
+          renderArticlesList();
+        } catch(e){}
       }
 
-      // Data
-      const clinics = [
-        { id: 1, name: "City Hospital №2", address: "Turar Ryskulov St, 6", type: "public",  lat: 51.1477, lng: 71.4216, notes: "Government hospital with mammography services" },
-        { id: 2, name: "City Polyclinic №9", address: "Mangilik El Ave, 16/1", type: "public",  lat: 51.0899, lng: 71.4165, notes: "Primary care facility with screening services" },
-        { id: 3, name: "Multidisciplinary Medical Center", address: "Manas St, 17", type: "private", lat: 51.1260, lng: 71.4000, notes: "Private clinic with digital mammography" },
-        { id: 4, name: "Presidential Clinic", address: "Mangilik El Ave, 80", type: "private", lat: 51.0954, lng: 71.4218, notes: "High-end private medical facility" },
-        { id: 5, name: "Big Tau Clinic", address: "Turan Ave, 50", type: "private", lat: 51.1325, lng: 71.4301, notes: "Modern private clinic with advanced equipment" },
-        { id: 6, name: "Sak Medical Centre", address: "Saryarka Ave, 42", type: "private", lat: 51.1428, lng: 71.4389, notes: "Specialized women's health center" },
-        { id: 7, name: "DiVera", address: "Kabanbay Batyr Ave, 47/2", type: "private", lat: 51.1187, lng: 71.4456, notes: "Private diagnostic center" },
-        { id: 8, name: "International Oncology Center 'UMIT'", address: "Abylay Khan Ave, 42/1", type: "research", lat: 51.1253, lng: 71.4328, notes: "Comprehensive cancer diagnosis and treatment" },
-        { id: 9, name: "Republican Diagnostic Center (UMC)", address: "Sygynak St, 46", type: "public", lat: 51.1356, lng: 71.4254, notes: "National-level diagnostic facility" },
-        { id:10, name: "Maternal and Child Health Research Center (UMC)", address: "Turan Ave, 32", type: "research", lat: 51.1298, lng: 71.4287, notes: "Specialized in women's and children's health" },
-        { id:11, name: "EMIRMED (Health Research Institute)", address: "Kuishi Dina St, 9", type: "research", lat: 51.1224, lng: 71.4193, notes: "Research institute with diagnostic services" },
-        { id:12, name: "Meyirim Medical Center", address: "Koshkarbayev St, 15", type: "private", lat: 51.1312, lng: 71.4356, notes: "Has digital mammography equipment" },
-        { id:13, name: "Emergency Medicine Research Institute", address: "Hussein bin Talal St, 14, 3rd floor", type: "research", lat: 51.1276, lng: 71.4372, notes: "Specialized diagnostic services" },
-        { id:14, name: "NROC (National Research Oncology Center)", address: "Kabanbay Batyr Ave, 53", type: "research", lat: 51.1201, lng: 71.4428, notes: "Modern equipment, integrated cancer programs" }
-      ];
-
-      const articles = [
-        { id:1, title:"WHO — Breast cancer facts", url:"https://www.who.int/news-room/fact-sheets/detail/breast-cancer", source:"World Health Organization" },
-        { id:2, title:"NHS — Breast cancer overview", url:"https://www.nhs.uk/conditions/breast-cancer/", source:"UK National Health Service" },
-        { id:3, title:"ACS — Screening Guidelines", url:"https://www.cancer.org/healthy/find-cancer-early/breast-cancer-screening.html", source:"American Cancer Society" },
-        { id:4, title:"Breast self-examination guide", url:"https://www.breastcancer.org/screening-testing/breast-self-exam", source:"BreastCancer.org" },
-        { id:5, title:"Mammography: What to expect", url:"https://www.mayoclinic.org/tests-procedures/mammogram/about/pac-20384806", source:"Mayo Clinic" },
-        { id:6, title:"Reducing breast cancer risk", url:"https://www.cdc.gov/cancer/breast/basic_info/prevention.htm", source:"CDC" }
-      ];
-
-      // Map
-      let map; let markers = []; let lastFilter = { search:'', type:'' };
-
-      function initMap(){
-        if(map) return;
-        map = L.map('map').setView([51.169392,71.449074], 12);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution:'&copy; OpenStreetMap contributors' }).addTo(map);
-        renderClinicsOnMap();
+      function setLanguage(lang){
+        if (!['en','ru','kz'].includes(lang)) return;
+        currentLanguage = lang;
+        localStorage.setItem('preferredLanguage', lang);
+        applyTranslations();
       }
 
-      function renderClinicsOnMap(filter = lastFilter){
-        lastFilter = filter;
-        if(!map) return;
-        markers.forEach(m => map.removeLayer(m)); markers = [];
+      document.addEventListener('DOMContentLoaded', function(){
+        // Init AOS & icons
+        AOS.init({ duration: 600, once: true });
+        if (window.feather && typeof feather.replace==='function') feather.replace();
 
-        const list = filterClinics(filter);
-        list.forEach(clinic=>{
-          const marker = L.marker([clinic.lat, clinic.lng]).addTo(map);
-          const t = translations[currentLanguage] || translations.en;
-          const typeLabel = clinic.type==='public' ? t.card_public : clinic.type==='private' ? t.card_private : t.card_research;
-          const typeColor = clinic.type==='public' ? '#3b82f6' : clinic.type==='private' ? '#ec4899' : '#8b5cf6';
-          marker.bindPopup(`
-            <div class="space-y-2" style="min-width:200px;">
-              <h4 class="font-semibold text-gray-800">${escapeHtml(clinic.name)}</h4>
-              <p class="text-sm text-gray-600">${escapeHtml(clinic.address)}</p>
-              <div class="flex items-center gap-2">
-                <span class="inline-block w-3 h-3 rounded-full" style="background-color:${typeColor};"></span>
-                <span class="text-xs font-medium text-gray-700">${typeLabel}</span>
-              </div>
-              ${clinic.notes ? `<p class="text-xs text-gray-500 mt-2">${escapeHtml(clinic.notes)}</p>` : ''}
-              <div class="mt-2">
-                <a href="https://www.google.com/maps?q=${clinic.lat},${clinic.lng}" target="_blank" rel="noopener" class="inline-flex items-center gap-1 text-sm text-primary hover:underline">
-                  <i data-feather="map-pin" class="w-3 h-3"></i>${t.get_directions}
-                </a>
-              </div>
-            </div>
-          `);
-          markers.push(marker);
-        });
+        // Mobile menu
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const closeMobileMenu = document.getElementById('close-mobile-menu');
+        mobileMenuButton?.addEventListener('click', ()=>{ mobileMenu.classList.remove('hidden'); document.body.style.overflow='hidden'; });
+        closeMobileMenu?.addEventListener('click', ()=>{ mobileMenu.classList.add('hidden'); document.body.style.overflow=''; });
 
-        if(list.length>0){
-          const bounds = L.latLngBounds(list.map(c=>[c.lat,c.lng]));
-          map.fitBounds(bounds,{ padding:[50,50] });
+        // Routing
+        const routes = ["home","clinics","resources","about"];
+        function showView(view){
+          routes.forEach(v=>{
+            document.getElementById(`view-${v}`).classList.add('hidden');
+            document.querySelectorAll(`[data-view="${v}"]`).forEach(el=>{
+              el.classList.remove('active'); if(el.classList.contains('tab-button')) el.classList.remove('active');
+            });
+          });
+          document.getElementById(`view-${view}`).classList.remove('hidden');
+          document.querySelectorAll(`[data-view="${view}"]`).forEach(el=>{
+            el.classList.add('active'); if(el.classList.contains('tab-button')) el.classList.add('active');
+          });
+          localStorage.setItem('lastView', view);
+          if(view==='clinics') initMap();
         }
-      }
+        function parseRoute(){ const hash=(window.location.hash.substring(1)||'home'); showView(routes.includes(hash)?hash:'home'); }
+        window.addEventListener('hashchange', parseRoute); parseRoute();
 
-      function filterClinics({search='', type=''}){
-        const s = search.toLowerCase(); const t = type.toLowerCase();
-        return clinics.filter(c=>{
-          const mS = !s || c.name.toLowerCase().includes(s) || c.address.toLowerCase().includes(s) || (c.notes||'').toLowerCase().includes(s);
-          const mT = !t || c.type===t;
-          return mS && mT;
-        });
-      }
+        // Language switcher
+        const switcherBtn = document.getElementById('language-switcher');
+        const dropdown    = document.getElementById('language-dropdown');
 
-      function renderClinicsList(filter = lastFilter){
-        lastFilter = filter;
-        const container = document.getElementById('clinics-list'); if(!container) return;
-        const list = filterClinics(filter);
-        const dict = translations[currentLanguage] || translations.en;
-
-        if(list.length===0){
-          container.innerHTML = `<div class="card p-4 text-center text-gray-500">${dict.no_results}</div>`;
-          return;
-        }
-
-        container.innerHTML = list.map(clinic=>{
-          let badgeClass, typeText;
-          if(clinic.type==='public'){ badgeClass='bg-blue-100 text-blue-800'; typeText=dict.card_public; }
-          else if(clinic.type==='private'){ badgeClass='bg-pink-100 text-pink-800'; typeText=dict.card_private; }
-          else { badgeClass='bg-purple-100 text-purple-800'; typeText=dict.card_research; }
-
-          return `
-            <div class="clinic-item card p-4" data-id="${clinic.id}">
-              <div class="flex justify-between items-start mb-2">
-                <h4 class="font-medium text-gray-800">${escapeHtml(clinic.name)}</h4>
-                <span class="text-xs px-2 py-1 rounded-full ${badgeClass}">${typeText}</span>
-              </div>
-              <p class="text-sm text-gray-600 mb-3">${escapeHtml(clinic.address)}</p>
-              ${clinic.notes ? `<p class="text-xs text-gray-500 mb-3">${escapeHtml(clinic.notes)}</p>` : ''}
-              <div class="flex flex-wrap gap-2">
-                <button class="focus-clinic px-3 py-1 text-xs bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition" data-i18n="show_on_map">${dict.show_on_map}</button>
-                <a href="https://www.google.com/maps?q=${clinic.lat},${clinic.lng}" target="_blank" rel="noopener" class="px-3 py-1 text-xs bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition">${dict.directions}</a>
-              </div>
-            </div>
-          `;
-        }).join('');
-
-        document.querySelectorAll('.focus-clinic').forEach(btn=>{
-          btn.addEventListener('click', function(){
-            const id = parseInt(this.closest('.clinic-item').getAttribute('data-id'));
-            const c = clinics.find(x=>x.id===id);
-            if(c && map){
-              map.setView([c.lat, c.lng], 15);
-              markers.forEach(m=>{ const p=m.getLatLng(); if(p.lat===c.lat && p.lng===c.lng) m.openPopup(); });
-            }
+        switcherBtn?.addEventListener('click', (e)=>{ e.stopPropagation(); dropdown?.classList.toggle('hidden'); });
+        document.addEventListener('click', ()=> dropdown?.classList.add('hidden'));
+        $all('#language-dropdown [data-lang]').forEach(btn=>{
+          btn.addEventListener('click', (e)=>{
+            e.stopPropagation();
+            const lang = btn.getAttribute('data-lang');
+            setLanguage(lang);
+            dropdown?.classList.add('hidden');
           });
         });
-      }
 
-      function renderArticlesList(){
-        const container = document.getElementById('articles-list'); if(!container) return;
-        const dict = translations[currentLanguage] || translations.en;
-        container.innerHTML = articles.map(a => `
-          <a href="${escapeHtml(a.url)}" target="_blank" rel="noopener" class="article-card block p-4 border border-gray-200 rounded-lg hover:border-primary transition">
-            <h4 class="font-medium text-gray-800 mb-1">${escapeHtml(a.title)}</h4>
-            <p class="text-xs text-gray-500">${escapeHtml(a.source)}</p>
-            <div class="mt-2 flex justify-between items-center">
-              <span class="text-xs text-primary">${dict.read_article || 'Read article'}</span>
-              <i data-feather="external-link" class="w-4 h-4 text-gray-400"></i>
-            </div>
-          </a>
-        `).join('');
-        feather.replace();
-      }
+        // First language application
+        applyTranslations();
 
-      // Filters
-      document.getElementById('btn-apply-filters')?.addEventListener('click', ()=>{
-        const s = document.getElementById('search-clinics').value;
-        const t = document.getElementById('filter-type').value;
-        const f = { search:s, type:t };
-        renderClinicsOnMap(f); renderClinicsList(f);
-      });
-      document.getElementById('search-clinics')?.addEventListener('keypress', (e)=>{ if(e.key==='Enter') document.getElementById('btn-apply-filters').click(); });
+        // Initial renders (for home)
+        renderArticlesList();
 
-      // Modal (demo only)
-      const addClinicModal = document.getElementById('add-clinic-modal');
-      document.getElementById('btn-add-clinic')?.addEventListener('click', ()=>{ addClinicModal.classList.remove('hidden'); document.body.style.overflow='hidden'; });
-      document.getElementById('close-add-clinic-modal')?.addEventListener('click', closeModal);
-      document.getElementById('cancel-add-clinic')?.addEventListener('click', closeModal);
-      function closeModal(){ addClinicModal.classList.add('hidden'); document.body.style.overflow=''; }
-      document.getElementById('save-clinic')?.addEventListener('click', ()=>{
-        alert('Demo: here you would save the clinic to a backend or localStorage.');
-        closeModal();
+        // Filters
+        document.getElementById('btn-apply-filters')?.addEventListener('click', ()=>{
+          const s = document.getElementById('search-clinics').value;
+          const t = document.getElementById('filter-type').value;
+          const f = { search:s, type:t };
+          renderClinicsOnMap(f); renderClinicsList(f);
+        });
+        document.getElementById('search-clinics')?.addEventListener('keypress', (e)=>{ if(e.key==='Enter') document.getElementById('btn-apply-filters').click(); });
+
+        // Modal demo
+        const addClinicModal = document.getElementById('add-clinic-modal');
+        document.getElementById('btn-add-clinic')?.addEventListener('click', ()=>{ addClinicModal.classList.remove('hidden'); document.body.style.overflow='hidden'; });
+        document.getElementById('close-add-clinic-modal')?.addEventListener('click', closeModal);
+        document.getElementById('cancel-add-clinic')?.addEventListener('click', closeModal);
+        function closeModal(){ addClinicModal.classList.add('hidden'); document.body.style.overflow=''; }
+        document.getElementById('save-clinic')?.addEventListener('click', ()=>{
+          alert('Demo: here you would save the clinic to a backend or localStorage.');
+          closeModal();
+        });
       });
 
-      // First render
-      renderArticlesList();
-    });
-
-    function escapeHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;'); }
+      // Expose for debug
+      window.MammoCareI18n = { get lang(){return currentLanguage;}, setLanguage };
+    })();
   </script>
 </body>
 </html>
