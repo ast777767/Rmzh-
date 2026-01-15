@@ -872,14 +872,16 @@
 
       // Expose for debug
       window.MammoCareI18n = { get lang(){return currentLanguage;}, setLanguage };
-    })();
-    <!-- PWA -->
-<script>
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("./sw.js");
-}
-</script>
-<!-- /PWA -->
+    
+        })();
   </script>
+
+  <!-- PWA -->
+  <script>
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("./sw.js");
+    }
+  </script>
+
 </body>
 </html>
