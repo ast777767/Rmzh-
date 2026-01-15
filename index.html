@@ -6,6 +6,11 @@
   <title>MammoCare — Маммография в Астане | Астанадағы маммография</title>
   <meta name="description" content="Карта клиник маммографии в Астане | Map of mammography clinics in Astana | Астанадағы маммография клиникаларының картасы" />
 
+  <!-- PWA -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#ec4899">
+<!-- /PWA -->
+  
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -868,6 +873,13 @@
       // Expose for debug
       window.MammoCareI18n = { get lang(){return currentLanguage;}, setLanguage };
     })();
+    <!-- PWA -->
+<script>
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("./sw.js");
+}
+</script>
+<!-- /PWA -->
   </script>
 </body>
 </html>
