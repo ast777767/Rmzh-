@@ -875,6 +875,31 @@
     
         })();
   </script>
+  <script>
+document.addEventListener('DOMContentLoaded', () => {
+
+  const aiBtn = document.getElementById('ai-button');
+  const aiModal = document.getElementById('ai-modal');
+  const aiClose = document.getElementById('ai-close');
+  const aiInput = document.getElementById('ai-input');
+  const aiSend = document.getElementById('ai-send');
+  const aiMessages = document.getElementById('ai-messages');
+
+  aiBtn.addEventListener('click', () => {
+    aiModal.classList.remove('hidden');
+  });
+
+  aiClose.addEventListener('click', () => {
+    aiModal.classList.add('hidden');
+  });
+
+  aiSend.addEventListener('click', sendMessage);
+  aiInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') sendMessage();
+  });
+
+});
+</script>
 <script>
 /* =========================
    AI ASSISTANT LOGIC v1
