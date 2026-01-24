@@ -56,6 +56,7 @@
     .tooltip{ position:relative } .tooltip:hover .tooltip-text{ visibility:visible; opacity:1 }
     .tooltip-text{ visibility:hidden; opacity:0; transition:opacity .3s; position:absolute; z-index:1; bottom:125%; left:50%; transform:translateX(-50%); background:#1e293b; color:#fff; padding:.5rem; border-radius:4px; font-size:.875rem; white-space:nowrap }
   </style>
+
 </head>
 <body class="min-h-screen flex flex-col">
   <!-- Header -->
@@ -69,7 +70,9 @@
             <span id="current-city" data-i18n="city">Astana</span>
           </span>
         </div>
-
+<button id="mobile-menu-button" class="md:hidden text-gray-600">
+  <i data-feather="menu" class="w-6 h-6"></i>
+</button>
         <nav class="hidden md:flex space-x-1">
           <a href="#home" class="nav-item px-4 py-2 rounded-lg flex items-center space-x-1" data-view="home">
             <i data-feather="home" class="w-4 h-4"></i>
@@ -111,50 +114,36 @@
   </header>
 
   <!-- Mobile Menu -->
-  <div id="mobile-menu" class="hidden fixed inset-0 z-40 bg-white/95 backdrop-blur-md">
-    <div class="container mx-auto px-4 py-8">
-      <div class="flex justify-between items-center mb-8">
-        <div class="flex items-center space-x-2">
-          <div class="text-2xl text-primary"><i data-feather="heart"></i></div>
-          <h1 class="text-xl font-bold text-gray-800">MammoCare</h1>
-        </div>
-        <button id="close-mobile-menu" class="text-gray-600"><i data-feather="x" class="w-6 h-6"></i></button>
+<div id="mobile-menu"
+     class="hidden fixed inset-0 z-[999] bg-white/95 backdrop-blur-md">
+  <div class="container mx-auto px-4 py-8">
+    <div class="flex justify-between items-center mb-8">
+      <div class="flex items-center space-x-2">
+        <div class="text-2xl text-primary"><i data-feather="heart"></i></div>
+        <h1 class="text-xl font-bold text-gray-800">MammoCare</h1>
       </div>
-
-      <nav class="flex flex-col space-y-4">
-        <a href="#home" class="nav-item px-4 py-3 rounded-lg flex items-center space-x-3 text-lg" data-view="home">
-          <i data-feather="home" class="w-5 h-5"></i>
-          <span data-i18n="home">Home</span>
-        </a>
-        <a href="#clinics" class="nav-item px-4 py-3 rounded-lg flex items-center space-x-3 text-lg" data-view="clinics">
-          <i data-feather="map" class="w-5 h-5"></i>
-          <span data-i18n="clinics">Clinics</span>
-        </a>
-        <a href="#resources" class="nav-item px-4 py-3 rounded-lg flex items-center space-x-3 text-lg" data-view="resources">
-          <i data-feather="book" class="w-5 h-5"></i>
-          <span data-i18n="resources">Resources</span>
-        </a>
-        <a href="#about" class="nav-item px-4 py-3 rounded-lg flex items-center space-x-3 text-lg" data-view="about">
-          <i data-feather="info" class="w-5 h-5"></i>
-          <span data-i18n="about">About</span>
-        </a>
-      </nav>
-      <script>
-  const openBtn = document.getElementById('mobile-menu-button');
-  const closeBtn = document.getElementById('close-mobile-menu');
-  const menu = document.getElementById('mobile-menu');
-
-  openBtn.addEventListener('click', () => {
-    menu.classList.remove('hidden');
-  });
-
-  closeBtn.addEventListener('click', () => {
-    menu.classList.add('hidden');
-  });
-</script>
+      <button id="close-mobile-menu" class="text-gray-600">
+        <i data-feather="x" class="w-6 h-6"></i>
+      </button>
     </div>
-  </div>
 
+    <nav class="flex flex-col space-y-4">
+      <a href="#home" class="nav-item px-4 py-3 rounded-lg flex items-center gap-3 text-lg" data-view="home">
+        <i data-feather="home"></i> Home
+      </a>
+      <a href="#clinics" class="nav-item px-4 py-3 rounded-lg flex items-center gap-3 text-lg" data-view="clinics">
+        <i data-feather="map"></i> Clinics
+      </a>
+      <a href="#resources" class="nav-item px-4 py-3 rounded-lg flex items-center gap-3 text-lg" data-view="resources">
+        <i data-feather="book"></i> Resources
+      </a>
+      <a href="#about" class="nav-item px-4 py-3 rounded-lg flex items-center gap-3 text-lg" data-view="about">
+        <i data-feather="info"></i> About
+      </a>
+    </nav>
+  </div>
+</div>
+  
   <!-- Main -->
   <main class="flex-grow container mx-auto px-4 py-6">
     <!-- Home -->
@@ -978,6 +967,30 @@ document.addEventListener('DOMContentLoaded', () => {
     </div>
   </div>
 </div>
-  
+  <script>
+document.addEventListener('DOMContentLoaded', () => {
+  const openBtn  = document.getElementById('mobile-menu-button');
+  const closeBtn = document.getElementById('close-mobile-menu');
+  const menu     = document.getElementById('mobile-menu');
+
+  openBtn.addEventListener('click', () => {
+    menu.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+  });
+
+  closeBtn.addEventListener('click', () => {
+    menu.classList.add('hidden');
+    document.body.style.overflow = '';
+  });
+
+  // закрытие при клике на пункт меню
+  menu.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => {
+      menu.classList.add('hidden');
+      document.body.style.overflow = '';
+    });
+  });
+});
+</script>
 </body>
 </html>
