@@ -139,6 +139,19 @@
           <span data-i18n="about">About</span>
         </a>
       </nav>
+      <script>
+  const openBtn = document.getElementById('mobile-menu-button');
+  const closeBtn = document.getElementById('close-mobile-menu');
+  const menu = document.getElementById('mobile-menu');
+
+  openBtn.addEventListener('click', () => {
+    menu.classList.remove('hidden');
+  });
+
+  closeBtn.addEventListener('click', () => {
+    menu.classList.add('hidden');
+  });
+</script>
     </div>
   </div>
 
