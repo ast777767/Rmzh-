@@ -137,25 +137,6 @@
 
 <body class="min-h-screen flex flex-col">
 
-<!-- Скрипт в head убран, он вставлен в конце body -->
-
-<!-- ===== ПРОВЕРКА ПЕРВОГО ВХОДА ===== -->
-<script>
-window.onload = function () {
-  let risk = localStorage.getItem("riskResult");
-  if (!risk) {
-    document.getElementById("risk-section").style.display = "block";
-  } else {
-    document.getElementById("savedRisk").innerText = "Ваш риск: " + risk;
-  }
-
-  let cycle = localStorage.getItem("cycleResult");
-  if (cycle) {
-    document.getElementById("savedCycle").innerText = cycle;
-  }
-};
-</script>
-
 <!-- Header -->
 <header class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-200">
   <div class="container mx-auto px-4 py-3">
@@ -195,7 +176,7 @@ window.onload = function () {
           <span>🌐</span>
           <span id="current-lang">EN</span>
           <i data-feather="chevron-down" class="w-4 h-4 text-gray-500"></i>
-        </div>
+        </button>
         <div id="language-dropdown" class="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-lg shadow-lg hidden">
           <button class="w-full text-left px-3 py-2 hover:bg-gray-50" data-lang="en">English</button>
           <button class="w-full text-left px-3 py-2 hover:bg-gray-50" data-lang="ru">Русский</button>
@@ -208,7 +189,7 @@ window.onload = function () {
 
 <!-- Mobile Menu -->
 <div id="mobile-menu" class="hidden fixed inset-0 z-[999] bg-black/40 backdrop-blur-sm">
-  
+
   <!-- Контент -->
   <div class="bg-white h-full w-full max-w-sm ml-auto p-6 animate-slide-in">
 
@@ -250,47 +231,6 @@ window.onload = function () {
 
 <!-- Main content -->
 <main class="flex-grow container mx-auto px-4 py-6">
-  <!-- Оценка риска (первый вход) -->
-  <section id="risk-section" style="display:none;">
-    <h2>Оценка риска</h2>
-    <label>Возраст:</label>
-    <input type="number" id="age" />
-
-    <label>Случаи рака груди в семье:</label>
-    <select id="family">
-      <option value="0">Нет</option>
-      <option value="2">Да</option>
-    </select>
-
-    <label>Курение:</label>
-    <select id="smoke">
-      <option value="0">Нет</option>
-      <option value="1">Да</option>
-    </select>
-
-    <label>Есть ли жалобы (боль, уплотнения):</label>
-    <select id="symptoms">
-      <option value="0">Нет</option>
-      <option value="2">Да</option>
-    </select>
-
-    <button onclick="calculateRisk()">Рассчитать</button>
-    <p id="riskResult"></p>
-    <small>Это не медицинский диагноз. Обратитесь к врачу.</small>
-  </section>
-
-  <!-- Трекер цикла -->
-  <section id="cycle-section">
-    <h2>Трекер цикла</h2>
-    <label>Дата последних месячных:</label>
-    <input type="date" id="lastPeriod" />
-
-    <label>Длина цикла (дни):</label>
-    <input type="number" id="cycleLength" value="28" />
-
-    <button onclick="calculateCycle()">Рассчитать</button>
-    <p id="cycleResult"></p>
-  </section>
 
   <!-- ГЛАВНАЯ КАРТОЧКА -->
   <section id="dashboard">
@@ -442,7 +382,7 @@ window.onload = function () {
             <div class="space-y-3">
               <div class="flex items-center gap-3">
                 <div class="p-2 rounded-full bg-gray-100 text-gray-600"><i data-feather="mail" class="w-5 h-5"></i></div>
-                <span class="text-gray-700">info@mammocare.kz</span>
+                <span class="text-gray-700"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="9bf2f5fdf4dbf6faf6f6f4f8fae9feb5f0e1">[email&#160;protected]</a></span>
               </div>
               <div class="flex items-center gap-3">
                 <div class="p-2 rounded-full bg-gray-100 text-gray-600"><i data-feather="github" class="w-5 h-5"></i></div>
@@ -548,7 +488,7 @@ window.onload = function () {
 </div>
 
 <!-- Скрипты -->
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
   // Переводы
   const translations = {
     en: {
@@ -597,29 +537,29 @@ window.onload = function () {
       tip4_title: "Знайте признаки", tip4_text: "Обращайте внимание на уплотнения, изменения кожи, выделения из соска или постоянную боль. Сообщите врачу.",
       quick_guide: "Краткое руководство по самообследованию",
       visual_inspection: "Визуальный осмотр", vi_1: "Встаньте перед зеркалом, выпрямив плечи, руки на бедрах", vi_2: "Отслеживайте изменения размера, формы или цвета", vi_3: "Проверьте на втяжения, ямочки или выпуклости кожи",
-      physical_exam: "Пальпация", pe_1: "Подушечками пальцев прощупайте ткани на наличие уплотнений", pe_2: "Кеудені толық: жоғары-төмен, шетіне дейін тексеріңіз", pe_3: "Қолтық асты мен бұғанаға дейін қараңыз",
-      watch_videos: "Нұсқаулық видеоларды қарау",
-      clinics_title: "Клиники маммографии в Астане", clinics_sub: "Жақын скрининг орталықтарын табыңыз",
-      add_clinic: "Клиника қосу", search_label: "Іздеу",
-      search_ph: "Клиника атауы немесе мекенжайы…", filter_label: "Түрі бойынша сүзгі", type_all: "Барлығы", type_public: "Мемлекеттік", type_private: "Жекеменшік", type_research: "Ғылыми орталық", apply_btn: "Қолдану",
-      map_hint: "Маркерді басып, мәліметті қараңыз. «Маршрут» Google Maps-та ашылады.",
-      clinic_list: "Клиникалар тізімі", no_results: "Сүзгіге сай клиника табылмады",
-      show_on_map: "Картадан көрсету", directions: "Маршрут", get_directions: "Маршрут", read_article: "Мақаланы оқу",
-      resources_title: "Білім ресустары", videos_heading: "Нұсқаулық видеолар",
-      video1_title: "Қалай жүргізу керек", video1_desc: "Ай сайынғы тексеруге арналған қадамдық нұсқаулық",
-      video2_title: "Маммография туралы түсінік", video2_desc: "Скрининг кезінде не күту керек",
-      more_videos: "YouTube-та көбірек видео", articles_heading: "Мақалалар мен нұсқаулықтар", more_from_who: "ДДҰ материалдары",
-      about_title: "MammoCare туралы", about_p1: "MammoCare — Астанадағы маммография клиникаларын және сенімді ақпаратты табуға көмектесетін тегін ресурс.",
-      about_p2: "Мақсатымыз — білім беру және скринингке қолжетімділік арқылы ерте анықтауды арттыру. Бұл ем нәтижесін жақсартуға көмектеседі.",
-      about_p3: "Жоба медициналық мекемелерге қатысы жоқ және қоғамдық бастама. Медициналық кеңес алу үшін дәрігерге жүгініңіз.",
-      disclaimer_title: "Жауапкершіліктен бас тарту",
-      disclaimer_text: "Мұндағы ақпарат оқу мақсатында. Клиника мәліметтері өзгеруі мүмкін — нақтылау үшін тексеріңіз.",
-      contact_title: "Байланыс", contact_desc: "Сұрақ немесе ұсыныстарыңыз бар ма? Бізге жазыңыз.",
-      github_repo: "Репозиторий GitHub", support_text: "Бастаманы қолдау",
-      credits_title: "Алғыс", credits_med: "Медициналық ақпарат: ДДСҰ және NHS",
-      modal_add_title: "Жаңа клиника қосу", fld_name: "Клиника атауы", fld_addr: "Мекенжай", fld_type: "Түрі", fld_lat: "Ендік", fld_lng: "Бойлық", fld_notes: "Ескертпе (міндетті емес)",
-      btn_cancel: "Болдырмау", btn_save: "Сақтау",
-      card_public: "Мемл.", card_private: "Жеке", card_research: "Ғыл."
+      physical_exam: "Пальпация", pe_1: "Подушечками пальцев прощупайте ткани на наличие уплотнений", pe_2: "Обследуйте всю грудь: сверху вниз, из стороны в сторону", pe_3: "Проверьте подмышечную область и ключицу",
+      watch_videos: "Смотреть обучающие видео",
+      clinics_title: "Клиники маммографии в Астане", clinics_sub: "Найдите ближайшие центры скрининга",
+      add_clinic: "Добавить клинику", search_label: "Поиск",
+      search_ph: "Название клиники или адрес...", filter_label: "Фильтр по типу", type_all: "Все типы", type_public: "Государственная", type_private: "Частная", type_research: "Научный центр", apply_btn: "Применить",
+      map_hint: "Нажмите на маркер для подробностей. Кнопка «Маршрут» откроет Google Maps.",
+      clinic_list: "Список клиник", no_results: "Клиники не найдены по вашему запросу",
+      show_on_map: "Показать на карте", directions: "Маршрут", get_directions: "Построить маршрут", read_article: "Читать статью",
+      resources_title: "Образовательные ресурсы", videos_heading: "Обучающие видео",
+      video1_title: "Как проводить самообследование груди", video1_desc: "Пошаговое руководство для ежемесячной проверки",
+      video2_title: "Что такое маммография", video2_desc: "Чего ожидать во время скрининга",
+      more_videos: "Больше видео на YouTube", articles_heading: "Статьи и руководства", more_from_who: "Материалы от ВОЗ",
+      about_title: "О MammoCare", about_p1: "MammoCare — бесплатный ресурс, помогающий женщинам в Астане найти центры маммографии и получить достоверную информацию о здоровье груди.",
+      about_p2: "Наша цель — содействовать раннему выявлению рака груди через образование и доступ к скринингу. Ранняя диагностика значительно улучшает результаты лечения.",
+      about_p3: "Проект создан как общественная инициатива и не связан с медицинскими учреждениями. Всегда консультируйтесь с врачом.",
+      disclaimer_title: "Отказ от ответственности",
+      disclaimer_text: "Информация на сайте предназначена только для образовательных целей и не является медицинской консультацией. Данные о клиниках могут меняться — уточняйте перед визитом.",
+      contact_title: "Контакты", contact_desc: "Есть вопросы или предложения? Мы будем рады их услышать.",
+      github_repo: "Репозиторий GitHub", support_text: "Поддержать инициативу",
+      credits_title: "Благодарности", credits_med: "Медицинская информация: ВОЗ и NHS",
+      modal_add_title: "Добавить новую клинику", fld_name: "Название клиники", fld_addr: "Адрес", fld_type: "Тип", fld_lat: "Широта", fld_lng: "Долгота", fld_notes: "Примечания (необязательно)",
+      btn_cancel: "Отмена", btn_save: "Сохранить",
+      card_public: "Гос.", card_private: "Частн.", card_research: "Научн."
     },
     kz: {
       home: "Басты", clinics: "Клиникалар", resources: "Ресурстар", about: "Жоба туралы", city: "Астана", rights: "Барлық құқықтар қорғалған.",
@@ -634,13 +574,13 @@ window.onload = function () {
       visual_inspection: "Көру арқылы тексеру", vi_1: "Айна алдында тұрыңыз, иық тік, қол белде", vi_2: "Өлшемі, пішіні, түсі өзгерісін байқаңыз", vi_3: "Терідегі ойық, тартылу, ісінуді тексеріңіз",
       physical_exam: "Қолмен тексеру", pe_1: "Саусақ ұшымен түйіндерді сезіп көріңіз", pe_2: "Кеудені толық: жоғары-төмен, шетіне дейін тексеріңіз", pe_3: "Қолтық асты мен бұғанаға дейін қараңыз",
       watch_videos: "Нұсқаулық видеоларды қарау",
-      clinics_title: "Клиникалар маммографии в Астане", clinics_sub: "Жақын скрининг орталықтарын табыңыз",
+      clinics_title: "Астанадағы маммография клиникалары", clinics_sub: "Жақын скрининг орталықтарын табыңыз",
       add_clinic: "Клиника қосу", search_label: "Іздеу",
       search_ph: "Клиника атауы немесе мекенжайы…", filter_label: "Түрі бойынша сүзгі", type_all: "Барлығы", type_public: "Мемлекеттік", type_private: "Жекеменшік", type_research: "Ғылыми орталық", apply_btn: "Қолдану",
       map_hint: "Маркерді басып, мәліметті қараңыз. «Маршрут» Google Maps-та ашылады.",
       clinic_list: "Клиникалар тізімі", no_results: "Сүзгіге сай клиника табылмады",
       show_on_map: "Картадан көрсету", directions: "Маршрут", get_directions: "Маршрут", read_article: "Мақаланы оқу",
-      resources_title: "Білім ресустары", videos_heading: "Нұсқаулық видеолар",
+      resources_title: "Білім ресурстары", videos_heading: "Нұсқаулық видеолар",
       video1_title: "Қалай жүргізу керек", video1_desc: "Ай сайынғы тексеруге арналған қадамдық нұсқаулық",
       video2_title: "Маммография туралы түсінік", video2_desc: "Скрининг кезінде не күту керек",
       more_videos: "YouTube-та көбірек видео", articles_heading: "Мақалалар мен нұсқаулықтар", more_from_who: "ДДҰ материалдары",
@@ -912,7 +852,7 @@ window.onload = function () {
 
 <!-- Кнопка помощника AI -->
 <button id="ai-button" class="fixed bottom-5 right-5 z-50 bg-primary text-white px-4 py-3 rounded-full shadow-lg hover:bg-pink-600">
-  🤖 AI помощник
+  AI помощник
 </button>
 
 <!-- Модальное окно AI -->
@@ -1023,24 +963,25 @@ window.onload = function () {
     });
   });
 </script>
+
 <!-- ===== RISK MODAL ===== -->
 <div id="risk-modal" class="fixed inset-0 z-50 hidden bg-black/50 flex items-center justify-center p-4">
   <div class="bg-white rounded-xl w-full max-w-md p-6 space-y-4">
     <h2 class="text-lg font-bold">Оценка риска</h2>
 
-    <input type="number" id="age" placeholder="Возраст" class="w-full border p-2 rounded">
+    <input type="number" id="modal-age" placeholder="Возраст" class="w-full border p-2 rounded">
 
-    <select id="family" class="w-full border p-2 rounded">
-      <option value="0">Нет случаев</option>
-      <option value="2">Есть случаи</option>
+    <select id="modal-family" class="w-full border p-2 rounded">
+      <option value="0">Нет случаев рака в семье</option>
+      <option value="2">Есть случаи рака в семье</option>
     </select>
 
-    <select id="smoke" class="w-full border p-2 rounded">
+    <select id="modal-smoke" class="w-full border p-2 rounded">
       <option value="0">Не курю</option>
       <option value="1">Курю</option>
     </select>
 
-    <select id="symptoms" class="w-full border p-2 rounded">
+    <select id="modal-symptoms" class="w-full border p-2 rounded">
       <option value="0">Нет симптомов</option>
       <option value="2">Есть симптомы</option>
     </select>
@@ -1049,7 +990,7 @@ window.onload = function () {
       Рассчитать
     </button>
 
-    <p id="riskResult" class="text-center font-medium"></p>
+    <p id="modal-riskResult" class="text-center font-medium"></p>
   </div>
 </div>
 
@@ -1058,22 +999,37 @@ window.onload = function () {
   <div class="bg-white rounded-xl w-full max-w-md p-6 space-y-4">
 
     <div class="flex justify-between">
-      <h2 class="font-bold">Цикл</h2>
+      <h2 class="font-bold">Трекер цикла</h2>
       <button onclick="closeCycle()">✕</button>
     </div>
 
-    <input type="date" id="lastPeriod" class="w-full border p-2 rounded">
-    <input type="number" id="cycleLength" value="28" class="w-full border p-2 rounded">
+    <label class="block text-sm text-gray-600">Дата последних месячных:</label>
+    <input type="date" id="modal-lastPeriod" class="w-full border p-2 rounded">
+
+    <label class="block text-sm text-gray-600">Длина цикла (дни):</label>
+    <input type="number" id="modal-cycleLength" value="28" class="w-full border p-2 rounded">
 
     <button onclick="calculateCycle()" class="w-full bg-primary text-white py-2 rounded">
       Рассчитать
     </button>
 
-    <p id="cycleResult" class="text-center"></p>
+    <p id="modal-cycleResult" class="text-center"></p>
   </div>
 </div>
-  <script>
+
+<script>
 document.addEventListener("DOMContentLoaded", () => {
+
+  // Показ сохраненных данных
+  let risk = localStorage.getItem("riskResult");
+  if (risk) {
+    document.getElementById("savedRisk").innerText = "Ваш риск: " + risk;
+  }
+
+  let cycle = localStorage.getItem("cycleResult");
+  if (cycle) {
+    document.getElementById("savedCycle").innerText = cycle;
+  }
 
   // риск при первом входе
   if (!localStorage.getItem("riskDone")) {
@@ -1090,10 +1046,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // ===== РИСК =====
 function calculateRisk() {
-  let age = +document.getElementById("age").value || 0;
-  let family = +document.getElementById("family").value;
-  let smoke = +document.getElementById("smoke").value;
-  let symptoms = +document.getElementById("symptoms").value;
+  let age = +document.getElementById("modal-age").value || 0;
+  let family = +document.getElementById("modal-family").value;
+  let smoke = +document.getElementById("modal-smoke").value;
+  let symptoms = +document.getElementById("modal-symptoms").value;
 
   let score = family + smoke + symptoms;
 
@@ -1105,9 +1061,10 @@ function calculateRisk() {
     score <= 5 ? "Средний риск" :
     "Высокий риск";
 
-  document.getElementById("riskResult").innerText = result;
+  document.getElementById("modal-riskResult").innerText = result;
+  document.getElementById("savedRisk").innerText = "Ваш риск: " + result;
 
-  localStorage.setItem("riskDone", true);
+  localStorage.setItem("riskDone", "true");
   localStorage.setItem("riskResult", result);
 
   setTimeout(() => {
@@ -1117,11 +1074,11 @@ function calculateRisk() {
 
 // ===== ЦИКЛ =====
 function calculateCycle() {
-  let lastValue = document.getElementById("lastPeriod").value;
+  let lastValue = document.getElementById("modal-lastPeriod").value;
   if (!lastValue) return alert("Введите дату");
 
   let last = new Date(lastValue);
-  let cycle = +document.getElementById("cycleLength").value || 28;
+  let cycle = +document.getElementById("modal-cycleLength").value || 28;
 
   let next = new Date(last);
   next.setDate(next.getDate() + cycle);
@@ -1133,7 +1090,8 @@ function calculateCycle() {
     "Следующие: " + next.toLocaleDateString() +
     " | Овуляция: " + ovulation.toLocaleDateString();
 
-  document.getElementById("cycleResult").innerText = result;
+  document.getElementById("modal-cycleResult").innerText = result;
+  document.getElementById("savedCycle").innerText = result;
 
   localStorage.setItem("cycleResult", result);
 }
