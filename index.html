@@ -43,45 +43,98 @@
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
-    :root { --radius: 12px; --shadow: 0 10px 15px -3px rgba(0,0,0,.1), 0 4px 6px -2px rgba(0,0,0,.05) }
-    body { font-family: 'Inter', sans-serif; background:#f8fafc }
-    .card { border-radius: var(--radius); box-shadow: var(--shadow); background:#fff; border:1px solid #e2e8f0 }
-    .nav-item{ transition:.2s } .nav-item:hover{ background:#fdf2f8 } .nav-item.active{ background:#fce7f3; color:#ec4899; font-weight:500 }
-    #map{ height:400px; border-radius:var(--radius); z-index:10 }
-    .clinic-item{ transition:.2s } .clinic-item:hover{ transform:translateY(-2px); box-shadow:0 20px 25px -5px rgba(0,0,0,.1),0 10px 10px -5px rgba(0,0,0,.04) }
-    .article-card{ transition:.2s } .article-card:hover{ transform:translateY(-2px); box-shadow:0 20px 25px -5px rgba(0,0,0,.1),0 10px 10px -5px rgba(0,0,0,.04) }
-    .modal-overlay{ background:rgba(0,0,0,.5); z-index:1000 } .modal-content{ max-height:90vh; overflow-y:auto }
-    .tab-button{ transition:.2s } .tab-button.active{ color:#ec4899; border-bottom:2px solid #ec4899 }
-    .tooltip{ position:relative } .tooltip:hover .tooltip-text{ visibility:visible; opacity:1 }
-    .tooltip-text{ visibility:hidden; opacity:0; transition:opacity .3s; position:absolute; z-index:1; bottom:125%; left:50%; transform:translateX(-50%); background:#1e293b; color:#fff; padding:.5rem; border-radius:4px; font-size:.875rem; white-space:nowrap }
- section {
-  background: #f6fff6;
-  padding: 15px;
-  margin: 15px 0;
-  border-radius: 12px;
+    :root {
+      --radius: 12px;
+      --shadow: 0 10px 15px -3px rgba(0,0,0,.1), 0 4px 6px -2px rgba(0,0,0,.05);
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f8fafc;
+    }
+
+    .card {
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      background: #fff;
+      border: 1px solid #e2e8f0;
+    }
+
+    .nav-item { transition: .2s }
+    .nav-item:hover { background: #fdf2f8 }
+    .nav-item.active {
+      background: #fce7f3;
+      color: #ec4899;
+      font-weight: 500;
+    }
+
+    #map {
+      height: 400px;
+      border-radius: var(--radius);
+      z-index: 10;
+    }
+
+    .clinic-item { transition: .2s }
+    .clinic-item:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 20px 25px -5px rgba(0,0,0,.1), 0 10px 10px -5px rgba(0,0,0,.04);
+    }
+
+    .article-card { transition: .2s }
+    .article-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 20px 25px -5px rgba(0,0,0,.1), 0 10px 10px -5px rgba(0,0,0,.04);
+    }
+
+    .modal-overlay {
+      background: rgba(0,0,0,.5);
+      z-index: 1000;
+    }
+
+    .modal-content {
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .tab-button { transition: .2s }
+    .tab-button.active {
+      color: #ec4899;
+      border-bottom: 2px solid #ec4899;
+    }
+
+    .tooltip { position: relative }
+    .tooltip:hover .tooltip-text {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    .tooltip-text {
+      visibility: hidden;
+      opacity: 0;
+      transition: opacity .3s;
+      position: absolute;
+      z-index: 1;
+      bottom: 125%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1e293b;
+      color: #fff;
+      padding: .5rem;
+      border-radius: 4px;
+      font-size: .875rem;
+      white-space: nowrap;
+    }
+    @keyframes slideIn {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
 }
 
-input, select {
-  display: block;
-  margin: 8px 0;
-  padding: 8px;
-  width: 100%;
-}
-
-button {
-  background: #2ecc71;
-  color: white;
-  border: none;
-  padding: 10px;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-button:hover {
-  background: #27ae60;
+.animate-slide-in {
+  animation: slideIn 0.3s ease;
 }
   </style>
 </head>
+
 <body class="min-h-screen flex flex-col">
 
 <!-- Скрипт в head убран, он вставлен в конце body -->
@@ -154,8 +207,12 @@ window.onload = function () {
 </header>
 
 <!-- Mobile Menu -->
-<div id="mobile-menu" class="hidden fixed inset-0 z-[999] bg-white/95 backdrop-blur-md">
-  <div class="container mx-auto px-4 py-8">
+<div id="mobile-menu" class="hidden fixed inset-0 z-[999] bg-black/40 backdrop-blur-sm">
+  
+  <!-- Контент -->
+  <div class="bg-white h-full w-full max-w-sm ml-auto p-6 animate-slide-in">
+
+    <!-- Header -->
     <div class="flex justify-between items-center mb-8">
       <div class="flex items-center space-x-2">
         <div class="text-2xl text-primary"><i data-feather="heart"></i></div>
@@ -166,20 +223,28 @@ window.onload = function () {
       </button>
     </div>
 
+    <!-- Навигация -->
     <nav class="flex flex-col space-y-4">
-      <a href="#home" class="nav-item px-4 py-3 rounded-lg flex items-center gap-3 text-lg" data-view="home">
+      <a href="#home" class="nav-item px-4 py-3 rounded-lg flex items-center gap-3 text-lg">
         <i data-feather="home"></i> Home
       </a>
-      <a href="#clinics" class="nav-item px-4 py-3 rounded-lg flex items-center gap-3 text-lg" data-view="clinics">
+      <a href="#clinics" class="nav-item px-4 py-3 rounded-lg flex items-center gap-3 text-lg">
         <i data-feather="map"></i> Clinics
       </a>
-      <a href="#resources" class="nav-item px-4 py-3 rounded-lg flex items-center gap-3 text-lg" data-view="resources">
+      <a href="#resources" class="nav-item px-4 py-3 rounded-lg flex items-center gap-3 text-lg">
         <i data-feather="book"></i> Resources
       </a>
-      <a href="#about" class="nav-item px-4 py-3 rounded-lg flex items-center gap-3 text-lg" data-view="about">
+      <a href="#about" class="nav-item px-4 py-3 rounded-lg flex items-center gap-3 text-lg">
         <i data-feather="info"></i> About
       </a>
+      <a href="#cycle"
+   id="open-cycle"
+   class="nav-item px-4 py-3 rounded-lg flex items-center gap-3 text-lg">
+  <i data-feather="activity"></i>
+  <span>Cycle</span>
+</a>
     </nav>
+
   </div>
 </div>
 
@@ -958,6 +1023,124 @@ window.onload = function () {
     });
   });
 </script>
+<!-- ===== RISK MODAL ===== -->
+<div id="risk-modal" class="fixed inset-0 z-50 hidden bg-black/50 flex items-center justify-center p-4">
+  <div class="bg-white rounded-xl w-full max-w-md p-6 space-y-4">
+    <h2 class="text-lg font-bold">Оценка риска</h2>
 
+    <input type="number" id="age" placeholder="Возраст" class="w-full border p-2 rounded">
+
+    <select id="family" class="w-full border p-2 rounded">
+      <option value="0">Нет случаев</option>
+      <option value="2">Есть случаи</option>
+    </select>
+
+    <select id="smoke" class="w-full border p-2 rounded">
+      <option value="0">Не курю</option>
+      <option value="1">Курю</option>
+    </select>
+
+    <select id="symptoms" class="w-full border p-2 rounded">
+      <option value="0">Нет симптомов</option>
+      <option value="2">Есть симптомы</option>
+    </select>
+
+    <button onclick="calculateRisk()" class="w-full bg-primary text-white py-2 rounded">
+      Рассчитать
+    </button>
+
+    <p id="riskResult" class="text-center font-medium"></p>
+  </div>
+</div>
+
+<!-- ===== CYCLE MODAL ===== -->
+<div id="cycle-modal" class="fixed inset-0 z-50 hidden bg-black/50 flex items-center justify-center p-4">
+  <div class="bg-white rounded-xl w-full max-w-md p-6 space-y-4">
+
+    <div class="flex justify-between">
+      <h2 class="font-bold">Цикл</h2>
+      <button onclick="closeCycle()">✕</button>
+    </div>
+
+    <input type="date" id="lastPeriod" class="w-full border p-2 rounded">
+    <input type="number" id="cycleLength" value="28" class="w-full border p-2 rounded">
+
+    <button onclick="calculateCycle()" class="w-full bg-primary text-white py-2 rounded">
+      Рассчитать
+    </button>
+
+    <p id="cycleResult" class="text-center"></p>
+  </div>
+</div>
+  <script>
+document.addEventListener("DOMContentLoaded", () => {
+
+  // риск при первом входе
+  if (!localStorage.getItem("riskDone")) {
+    document.getElementById("risk-modal").classList.remove("hidden");
+  }
+
+  // открыть цикл
+  document.getElementById("open-cycle")?.addEventListener("click", (e) => {
+    e.preventDefault();
+    document.getElementById("cycle-modal").classList.remove("hidden");
+  });
+
+});
+
+// ===== РИСК =====
+function calculateRisk() {
+  let age = +document.getElementById("age").value || 0;
+  let family = +document.getElementById("family").value;
+  let smoke = +document.getElementById("smoke").value;
+  let symptoms = +document.getElementById("symptoms").value;
+
+  let score = family + smoke + symptoms;
+
+  if (age >= 30 && age < 45) score += 1;
+  if (age >= 45) score += 2;
+
+  let result =
+    score <= 2 ? "Низкий риск" :
+    score <= 5 ? "Средний риск" :
+    "Высокий риск";
+
+  document.getElementById("riskResult").innerText = result;
+
+  localStorage.setItem("riskDone", true);
+  localStorage.setItem("riskResult", result);
+
+  setTimeout(() => {
+    document.getElementById("risk-modal").classList.add("hidden");
+  }, 1200);
+}
+
+// ===== ЦИКЛ =====
+function calculateCycle() {
+  let lastValue = document.getElementById("lastPeriod").value;
+  if (!lastValue) return alert("Введите дату");
+
+  let last = new Date(lastValue);
+  let cycle = +document.getElementById("cycleLength").value || 28;
+
+  let next = new Date(last);
+  next.setDate(next.getDate() + cycle);
+
+  let ovulation = new Date(next);
+  ovulation.setDate(ovulation.getDate() - 14);
+
+  let result =
+    "Следующие: " + next.toLocaleDateString() +
+    " | Овуляция: " + ovulation.toLocaleDateString();
+
+  document.getElementById("cycleResult").innerText = result;
+
+  localStorage.setItem("cycleResult", result);
+}
+
+function closeCycle() {
+  document.getElementById("cycle-modal").classList.add("hidden");
+}
+</script>
 </body>
 </html>
