@@ -1,13 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>MammoCare — Маммография в Астане | Астанадағы маммография</title>
-  <meta name="description" content="Карта клиник маммографии в Астане | Map of mammography clinics in Astana | Астанадағы маммография клиникаларының картасы" />
-
-  <!-- PWA -->
-  <link rel="manifest" href="manifest.json" />
+  <title>MammoCare — Маммография и здоровье груди</title>
+  <meta name="description" content="Карта клиник маммографии в Астане, трекер цикла, оценка риска" />
   <meta name="theme-color" content="#ec4899" />
 
   <!-- Tailwind CSS -->
@@ -20,10 +17,12 @@
             primary: '#ec4899',
             secondary: '#8b5cf6',
             accent: '#f43f5e',
-            soft: '#fff1f2',
-            muted: '#64748b'
-          },
-          fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] }
+            period: '#ef4444',
+            ovulation: '#8b5cf6',
+            fertile: '#a78bfa',
+            safe: '#10b981',
+            exam: '#06b6d4'
+          }
         }
       }
     }
@@ -36,1069 +35,996 @@
   <!-- Feather Icons -->
   <script src="https://unpkg.com/feather-icons"></script>
 
-  <!-- AOS Animations -->
-  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
-  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
-    :root {
-      --radius: 12px;
-      --shadow: 0 10px 15px -3px rgba(0,0,0,.1), 0 4px 6px -2px rgba(0,0,0,.05);
-    }
-
-    body {
-      font-family: 'Inter', sans-serif;
-      background: #f8fafc;
-    }
+    * { font-family: 'Inter', sans-serif; }
 
     .card {
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
       background: #fff;
-      border: 1px solid #e2e8f0;
+      border: 1px solid #f1f5f9;
     }
 
     .nav-item { transition: .2s }
     .nav-item:hover { background: #fdf2f8 }
-    .nav-item.active {
-      background: #fce7f3;
-      color: #ec4899;
-      font-weight: 500;
-    }
+    .nav-item.active { background: #fce7f3; color: #ec4899; font-weight: 500; }
 
-    #map {
-      height: 400px;
-      border-radius: var(--radius);
-      z-index: 10;
-    }
+    #map { height: 400px; border-radius: 12px; z-index: 10; }
 
-    .clinic-item { transition: .2s }
-    .clinic-item:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 20px 25px -5px rgba(0,0,0,.1), 0 10px 10px -5px rgba(0,0,0,.04);
-    }
+    .view-section { display: none; }
+    .view-section.active { display: block; }
 
-    .article-card { transition: .2s }
-    .article-card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 20px 25px -5px rgba(0,0,0,.1), 0 10px 10px -5px rgba(0,0,0,.04);
+    /* Календарь */
+    .calendar-day {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
     }
+    .calendar-day:hover { background: #f1f5f9; }
+    .calendar-day.today { border: 2px solid #ec4899; font-weight: 600; }
+    .calendar-day.period { background: #fecaca; color: #dc2626; }
+    .calendar-day.ovulation { background: #ddd6fe; color: #7c3aed; }
+    .calendar-day.fertile { background: #ede9fe; color: #8b5cf6; }
+    .calendar-day.exam { background: #cffafe; color: #0891b2; }
+    .calendar-day.other-month { color: #cbd5e1; }
+    .calendar-day.selected { box-shadow: 0 0 0 2px #ec4899; }
 
-    .modal-overlay {
-      background: rgba(0,0,0,.5);
-      z-index: 1000;
-    }
-
-    .modal-content {
-      max-height: 90vh;
-      overflow-y: auto;
-    }
-
-    .tab-button { transition: .2s }
-    .tab-button.active {
-      color: #ec4899;
-      border-bottom: 2px solid #ec4899;
-    }
-
-    .tooltip { position: relative }
-    .tooltip:hover .tooltip-text {
-      visibility: visible;
-      opacity: 1;
-    }
-
-    .tooltip-text {
-      visibility: hidden;
-      opacity: 0;
-      transition: opacity .3s;
+    .phase-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
       position: absolute;
-      z-index: 1;
-      bottom: 125%;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #1e293b;
-      color: #fff;
-      padding: .5rem;
-      border-radius: 4px;
-      font-size: .875rem;
-      white-space: nowrap;
+      bottom: 2px;
     }
-    @keyframes slideIn {
-  from { transform: translateX(100%); }
-  to { transform: translateX(0); }
-}
 
-.animate-slide-in {
-  animation: slideIn 0.3s ease;
-}
+    .notification-card {
+      animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+      from { transform: translateY(-10px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    .pulse { animation: pulse 2s infinite; }
   </style>
 </head>
 
-<body class="min-h-screen flex flex-col">
+<body class="bg-gray-50 min-h-screen flex flex-col">
 
 <!-- Header -->
-<header class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-200">
+<header class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-100">
   <div class="container mx-auto px-4 py-3">
     <div class="flex items-center justify-between">
       <div class="flex items-center space-x-2">
         <div class="text-2xl text-primary"><i data-feather="heart"></i></div>
         <h1 class="text-xl font-bold text-gray-800">MammoCare</h1>
-        <span class="px-2 py-1 text-xs rounded-full bg-primary text-white">
-          <span id="current-city" data-i18n="city">Astana</span>
-        </span>
       </div>
-      <button id="mobile-menu-button" class="md:hidden text-gray-600">
+
+      <button id="mobile-menu-btn" class="md:hidden text-gray-600">
         <i data-feather="menu" class="w-6 h-6"></i>
       </button>
+
       <nav class="hidden md:flex space-x-1">
-        <a href="#home" class="nav-item px-4 py-2 rounded-lg flex items-center space-x-1" data-view="home">
-          <i data-feather="home" class="w-4 h-4"></i>
-          <span data-i18n="home">Home</span>
+        <a href="#" class="nav-item active px-4 py-2 rounded-lg flex items-center gap-2" data-view="home">
+          <i data-feather="home" class="w-4 h-4"></i> Главная
         </a>
-        <a href="#clinics" class="nav-item px-4 py-2 rounded-lg flex items-center space-x-1" data-view="clinics">
-          <i data-feather="map" class="w-4 h-4"></i>
-          <span data-i18n="clinics">Clinics</span>
+        <a href="#" class="nav-item px-4 py-2 rounded-lg flex items-center gap-2" data-view="cycle">
+          <i data-feather="calendar" class="w-4 h-4"></i> Цикл
         </a>
-        <a href="#resources" class="nav-item px-4 py-2 rounded-lg flex items-center space-x-1" data-view="resources">
-          <i data-feather="book" class="w-4 h-4"></i>
-          <span data-i18n="resources">Resources</span>
+        <a href="#" class="nav-item px-4 py-2 rounded-lg flex items-center gap-2" data-view="clinics">
+          <i data-feather="map" class="w-4 h-4"></i> Клиники
         </a>
-        <a href="#about" class="nav-item px-4 py-2 rounded-lg flex items-center space-x-1" data-view="about">
-          <i data-feather="info" class="w-4 h-4"></i>
-          <span data-i18n="about">About</span>
+        <a href="#" class="nav-item px-4 py-2 rounded-lg flex items-center gap-2" data-view="resources">
+          <i data-feather="book" class="w-4 h-4"></i> Ресурсы
         </a>
       </nav>
-
-      <!-- Language Switcher -->
-      <div class="relative">
-        <button id="language-switcher" class="flex items-center gap-2 px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
-          <span>🌐</span>
-          <span id="current-lang">EN</span>
-          <i data-feather="chevron-down" class="w-4 h-4 text-gray-500"></i>
-        </button>
-        <div id="language-dropdown" class="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-lg shadow-lg hidden">
-          <button class="w-full text-left px-3 py-2 hover:bg-gray-50" data-lang="en">English</button>
-          <button class="w-full text-left px-3 py-2 hover:bg-gray-50" data-lang="ru">Русский</button>
-          <button class="w-full text-left px-3 py-2 hover:bg-gray-50" data-lang="kz">Қазақша</button>
-        </div>
-      </div>
     </div>
   </div>
 </header>
 
 <!-- Mobile Menu -->
-<div id="mobile-menu" class="hidden fixed inset-0 z-[999] bg-black/40 backdrop-blur-sm">
-
-  <!-- Контент -->
-  <div class="bg-white h-full w-full max-w-sm ml-auto p-6 animate-slide-in">
-
-    <!-- Header -->
+<div id="mobile-menu" class="hidden fixed inset-0 z-[999] bg-black/40">
+  <div class="bg-white h-full w-80 max-w-full p-6 ml-auto">
     <div class="flex justify-between items-center mb-8">
-      <div class="flex items-center space-x-2">
-        <div class="text-2xl text-primary"><i data-feather="heart"></i></div>
-        <h1 class="text-xl font-bold text-gray-800">MammoCare</h1>
-      </div>
-      <button id="close-mobile-menu" class="text-gray-600">
-        <i data-feather="x" class="w-6 h-6"></i>
-      </button>
+      <h2 class="text-xl font-bold">Меню</h2>
+      <button id="close-mobile-menu" class="text-gray-500"><i data-feather="x" class="w-6 h-6"></i></button>
     </div>
-
-    <!-- Навигация -->
-    <nav class="flex flex-col space-y-4">
-      <a href="#home" class="nav-item px-4 py-3 rounded-lg flex items-center gap-3 text-lg">
-        <i data-feather="home"></i> Home
+    <nav class="space-y-2">
+      <a href="#" class="nav-item active block px-4 py-3 rounded-lg" data-view="home">
+        <i data-feather="home" class="w-5 h-5 inline mr-3"></i> Главная
       </a>
-      <a href="#clinics" class="nav-item px-4 py-3 rounded-lg flex items-center gap-3 text-lg">
-        <i data-feather="map"></i> Clinics
+      <a href="#" class="nav-item block px-4 py-3 rounded-lg" data-view="cycle">
+        <i data-feather="calendar" class="w-5 h-5 inline mr-3"></i> Трекер цикла
       </a>
-      <a href="#resources" class="nav-item px-4 py-3 rounded-lg flex items-center gap-3 text-lg">
-        <i data-feather="book"></i> Resources
+      <a href="#" class="nav-item block px-4 py-3 rounded-lg" data-view="clinics">
+        <i data-feather="map" class="w-5 h-5 inline mr-3"></i> Клиники
       </a>
-      <a href="#about" class="nav-item px-4 py-3 rounded-lg flex items-center gap-3 text-lg">
-        <i data-feather="info"></i> About
+      <a href="#" class="nav-item block px-4 py-3 rounded-lg" data-view="resources">
+        <i data-feather="book" class="w-5 h-5 inline mr-3"></i> Ресурсы
       </a>
-      <a href="#cycle"
-   id="open-cycle"
-   class="nav-item px-4 py-3 rounded-lg flex items-center gap-3 text-lg">
-  <i data-feather="activity"></i>
-  <span>Cycle</span>
-</a>
     </nav>
-
   </div>
 </div>
 
-<!-- Main content -->
+<!-- Main -->
 <main class="flex-grow container mx-auto px-4 py-6">
 
-  <!-- ГЛАВНАЯ КАРТОЧКА -->
-  <section id="dashboard">
-    <h2>Ваши данные</h2>
-    <p id="savedRisk"></p>
-    <p id="savedCycle"></p>
+  <!-- ===== ГЛАВНАЯ ===== -->
+  <section id="view-home" class="view-section active space-y-6">
+
+    <!-- Уведомления -->
+    <div id="notifications-container" class="space-y-3"></div>
+
+    <!-- Hero -->
+    <div class="card p-8 bg-gradient-to-br from-pink-50 via-white to-purple-50">
+      <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-3">Добро пожаловать в MammoCare</h2>
+      <p class="text-gray-600 mb-6">Следите за здоровьем груди: трекер цикла, напоминания о самообследовании и карта клиник.</p>
+      <div class="flex flex-wrap gap-3">
+        <button class="px-5 py-2.5 bg-primary text-white rounded-lg hover:bg-pink-600 transition" data-view="cycle">
+          Открыть трекер цикла
+        </button>
+        <button class="px-5 py-2.5 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition" data-view="clinics">
+          Найти клинику
+        </button>
+      </div>
+    </div>
+
+    <!-- Статус -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div class="card p-5">
+        <div class="flex items-center gap-3 mb-3">
+          <div class="p-2 rounded-full bg-pink-100 text-primary"><i data-feather="calendar" class="w-5 h-5"></i></div>
+          <span class="font-medium text-gray-700">День цикла</span>
+        </div>
+        <p class="text-3xl font-bold text-gray-800" id="home-cycle-day">—</p>
+        <p class="text-sm text-gray-500" id="home-cycle-phase">Настройте трекер</p>
+      </div>
+
+      <div class="card p-5">
+        <div class="flex items-center gap-3 mb-3">
+          <div class="p-2 rounded-full bg-red-100 text-red-500"><i data-feather="droplet" class="w-5 h-5"></i></div>
+          <span class="font-medium text-gray-700">Следующие месячные</span>
+        </div>
+        <p class="text-xl font-bold text-gray-800" id="home-next-period">—</p>
+        <p class="text-sm text-gray-500" id="home-period-countdown"></p>
+      </div>
+
+      <div class="card p-5">
+        <div class="flex items-center gap-3 mb-3">
+          <div class="p-2 rounded-full bg-cyan-100 text-cyan-600"><i data-feather="check-circle" class="w-5 h-5"></i></div>
+          <span class="font-medium text-gray-700">Самообследование</span>
+        </div>
+        <p class="text-xl font-bold text-gray-800" id="home-exam-date">—</p>
+        <p class="text-sm text-gray-500" id="home-exam-status"></p>
+      </div>
+    </div>
+
+    <!-- Быстрые советы -->
+    <div class="card p-6">
+      <h3 class="font-semibold text-gray-800 mb-4">Советы по здоровью груди</h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="flex gap-3 p-3 bg-gray-50 rounded-lg">
+          <div class="text-primary"><i data-feather="clock" class="w-5 h-5"></i></div>
+          <div>
+            <p class="font-medium text-gray-800">Самообследование раз в месяц</p>
+            <p class="text-sm text-gray-600">Лучшее время: 5-7 день после начала месячных</p>
+          </div>
+        </div>
+        <div class="flex gap-3 p-3 bg-gray-50 rounded-lg">
+          <div class="text-primary"><i data-feather="activity" class="w-5 h-5"></i></div>
+          <div>
+            <p class="font-medium text-gray-800">Маммография после 40 лет</p>
+            <p class="text-sm text-gray-600">Рекомендуется проходить раз в 1-2 года</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </section>
 
-  <!-- Клиники -->
-  <section id="view-clinics" class="hidden space-y-6">
-    <div class="card p-6">
-      <div class="flex flex-col md:flex-row justify-between gap-4 mb-6">
+  <!-- ===== ТРЕКЕР ЦИКЛА ===== -->
+  <section id="view-cycle" class="view-section space-y-6">
+
+    <!-- Настройки если нет данных -->
+    <div id="cycle-setup" class="card p-6">
+      <h2 class="text-xl font-bold text-gray-800 mb-4">Настройка трекера цикла</h2>
+      <p class="text-gray-600 mb-6">Введите данные для точного расчёта фаз цикла и напоминаний.</p>
+
+      <div class="space-y-4 max-w-md">
         <div>
-          <h2 class="text-2xl font-bold text-gray-800 mb-1" data-i18n="clinics_title">Mammography Clinics in Astana</h2>
-          <p class="text-gray-600" data-i18n="clinics_sub">Find screening centers near you</p>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Дата начала последних месячных</label>
+          <input type="date" id="setup-last-period" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary">
         </div>
         <div>
-          <button id="btn-add-clinic" class="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-pink-600 transition">
-            <i data-feather="plus" class="w-4 h-4"></i>
-            <span data-i18n="add_clinic">Add Clinic</span>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Средняя длина цикла (дни)</label>
+          <input type="number" id="setup-cycle-length" value="28" min="21" max="40" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Средняя длина месячных (дни)</label>
+          <input type="number" id="setup-period-length" value="5" min="2" max="10" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary">
+        </div>
+        <button id="save-cycle-settings" class="w-full py-3 bg-primary text-white rounded-lg hover:bg-pink-600 transition font-medium">
+          Сохранить и начать
+        </button>
+      </div>
+    </div>
+
+    <!-- Календарь -->
+    <div id="cycle-calendar-container" class="hidden space-y-6">
+
+      <!-- Текущий статус -->
+      <div class="card p-6 bg-gradient-to-r from-pink-50 to-purple-50">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <p class="text-sm text-gray-600 mb-1">Сегодня</p>
+            <p class="text-4xl font-bold text-gray-800">День <span id="current-cycle-day">1</span></p>
+            <p class="text-lg text-primary font-medium" id="current-phase-name">Менструация</p>
+          </div>
+          <div class="flex gap-4">
+            <div class="text-center">
+              <div class="w-16 h-16 rounded-full bg-white shadow-md flex items-center justify-center mb-1">
+                <span class="text-2xl font-bold text-red-500" id="days-to-period">—</span>
+              </div>
+              <p class="text-xs text-gray-600">до месячных</p>
+            </div>
+            <div class="text-center">
+              <div class="w-16 h-16 rounded-full bg-white shadow-md flex items-center justify-center mb-1">
+                <span class="text-2xl font-bold text-purple-500" id="days-to-ovulation">—</span>
+              </div>
+              <p class="text-xs text-gray-600">до овуляции</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Уведомление о самообследовании -->
+      <div id="exam-reminder" class="hidden card p-4 bg-cyan-50 border-cyan-200">
+        <div class="flex items-start gap-3">
+          <div class="p-2 rounded-full bg-cyan-100 text-cyan-600 pulse">
+            <i data-feather="bell" class="w-5 h-5"></i>
+          </div>
+          <div class="flex-1">
+            <p class="font-medium text-cyan-800">Время для самообследования груди!</p>
+            <p class="text-sm text-cyan-700">Сейчас оптимальный период (5-7 день цикла). Уделите 5 минут для проверки.</p>
+          </div>
+          <button id="exam-done-btn" class="px-3 py-1 bg-cyan-600 text-white text-sm rounded-lg hover:bg-cyan-700">
+            Выполнено
           </button>
         </div>
       </div>
+
+      <!-- Календарь -->
+      <div class="card p-6">
+        <div class="flex items-center justify-between mb-4">
+          <button id="prev-month" class="p-2 hover:bg-gray-100 rounded-lg">
+            <i data-feather="chevron-left" class="w-5 h-5"></i>
+          </button>
+          <h3 class="text-lg font-semibold text-gray-800" id="calendar-month-year"></h3>
+          <button id="next-month" class="p-2 hover:bg-gray-100 rounded-lg">
+            <i data-feather="chevron-right" class="w-5 h-5"></i>
+          </button>
+        </div>
+
+        <!-- Дни недели -->
+        <div class="grid grid-cols-7 gap-1 mb-2">
+          <div class="text-center text-sm font-medium text-gray-500 py-2">Пн</div>
+          <div class="text-center text-sm font-medium text-gray-500 py-2">Вт</div>
+          <div class="text-center text-sm font-medium text-gray-500 py-2">Ср</div>
+          <div class="text-center text-sm font-medium text-gray-500 py-2">Чт</div>
+          <div class="text-center text-sm font-medium text-gray-500 py-2">Пт</div>
+          <div class="text-center text-sm font-medium text-gray-500 py-2">Сб</div>
+          <div class="text-center text-sm font-medium text-gray-500 py-2">Вс</div>
+        </div>
+
+        <!-- Дни месяца -->
+        <div id="calendar-grid" class="grid grid-cols-7 gap-1"></div>
+
+        <!-- Легенда -->
+        <div class="flex flex-wrap gap-4 mt-6 pt-4 border-t border-gray-100">
+          <div class="flex items-center gap-2">
+            <div class="w-4 h-4 rounded-full bg-red-200"></div>
+            <span class="text-sm text-gray-600">Месячные</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <div class="w-4 h-4 rounded-full bg-purple-200"></div>
+            <span class="text-sm text-gray-600">Овуляция</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <div class="w-4 h-4 rounded-full bg-purple-100"></div>
+            <span class="text-sm text-gray-600">Фертильные дни</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <div class="w-4 h-4 rounded-full bg-cyan-200"></div>
+            <span class="text-sm text-gray-600">Самообследование</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Прогноз на 3 месяца -->
+      <div class="card p-6">
+        <h3 class="font-semibold text-gray-800 mb-4">Прогноз на ближайшие месяцы</h3>
+        <div id="forecast-list" class="space-y-3"></div>
+      </div>
+
+      <!-- Кнопка редактирования -->
+      <div class="text-center">
+        <button id="edit-cycle-settings" class="text-sm text-gray-500 hover:text-primary">
+          <i data-feather="settings" class="w-4 h-4 inline"></i> Изменить настройки цикла
+        </button>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ===== КЛИНИКИ ===== -->
+  <section id="view-clinics" class="view-section space-y-6">
+    <div class="card p-6">
+      <h2 class="text-2xl font-bold text-gray-800 mb-2">Клиники маммографии в Астане</h2>
+      <p class="text-gray-600 mb-6">Найдите ближайший центр для прохождения скрининга.</p>
+
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div class="lg:col-span-2 space-y-4">
-          <div class="flex flex-wrap gap-3">
-            <div class="flex-1 min-w-[200px]">
-              <label for="search-clinics" class="block text-sm font-medium text-gray-700 mb-1" data-i18n="search_label">Search</label>
-              <div class="relative">
-                <input type="text" id="search-clinics" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary" placeholder="Clinic name or address..." />
-                <i data-feather="search" class="absolute right-3 top-2.5 text-gray-400 w-5 h-5"></i>
-              </div>
-            </div>
-            <div class="min-w-[160px]">
-              <label for="filter-type" class="block text-sm font-medium text-gray-700 mb-1" data-i18n="filter_label">Filter by type</label>
-              <select id="filter-type" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary">
-                <option value="" data-i18n="type_all">All types</option>
-                <option value="public" data-i18n="type_public">Public</option>
-                <option value="private" data-i18n="type_private">Private</option>
-                <option value="research" data-i18n="type_research">Research Center</option>
-              </select>
-            </div>
-            <div class="flex items-end">
-              <button id="btn-apply-filters" class="px-4 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-700 transition h-[42px]" data-i18n="apply_btn">Apply</button>
-            </div>
+          <div class="flex gap-3">
+            <input type="text" id="search-clinics" class="flex-1 px-4 py-2 border border-gray-300 rounded-lg" placeholder="Поиск клиники..." />
+            <select id="filter-type" class="px-4 py-2 border border-gray-300 rounded-lg">
+              <option value="">Все типы</option>
+              <option value="public">Государственные</option>
+              <option value="private">Частные</option>
+              <option value="research">Научные центры</option>
+            </select>
           </div>
           <div id="map" class="w-full"></div>
-          <div class="text-sm text-gray-500">
-            <p data-i18n="map_hint">Click on map markers for more information. Use the "Directions" button to open in Google Maps.</p>
-          </div>
         </div>
         <div>
-          <h3 class="font-semibold text-gray-800 mb-3" data-i18n="clinic_list">Clinic List</h3>
-          <div id="clinics-list" class="space-y-3 max-h-[600px] overflow-y-auto pr-2"></div>
+          <h3 class="font-semibold text-gray-800 mb-3">Список клиник</h3>
+          <div id="clinics-list" class="space-y-3 max-h-[500px] overflow-y-auto"></div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Resources -->
-  <section id="view-resources" class="hidden space-y-6">
+  <!-- ===== РЕСУРСЫ ===== -->
+  <section id="view-resources" class="view-section space-y-6">
     <div class="card p-6">
-      <h2 class="text-2xl font-bold text-gray-800 mb-6" data-i18n="resources_title">Educational Resources</h2>
+      <h2 class="text-2xl font-bold text-gray-800 mb-6">Полезные ресурсы</h2>
+
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <!-- Instructional Videos -->
         <div>
-          <h3 class="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
-            <i data-feather="video" class="w-5 h-5 text-primary"></i>
-            <span data-i18n="videos_heading">Instructional Videos</span>
+          <h3 class="font-semibold text-gray-800 mb-4 flex items-center gap-2">
+            <i data-feather="video" class="w-5 h-5 text-primary"></i> Видео
           </h3>
-          <div class="space-y-4">
-            <div class="article-card p-4 border border-gray-200 rounded-lg hover:border-primary transition cursor-pointer">
-              <div class="aspect-w-16 aspect-h-9 mb-3">
-                <div class="relative pt-[56.25%] rounded-lg overflow-hidden bg-gray-100">
-                  <img src="http://static.photos/medical/640x360/2" alt="Self-examination video" class="absolute inset-0 w-full h-full object-cover" />
-                  <div class="absolute inset-0 flex items-center justify-center">
-                    <div class="w-12 h-12 bg-white/80 rounded-full flex items-center justify-center">
-                      <i data-feather="play" class="w-5 h-5 text-primary"></i>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <h4 class="font-medium text-gray-800 mb-1" data-i18n="video1_title">How to Perform Breast Self-Examination</h4>
-              <p class="text-sm text-gray-600 mb-2" data-i18n="video1_desc">Step-by-step guide for monthly self-checks</p>
-              <div class="flex justify-between items-center text-xs text-gray-500"><span>WHO Health Channel</span><span>8 min</span></div>
-            </div>
-            <div class="article-card p-4 border border-gray-200 rounded-lg hover:border-primary transition cursor-pointer">
-              <div class="aspect-w-16 aspect-h-9 mb-3">
-                <div class="relative pt-[56.25%] rounded-lg overflow-hidden bg-gray-100">
-                  <img src="http://static.photos/medical/640x360/3" alt="Mammography explained" class="absolute inset-0 w-full h-full object-cover" />
-                  <div class="absolute inset-0 flex items-center justify-center">
-                    <div class="w-12 h-12 bg-white/80 rounded-full flex items-center justify-center">
-                      <i data-feather="play" class="w-5 h-5 text-primary"></i>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <h4 class="font-medium text-gray-800 mb-1" data-i18n="video2_title">Understanding Mammography</h4>
-              <p class="text-sm text-gray-600 mb-2" data-i18n="video2_desc">What to expect during your screening</p>
-              <div class="flex justify-between items-center text-xs text-gray-500"><span>National Cancer Institute</span><span>12 min</span></div>
-            </div>
-          </div>
-          <div class="mt-6">
-            <a href="https://www.youtube.com/results?search_query=breast+self+examination" target="_blank" rel="noopener" class="inline-flex items-center gap-2 text-primary font-medium">
-              <span data-i18n="more_videos">More videos on YouTube</span>
-              <i data-feather="external-link" class="w-4 h-4"></i>
+          <div class="space-y-3">
+            <a href="https://www.youtube.com/watch?v=tn_5PFPWL54" target="_blank" class="block p-4 border border-gray-200 rounded-lg hover:border-primary transition">
+              <p class="font-medium text-gray-800">Как проводить самообследование груди</p>
+              <p class="text-sm text-gray-500">YouTube • 5 минут</p>
+            </a>
+            <a href="https://www.youtube.com/watch?v=qXE_JbqB5mg" target="_blank" class="block p-4 border border-gray-200 rounded-lg hover:border-primary transition">
+              <p class="font-medium text-gray-800">Что такое маммография</p>
+              <p class="text-sm text-gray-500">YouTube • 8 минут</p>
             </a>
           </div>
         </div>
 
-        <!-- Articles & Guides -->
         <div>
-          <h3 class="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
-            <i data-feather="book-open" class="w-5 h-5 text-secondary"></i>
-            <span data-i18n="articles_heading">Articles & Guides</span>
+          <h3 class="font-semibold text-gray-800 mb-4 flex items-center gap-2">
+            <i data-feather="file-text" class="w-5 h-5 text-secondary"></i> Статьи
           </h3>
           <div id="articles-list" class="space-y-3"></div>
-          <div class="mt-6">
-            <a href="https://www.who.int/news-room/fact-sheets/detail/breast-cancer" target="_blank" rel="noopener" class="inline-flex items-center gap-2 text-primary font-medium">
-              <span data-i18n="more_from_who">More resources from WHO</span>
-              <i data-feather="external-link" class="w-4 h-4"></i>
-            </a>
-          </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- About -->
-  <section id="view-about" class="hidden">
-    <div class="card p-6">
-      <div class="flex flex-col md:flex-row gap-8">
-        <div class="md:w-1/2">
-          <h2 class="text-2xl font-bold text-gray-800 mb-4" data-i18n="about_title">About MammoCare</h2>
-          <div class="prose text-gray-600">
-            <p data-i18n="about_p1">MammoCare is a free resource designed to help women in Astana find mammography screening centers and access reliable information about breast health.</p>
-            <p data-i18n="about_p2">Our goal is to promote early detection of breast cancer through education and easy access to screening facilities. Early detection significantly improves treatment outcomes.</p>
-            <p data-i18n="about_p3">This project was created as a community service and is not affiliated with any medical institution. Always consult with your healthcare provider for medical advice.</p>
-          </div>
-          <div class="mt-8">
-            <h3 class="text-lg font-semibold text-gray-800 mb-3" data-i18n="disclaimer_title">Disclaimer</h3>
-            <p class="text-sm text-gray-600" data-i18n="disclaimer_text">The information provided on this website is for educational purposes only and should not be considered medical advice. Clinic information is provided as-is and may change. Please verify details with the clinic before visiting.</p>
-          </div>
-        </div>
-        <div class="md:w-1/2">
-          <div class="bg-gray-50 p-6 rounded-lg">
-            <h3 class="text-lg font-semibold text-gray-800 mb-3" data-i18n="contact_title">Contact</h3>
-            <p class="text-gray-600 mb-4" data-i18n="contact_desc">Have questions or suggestions? We'd love to hear from you.</p>
-            <div class="space-y-3">
-              <div class="flex items-center gap-3">
-                <div class="p-2 rounded-full bg-gray-100 text-gray-600"><i data-feather="mail" class="w-5 h-5"></i></div>
-                <span class="text-gray-700"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="9bf2f5fdf4dbf6faf6f6f4f8fae9feb5f0e1">[email&#160;protected]</a></span>
-              </div>
-              <div class="flex items-center gap-3">
-                <div class="p-2 rounded-full bg-gray-100 text-gray-600"><i data-feather="github" class="w-5 h-5"></i></div>
-                <a href="https://github.com/yourusername/mammocare" target="_blank" rel="noopener" class="text-primary hover:underline" data-i18n="github_repo">GitHub Repository</a>
-              </div>
-              <div class="flex items-center gap-3">
-                <div class="p-2 rounded-full bg-gray-100 text-gray-600"><i data-feather="heart" class="w-5 h-5"></i></div>
-                <span class="text-gray-700" data-i18n="support_text">Support our initiative</span>
-              </div>
-            </div>
-            <div class="mt-6 pt-6 border-t border-gray-200">
-              <h3 class="text-lg font-semibold text-gray-800 mb-3" data-i18n="credits_title">Credits</h3>
-              <ul class="text-sm text-gray-600 space-y-2">
-                <li>Map data © OpenStreetMap contributors</li>
-                <li>Icons by Feather Icons</li>
-                <li data-i18n="credits_med">Medical information from WHO and NHS</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
 </main>
 
 <!-- Footer -->
-<footer class="bg-white border-t border-gray-200 py-6">
-  <div class="container mx-auto px-4">
-    <div class="flex flex-col md:flex-row justify-between items-center">
-      <div class="flex items-center gap-2 mb-4 md:mb-0">
-        <div class="text-xl text-primary"><i data-feather="heart"></i></div>
-        <span class="font-medium text-gray-800">MammoCare</span>
-      </div>
-      <div class="flex space-x-4">
-        <a href="#home" class="tab-button px-3 py-1 text-gray-600 hover:text-primary" data-view="home">
-          <i data-feather="home" class="w-4 h-4 md:hidden"></i>
-          <span class="hidden md:inline" data-i18n="home">Home</span>
-        </a>
-        <a href="#clinics" class="tab-button px-3 py-1 text-gray-600 hover:text-primary" data-view="clinics">
-          <i data-feather="map" class="w-4 h-4 md:hidden"></i>
-          <span class="hidden md:inline" data-i18n="clinics">Clinics</span>
-        </a>
-        <a href="#resources" class="tab-button px-3 py-1 text-gray-600 hover:text-primary" data-view="resources">
-          <i data-feather="book" class="w-4 h-4 md:hidden"></i>
-          <span class="hidden md:inline" data-i18n="resources">Resources</span>
-        </a>
-        <a href="#about" class="tab-button px-3 py-1 text-gray-600 hover:text-primary" data-view="about">
-          <i data-feather="info" class="w-4 h-4 md:hidden"></i>
-          <span class="hidden md:inline" data-i18n="about">About</span>
-        </a>
-      </div>
-      <div class="mt-4 md:mt-0 text-sm text-gray-500">© 2025 MammoCare. <span data-i18n="rights">All rights reserved.</span></div>
-    </div>
+<footer class="bg-white border-t border-gray-100 py-4 mt-auto">
+  <div class="container mx-auto px-4 text-center text-sm text-gray-500">
+    © 2025 MammoCare • Информация не заменяет консультацию врача
   </div>
 </footer>
 
-<!-- Модальное окно для добавления клиники -->
-<div id="add-clinic-modal" class="fixed inset-0 z-50 hidden modal-overlay flex items-center justify-center p-4">
-  <div class="modal-content bg-white rounded-lg w-full max-w-md">
-    <div class="p-6">
-      <div class="flex justify-between items-center mb-4">
-        <h3 class="text-lg font-semibold text-gray-800" data-i18n="modal_add_title">Add New Clinic</h3>
-        <button id="close-add-clinic" class="text-gray-400 hover:text-gray-500"><i data-feather="x" class="w-5 h-5"></i></button>
-      </div>
-      <div class="space-y-4">
-        <div>
-          <label for="clinic-name" class="block text-sm font-medium text-gray-700 mb-1" data-i18n="fld_name">Clinic Name</label>
-          <input type="text" id="clinic-name" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary" />
+<!-- ===== СКРИПТЫ ===== -->
+<script>
+// ========== ДАННЫЕ ==========
+const clinics = [
+  { id: 1, name: "Городская больница №2", address: "ул. Турар Рыскулова, 6", type: "public", lat: 51.1477, lng: 71.4216 },
+  { id: 2, name: "Городская поликлиника №9", address: "пр. Мангилик Ел, 16/1", type: "public", lat: 51.0899, lng: 71.4165 },
+  { id: 3, name: "Многопрофильный медцентр", address: "ул. Манаса, 17", type: "private", lat: 51.1260, lng: 71.4000 },
+  { id: 4, name: "Президентская клиника", address: "пр. Мангилик Ел, 80", type: "private", lat: 51.0954, lng: 71.4218 },
+  { id: 5, name: "Клиника Big Tau", address: "пр. Туран, 50", type: "private", lat: 51.1325, lng: 71.4301 },
+  { id: 6, name: "Медцентр Sak", address: "пр. Сарыарка, 42", type: "private", lat: 51.1428, lng: 71.4389 },
+  { id: 7, name: "DiVera", address: "пр. Кабанбай Батыра, 47/2", type: "private", lat: 51.1187, lng: 71.4456 },
+  { id: 8, name: "Онкоцентр UMIT", address: "пр. Абылай хана, 42/1", type: "research", lat: 51.1253, lng: 71.4328 },
+  { id: 9, name: "РДЦ (UMC)", address: "ул. Сыганак, 46", type: "public", lat: 51.1356, lng: 71.4254 },
+  { id: 10, name: "НЦ материнства и детства", address: "пр. Туран, 32", type: "research", lat: 51.1298, lng: 71.4287 },
+  { id: 11, name: "EMIRMED", address: "ул. Куйши Дина, 9", type: "research", lat: 51.1224, lng: 71.4193 },
+  { id: 12, name: "ННОЦ", address: "пр. Кабанбай Батыра, 53", type: "research", lat: 51.1201, lng: 71.4428 }
+];
+
+const articles = [
+  { title: "ВОЗ — Рак молочной железы", url: "https://www.who.int/news-room/fact-sheets/detail/breast-cancer", source: "WHO" },
+  { title: "Рекомендации по скринингу", url: "https://www.cancer.org/healthy/find-cancer-early/breast-cancer-screening.html", source: "ACS" },
+  { title: "Самообследование груди", url: "https://www.breastcancer.org/screening-testing/breast-self-exam", source: "BreastCancer.org" },
+  { title: "Маммография: подготовка", url: "https://www.mayoclinic.org/tests-procedures/mammogram/about/pac-20384806", source: "Mayo Clinic" }
+];
+
+const MONTHS_RU = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
+
+// ========== ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ==========
+let cycleData = null;
+let currentCalendarDate = new Date();
+let map = null;
+let markers = [];
+
+// ========== УТИЛИТЫ ==========
+function formatDate(date, short = false) {
+  const options = short
+    ? { day: 'numeric', month: 'short' }
+    : { day: 'numeric', month: 'long' };
+  return date.toLocaleDateString('ru-RU', options);
+}
+
+function daysBetween(date1, date2) {
+  const d1 = new Date(date1.getFullYear(), date1.getMonth(), date1.getDate());
+  const d2 = new Date(date2.getFullYear(), date2.getMonth(), date2.getDate());
+  return Math.round((d2 - d1) / (1000 * 60 * 60 * 24));
+}
+
+function addDays(date, days) {
+  const result = new Date(date);
+  result.setDate(result.getDate() + days);
+  return result;
+}
+
+function isSameDay(d1, d2) {
+  return d1.getFullYear() === d2.getFullYear() &&
+         d1.getMonth() === d2.getMonth() &&
+         d1.getDate() === d2.getDate();
+}
+
+// ========== ЦИКЛ - РАСЧЁТЫ ==========
+function loadCycleData() {
+  const saved = localStorage.getItem('cycleData');
+  if (saved) {
+    cycleData = JSON.parse(saved);
+    cycleData.lastPeriod = new Date(cycleData.lastPeriod);
+  }
+  return cycleData;
+}
+
+function saveCycleData(data) {
+  cycleData = data;
+  localStorage.setItem('cycleData', JSON.stringify({
+    lastPeriod: data.lastPeriod.toISOString(),
+    cycleLength: data.cycleLength,
+    periodLength: data.periodLength
+  }));
+}
+
+function getCycleDay(date = new Date()) {
+  if (!cycleData) return null;
+
+  let periodStart = new Date(cycleData.lastPeriod);
+  const today = new Date(date);
+
+  // Находим ближайшее начало цикла
+  while (addDays(periodStart, cycleData.cycleLength) <= today) {
+    periodStart = addDays(periodStart, cycleData.cycleLength);
+  }
+
+  return daysBetween(periodStart, today) + 1;
+}
+
+function getPhaseInfo(cycleDay) {
+  if (!cycleData || !cycleDay) return { name: 'Неизвестно', color: 'gray' };
+
+  const { cycleLength, periodLength } = cycleData;
+  const ovulationDay = cycleLength - 14;
+
+  if (cycleDay <= periodLength) {
+    return { name: 'Менструация', color: 'red', type: 'period' };
+  } else if (cycleDay >= ovulationDay - 3 && cycleDay <= ovulationDay + 1) {
+    if (cycleDay === ovulationDay) {
+      return { name: 'Овуляция', color: 'purple', type: 'ovulation' };
+    }
+    return { name: 'Фертильные дни', color: 'purple', type: 'fertile' };
+  } else if (cycleDay >= 5 && cycleDay <= 7) {
+    return { name: 'Время для самообследования', color: 'cyan', type: 'exam' };
+  } else if (cycleDay < ovulationDay - 3) {
+    return { name: 'Фолликулярная фаза', color: 'pink', type: 'follicular' };
+  } else {
+    return { name: 'Лютеиновая фаза', color: 'amber', type: 'luteal' };
+  }
+}
+
+function getNextPeriodDate() {
+  if (!cycleData) return null;
+
+  let nextPeriod = new Date(cycleData.lastPeriod);
+  const today = new Date();
+
+  while (nextPeriod <= today) {
+    nextPeriod = addDays(nextPeriod, cycleData.cycleLength);
+  }
+
+  return nextPeriod;
+}
+
+function getNextOvulationDate() {
+  if (!cycleData) return null;
+
+  const nextPeriod = getNextPeriodDate();
+  return addDays(nextPeriod, -14);
+}
+
+function getExamDates(periodStart) {
+  return {
+    start: addDays(periodStart, 4), // 5-й день
+    end: addDays(periodStart, 6)    // 7-й день
+  };
+}
+
+function getDayPhase(date) {
+  if (!cycleData) return null;
+
+  let periodStart = new Date(cycleData.lastPeriod);
+
+  // Находим начало цикла для этой даты
+  while (addDays(periodStart, cycleData.cycleLength) <= date) {
+    periodStart = addDays(periodStart, cycleData.cycleLength);
+  }
+  while (periodStart > date) {
+    periodStart = addDays(periodStart, -cycleData.cycleLength);
+  }
+
+  const cycleDay = daysBetween(periodStart, date) + 1;
+  const { cycleLength, periodLength } = cycleData;
+  const ovulationDay = cycleLength - 14;
+
+  if (cycleDay <= periodLength) return 'period';
+  if (cycleDay === ovulationDay) return 'ovulation';
+  if (cycleDay >= ovulationDay - 3 && cycleDay <= ovulationDay + 1) return 'fertile';
+  if (cycleDay >= 5 && cycleDay <= 7) return 'exam';
+  return null;
+}
+
+// ========== ЦИКЛ - UI ==========
+function updateCycleUI() {
+  loadCycleData();
+
+  if (!cycleData) {
+    document.getElementById('cycle-setup').classList.remove('hidden');
+    document.getElementById('cycle-calendar-container').classList.add('hidden');
+    return;
+  }
+
+  document.getElementById('cycle-setup').classList.add('hidden');
+  document.getElementById('cycle-calendar-container').classList.remove('hidden');
+
+  const today = new Date();
+  const cycleDay = getCycleDay(today);
+  const phase = getPhaseInfo(cycleDay);
+  const nextPeriod = getNextPeriodDate();
+  const nextOvulation = getNextOvulationDate();
+
+  // Текущий день цикла
+  document.getElementById('current-cycle-day').textContent = cycleDay;
+  document.getElementById('current-phase-name').textContent = phase.name;
+
+  // Дни до событий
+  const daysToPeriod = daysBetween(today, nextPeriod);
+  const daysToOvulation = daysBetween(today, nextOvulation);
+
+  document.getElementById('days-to-period').textContent = daysToPeriod > 0 ? daysToPeriod : '—';
+  document.getElementById('days-to-ovulation').textContent = daysToOvulation > 0 ? daysToOvulation : '—';
+
+  // Напоминание о самообследовании
+  const examReminder = document.getElementById('exam-reminder');
+  if (cycleDay >= 5 && cycleDay <= 7) {
+    examReminder.classList.remove('hidden');
+  } else {
+    examReminder.classList.add('hidden');
+  }
+
+  // Обновляем главную страницу
+  updateHomeStatus();
+
+  // Рендерим календарь
+  renderCalendar();
+
+  // Рендерим прогноз
+  renderForecast();
+
+  // Показываем уведомления
+  showNotifications();
+}
+
+function updateHomeStatus() {
+  const cycleDay = getCycleDay();
+  const phase = getPhaseInfo(cycleDay);
+  const nextPeriod = getNextPeriodDate();
+
+  document.getElementById('home-cycle-day').textContent = cycleDay || '—';
+  document.getElementById('home-cycle-phase').textContent = cycleDay ? phase.name : 'Настройте трекер';
+
+  if (nextPeriod) {
+    document.getElementById('home-next-period').textContent = formatDate(nextPeriod, true);
+    const days = daysBetween(new Date(), nextPeriod);
+    document.getElementById('home-period-countdown').textContent = days > 0 ? `через ${days} дн.` : 'сегодня или скоро';
+  }
+
+  // Самообследование
+  if (cycleData) {
+    const examDates = getExamDates(getNextPeriodDate());
+    document.getElementById('home-exam-date').textContent = `${formatDate(examDates.start, true)} - ${formatDate(examDates.end, true)}`;
+
+    const cycleDay = getCycleDay();
+    if (cycleDay >= 5 && cycleDay <= 7) {
+      document.getElementById('home-exam-status').textContent = '✓ Сейчас оптимальное время!';
+      document.getElementById('home-exam-status').className = 'text-sm text-cyan-600 font-medium';
+    } else {
+      document.getElementById('home-exam-status').textContent = 'Оптимальные дни цикла';
+      document.getElementById('home-exam-status').className = 'text-sm text-gray-500';
+    }
+  }
+}
+
+function renderCalendar() {
+  const grid = document.getElementById('calendar-grid');
+  const year = currentCalendarDate.getFullYear();
+  const month = currentCalendarDate.getMonth();
+
+  document.getElementById('calendar-month-year').textContent = `${MONTHS_RU[month]} ${year}`;
+
+  // Первый день месяца
+  const firstDay = new Date(year, month, 1);
+  const lastDay = new Date(year, month + 1, 0);
+
+  // День недели первого числа (пн=0, вс=6)
+  let startDayOfWeek = firstDay.getDay() - 1;
+  if (startDayOfWeek < 0) startDayOfWeek = 6;
+
+  const today = new Date();
+  let html = '';
+
+  // Пустые ячейки в начале
+  for (let i = 0; i < startDayOfWeek; i++) {
+    const prevDate = new Date(year, month, -startDayOfWeek + i + 1);
+    const phase = getDayPhase(prevDate);
+    html += `<div class="calendar-day other-month ${phase || ''}">${prevDate.getDate()}</div>`;
+  }
+
+  // Дни месяца
+  for (let day = 1; day <= lastDay.getDate(); day++) {
+    const date = new Date(year, month, day);
+    const phase = getDayPhase(date);
+    const isToday = isSameDay(date, today);
+
+    let classes = 'calendar-day';
+    if (isToday) classes += ' today';
+    if (phase) classes += ` ${phase}`;
+
+    html += `<div class="${classes}" data-date="${date.toISOString()}">${day}</div>`;
+  }
+
+  // Пустые ячейки в конце
+  const endDayOfWeek = lastDay.getDay() - 1;
+  const remainingDays = endDayOfWeek < 0 ? 0 : 6 - endDayOfWeek;
+  for (let i = 1; i <= remainingDays; i++) {
+    const nextDate = new Date(year, month + 1, i);
+    const phase = getDayPhase(nextDate);
+    html += `<div class="calendar-day other-month ${phase || ''}">${i}</div>`;
+  }
+
+  grid.innerHTML = html;
+}
+
+function renderForecast() {
+  if (!cycleData) return;
+
+  const container = document.getElementById('forecast-list');
+  let html = '';
+
+  let periodStart = getNextPeriodDate();
+
+  for (let i = 0; i < 3; i++) {
+    const periodEnd = addDays(periodStart, cycleData.periodLength - 1);
+    const ovulation = addDays(periodStart, cycleData.cycleLength - 14);
+    const examDates = getExamDates(periodStart);
+
+    html += `
+      <div class="p-4 bg-gray-50 rounded-lg">
+        <div class="flex items-center justify-between mb-2">
+          <span class="font-medium text-gray-800">${MONTHS_RU[periodStart.getMonth()]} ${periodStart.getFullYear()}</span>
         </div>
-        <div>
-          <label for="clinic-address" class="block text-sm font-medium text-gray-700 mb-1" data-i18n="fld_addr">Address</label>
-          <input type="text" id="clinic-address" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary" />
-        </div>
-        <div>
-          <label for="clinic-type" class="block text-sm font-medium text-gray-700 mb-1" data-i18n="fld_type">Type</label>
-          <select id="clinic-type" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary">
-            <option value="public" data-i18n="type_public">Public</option>
-            <option value="private" data-i18n="type_private">Private</option>
-            <option value="research" data-i18n="type_research">Research Center</option>
-          </select>
-        </div>
-        <div class="grid grid-cols-2 gap-4">
-          <div>
-            <label for="clinic-lat" class="block text-sm font-medium text-gray-700 mb-1" data-i18n="fld_lat">Latitude</label>
-            <input type="number" step="0.000001" id="clinic-lat" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary" />
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-2 text-sm">
+          <div class="flex items-center gap-2">
+            <div class="w-3 h-3 rounded-full bg-red-300"></div>
+            <span>Месячные: ${formatDate(periodStart, true)} - ${formatDate(periodEnd, true)}</span>
           </div>
-          <div>
-            <label for="clinic-lng" class="block text-sm font-medium text-gray-700 mb-1" data-i18n="fld_lng">Longitude</label>
-            <input type="number" step="0.000001" id="clinic-lng" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary" />
+          <div class="flex items-center gap-2">
+            <div class="w-3 h-3 rounded-full bg-purple-300"></div>
+            <span>Овуляция: ~${formatDate(ovulation, true)}</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <div class="w-3 h-3 rounded-full bg-cyan-300"></div>
+            <span>Самообслед.: ${formatDate(examDates.start, true)} - ${formatDate(examDates.end, true)}</span>
           </div>
         </div>
-        <div>
-          <label for="clinic-notes" class="block text-sm font-medium text-gray-700 mb-1" data-i18n="fld_notes">Notes (optional)</label>
-          <textarea id="clinic-notes" rows="3" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary"></textarea>
-        </div>
       </div>
-      <div class="mt-6 flex justify-end gap-3">
-        <button id="cancel-add-clinic" class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50" data-i18n="btn_cancel">Cancel</button>
-        <button id="save-clinic" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-pink-600" data-i18n="btn_save">Save Clinic</button>
+    `;
+
+    periodStart = addDays(periodStart, cycleData.cycleLength);
+  }
+
+  container.innerHTML = html;
+}
+
+function showNotifications() {
+  if (!cycleData) return;
+
+  const container = document.getElementById('notifications-container');
+  const notifications = [];
+  const today = new Date();
+  const cycleDay = getCycleDay();
+  const nextPeriod = getNextPeriodDate();
+  const daysToPeriod = daysBetween(today, nextPeriod);
+
+  // Уведомление о скорых месячных
+  if (daysToPeriod <= 3 && daysToPeriod > 0) {
+    notifications.push({
+      icon: 'droplet',
+      color: 'red',
+      title: 'Месячные скоро начнутся',
+      text: `Ожидаются через ${daysToPeriod} ${daysToPeriod === 1 ? 'день' : 'дня'} — ${formatDate(nextPeriod, true)}`
+    });
+  }
+
+  // Уведомление о самообследовании
+  if (cycleDay >= 5 && cycleDay <= 7) {
+    notifications.push({
+      icon: 'check-circle',
+      color: 'cyan',
+      title: 'Время для самообследования груди',
+      text: 'Сейчас оптимальный период цикла. Уделите 5 минут для проверки.'
+    });
+  }
+
+  // Уведомление об овуляции
+  const nextOvulation = getNextOvulationDate();
+  const daysToOvulation = daysBetween(today, nextOvulation);
+  if (daysToOvulation >= 0 && daysToOvulation <= 2) {
+    notifications.push({
+      icon: 'star',
+      color: 'purple',
+      title: daysToOvulation === 0 ? 'Сегодня овуляция' : 'Овуляция скоро',
+      text: daysToOvulation === 0 ? 'Сегодня день овуляции — пик фертильности.' : `Овуляция ожидается через ${daysToOvulation} дн.`
+    });
+  }
+
+  if (notifications.length === 0) {
+    container.innerHTML = '';
+    return;
+  }
+
+  container.innerHTML = notifications.map(n => `
+    <div class="notification-card card p-4 flex items-start gap-3 bg-${n.color}-50 border-${n.color}-100">
+      <div class="p-2 rounded-full bg-${n.color}-100 text-${n.color}-600">
+        <i data-feather="${n.icon}" class="w-5 h-5"></i>
+      </div>
+      <div>
+        <p class="font-medium text-gray-800">${n.title}</p>
+        <p class="text-sm text-gray-600">${n.text}</p>
       </div>
     </div>
-  </div>
-</div>
+  `).join('');
 
-<!-- Скрипты -->
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
-  // Переводы
-  const translations = {
-    en: {
-      home: "Home", clinics: "Clinics", resources: "Resources", about: "About", city: "Astana", rights: "All rights reserved.",
-      hero_title: "Breast Cancer Screening in Astana",
-      hero_desc: "Find mammography clinics near you, learn about self-examination techniques, and access educational resources about breast health.",
-      cta_find_clinics: "Find Clinics", cta_learn_more: "Learn More",
-      tip1_title: "Regular Screening", tip1_text: "Women 40+ should discuss mammography screening with their doctor. Early detection saves lives.",
-      tip2_title: "Monthly Check", tip2_text: "Perform breast self-examination once a month, ideally a few days after your period ends.",
-      tip3_title: "Healthy Lifestyle", tip3_text: "Maintain a healthy weight, exercise regularly, and limit alcohol consumption to reduce risk.",
-      tip4_title: "Know the Signs", tip4_text: "Look for lumps, skin changes, nipple discharge, or persistent pain. Report changes to your doctor.",
-      quick_guide: "Quick Self-Check Guide",
-      visual_inspection: "Visual Inspection", vi_1: "Stand in front of a mirror with shoulders straight and arms on hips", vi_2: "Look for any changes in size, shape, or color", vi_3: "Check for dimpling, puckering, or bulging of the skin",
-      physical_exam: "Physical Examination", pe_1: "Use the pads of your fingers to feel for lumps", pe_2: "Cover the entire breast from top to bottom, side to side", pe_3: "Check under the armpit and up to the collarbone",
-      watch_videos: "Watch instructional videos",
-      clinics_title: "Mammography Clinics in Astana", clinics_sub: "Find screening centers near you",
-      add_clinic: "Add Clinic", search_label: "Search",
-      search_ph: "Clinic name or address...", filter_label: "Filter by type", type_all: "All types", type_public: "Public", type_private: "Private", type_research: "Research Center", apply_btn: "Apply",
-      map_hint: "Click on map markers for more information. Use the \"Directions\" button to open in Google Maps.",
-      clinic_list: "Clinic List", no_results: "No clinics found matching your criteria",
-      show_on_map: "Show on map", directions: "Directions", get_directions: "Get Directions", read_article: "Read article",
-      resources_title: "Educational Resources", videos_heading: "Instructional Videos",
-      video1_title: "How to Perform Breast Self-Examination", video1_desc: "Step-by-step guide for monthly self-checks",
-      video2_title: "Understanding Mammography", video2_desc: "What to expect during your screening",
-      more_videos: "More videos on YouTube", articles_heading: "Articles & Guides", more_from_who: "More resources from WHO",
-      about_title: "About MammoCare", about_p1: "MammoCare is a free resource designed to help women in Astana find mammography screening centers and access reliable information about breast health.",
-      about_p2: "Our goal is to promote early detection of breast cancer through education and easy access to screening facilities. Early detection significantly improves treatment outcomes.",
-      about_p3: "This project was created as a community service and is not affiliated with any medical institution. Always consult with your healthcare provider for medical advice.",
-      disclaimer_title: "Disclaimer",
-      disclaimer_text: "The information provided on this website is for educational purposes only and should not be considered medical advice. Clinic information is provided as-is and may change. Please verify details with the clinic before visiting.",
-      contact_title: "Contact", contact_desc: "Have questions or suggestions? We'd love to hear from you.",
-      github_repo: "GitHub Repository", support_text: "Support our initiative",
-      credits_title: "Credits", credits_med: "Medical information from WHO and NHS",
-      modal_add_title: "Add New Clinic", fld_name: "Clinic Name", fld_addr: "Address", fld_type: "Type", fld_lat: "Latitude", fld_lng: "Longitude", fld_notes: "Notes (optional)",
-      btn_cancel: "Cancel", btn_save: "Save Clinic",
-      card_public: "Public", card_private: "Private", card_research: "Research"
-    },
-    ru: {
-      home: "Главная", clinics: "Клиники", resources: "Ресурсы", about: "О проекте", city: "Астана", rights: "Все права защищены.",
-      hero_title: "Скрининг рака груди в Астане",
-      hero_desc: "Найдите клиники маммографии рядом с вами, изучите техники самообследования и получите доступ к образовательным материалам о здоровье груди.",
-      cta_find_clinics: "Найти клиники", cta_learn_more: "Узнать больше",
-      tip1_title: "Регулярный скрининг", tip1_text: "Женщинам 40+ стоит обсудить маммографию с врачом. Раннее выявление спасает жизни.",
-      tip2_title: "Ежемесячная проверка", tip2_text: "Проводите самообследование груди раз в месяц, лучше через несколько дней после менструации.",
-      tip3_title: "Здоровый образ жизни", tip3_text: "Поддерживайте здоровый вес, занимайтесь спортом и ограничьте алкоголь, чтобы снизить риск.",
-      tip4_title: "Знайте признаки", tip4_text: "Обращайте внимание на уплотнения, изменения кожи, выделения из соска или постоянную боль. Сообщите врачу.",
-      quick_guide: "Краткое руководство по самообследованию",
-      visual_inspection: "Визуальный осмотр", vi_1: "Встаньте перед зеркалом, выпрямив плечи, руки на бедрах", vi_2: "Отслеживайте изменения размера, формы или цвета", vi_3: "Проверьте на втяжения, ямочки или выпуклости кожи",
-      physical_exam: "Пальпация", pe_1: "Подушечками пальцев прощупайте ткани на наличие уплотнений", pe_2: "Обследуйте всю грудь: сверху вниз, из стороны в сторону", pe_3: "Проверьте подмышечную область и ключицу",
-      watch_videos: "Смотреть обучающие видео",
-      clinics_title: "Клиники маммографии в Астане", clinics_sub: "Найдите ближайшие центры скрининга",
-      add_clinic: "Добавить клинику", search_label: "Поиск",
-      search_ph: "Название клиники или адрес...", filter_label: "Фильтр по типу", type_all: "Все типы", type_public: "Государственная", type_private: "Частная", type_research: "Научный центр", apply_btn: "Применить",
-      map_hint: "Нажмите на маркер для подробностей. Кнопка «Маршрут» откроет Google Maps.",
-      clinic_list: "Список клиник", no_results: "Клиники не найдены по вашему запросу",
-      show_on_map: "Показать на карте", directions: "Маршрут", get_directions: "Построить маршрут", read_article: "Читать статью",
-      resources_title: "Образовательные ресурсы", videos_heading: "Обучающие видео",
-      video1_title: "Как проводить самообследование груди", video1_desc: "Пошаговое руководство для ежемесячной проверки",
-      video2_title: "Что такое маммография", video2_desc: "Чего ожидать во время скрининга",
-      more_videos: "Больше видео на YouTube", articles_heading: "Статьи и руководства", more_from_who: "Материалы от ВОЗ",
-      about_title: "О MammoCare", about_p1: "MammoCare — бесплатный ресурс, помогающий женщинам в Астане найти центры маммографии и получить достоверную информацию о здоровье груди.",
-      about_p2: "Наша цель — содействовать раннему выявлению рака груди через образование и доступ к скринингу. Ранняя диагностика значительно улучшает результаты лечения.",
-      about_p3: "Проект создан как общественная инициатива и не связан с медицинскими учреждениями. Всегда консультируйтесь с врачом.",
-      disclaimer_title: "Отказ от ответственности",
-      disclaimer_text: "Информация на сайте предназначена только для образовательных целей и не является медицинской консультацией. Данные о клиниках могут меняться — уточняйте перед визитом.",
-      contact_title: "Контакты", contact_desc: "Есть вопросы или предложения? Мы будем рады их услышать.",
-      github_repo: "Репозиторий GitHub", support_text: "Поддержать инициативу",
-      credits_title: "Благодарности", credits_med: "Медицинская информация: ВОЗ и NHS",
-      modal_add_title: "Добавить новую клинику", fld_name: "Название клиники", fld_addr: "Адрес", fld_type: "Тип", fld_lat: "Широта", fld_lng: "Долгота", fld_notes: "Примечания (необязательно)",
-      btn_cancel: "Отмена", btn_save: "Сохранить",
-      card_public: "Гос.", card_private: "Частн.", card_research: "Научн."
-    },
-    kz: {
-      home: "Басты", clinics: "Клиникалар", resources: "Ресурстар", about: "Жоба туралы", city: "Астана", rights: "Барлық құқықтар қорғалған.",
-      hero_title: "Астанада сүт безі қатерлі ісігін скринингтеу",
-      hero_desc: "Жақын маңдағы маммография клиникаларын табыңыз, өзін-өзі тексеру әдістерін үйреніңіз және сенімді білім көздеріне қол жеткізіңіз.",
-      cta_find_clinics: "Клиникаларды табу", cta_learn_more: "Көбірек білу",
-      tip1_title: "Тұрақты скрининг", tip1_text: "40+ жастағы әйелдер дәрігермен маммографияны талқылауы керек. Ерте анықтау өмірді сақтайды.",
-      tip2_title: "Ай сайынғы тексеру", tip2_text: "Өзін-өзі тексеруді айына бір рет, етеккірден бірнеше күн өткен соң жасаңыз.",
-      tip3_title: "Денсаулықты сақтау", tip3_text: "Дұрыс салмақты ұстаныңыз, тұрақты қозғалыс жасаңыз және алкогольді шектеңіз.",
-      tip4_title: "Белгілерді біліңіз", tip4_text: "Түйіндер, тері өзгерістері, бөлініс немесе тұрақты ауырсынуға мән беріп, дәрігерге айтыңыз.",
-      quick_guide: "Жедел өзін-өзі тексеру нұсқаулығы",
-      visual_inspection: "Көру арқылы тексеру", vi_1: "Айна алдында тұрыңыз, иық тік, қол белде", vi_2: "Өлшемі, пішіні, түсі өзгерісін байқаңыз", vi_3: "Терідегі ойық, тартылу, ісінуді тексеріңіз",
-      physical_exam: "Қолмен тексеру", pe_1: "Саусақ ұшымен түйіндерді сезіп көріңіз", pe_2: "Кеудені толық: жоғары-төмен, шетіне дейін тексеріңіз", pe_3: "Қолтық асты мен бұғанаға дейін қараңыз",
-      watch_videos: "Нұсқаулық видеоларды қарау",
-      clinics_title: "Астанадағы маммография клиникалары", clinics_sub: "Жақын скрининг орталықтарын табыңыз",
-      add_clinic: "Клиника қосу", search_label: "Іздеу",
-      search_ph: "Клиника атауы немесе мекенжайы…", filter_label: "Түрі бойынша сүзгі", type_all: "Барлығы", type_public: "Мемлекеттік", type_private: "Жекеменшік", type_research: "Ғылыми орталық", apply_btn: "Қолдану",
-      map_hint: "Маркерді басып, мәліметті қараңыз. «Маршрут» Google Maps-та ашылады.",
-      clinic_list: "Клиникалар тізімі", no_results: "Сүзгіге сай клиника табылмады",
-      show_on_map: "Картадан көрсету", directions: "Маршрут", get_directions: "Маршрут", read_article: "Мақаланы оқу",
-      resources_title: "Білім ресурстары", videos_heading: "Нұсқаулық видеолар",
-      video1_title: "Қалай жүргізу керек", video1_desc: "Ай сайынғы тексеруге арналған қадамдық нұсқаулық",
-      video2_title: "Маммография туралы түсінік", video2_desc: "Скрининг кезінде не күту керек",
-      more_videos: "YouTube-та көбірек видео", articles_heading: "Мақалалар мен нұсқаулықтар", more_from_who: "ДДҰ материалдары",
-      about_title: "MammoCare туралы", about_p1: "MammoCare — Астанадағы маммография клиникаларын және сенімді ақпаратты табуға көмектесетін тегін ресурс.",
-      about_p2: "Мақсатымыз — білім беру және скринингке қолжетімділік арқылы ерте анықтауды арттыру. Бұл ем нәтижесін жақсартуға көмектеседі.",
-      about_p3: "Жоба медициналық мекемелерге қатысы жоқ және қоғамдық бастама. Медициналық кеңес алу үшін дәрігерге жүгініңіз.",
-      disclaimer_title: "Жауапкершіліктен бас тарту",
-      disclaimer_text: "Мұндағы ақпарат оқу мақсатында. Клиника мәліметтері өзгеруі мүмкін — нақтылау үшін тексеріңіз.",
-      contact_title: "Байланыс", contact_desc: "Сұрақ немесе ұсыныстарыңыз бар ма? Бізге жазыңыз.",
-      github_repo: "Репозиторий GitHub", support_text: "Бастаманы қолдау",
-      credits_title: "Алғыс", credits_med: "Медициналық ақпарат: ДДСҰ және NHS",
-      modal_add_title: "Жаңа клиника қосу", fld_name: "Клиника атауы", fld_addr: "Мекенжай", fld_type: "Түрі", fld_lat: "Ендік", fld_lng: "Бойлық", fld_notes: "Ескертпе (міндетті емес)",
-      btn_cancel: "Болдырмау", btn_save: "Сақтау",
-      card_public: "Мемл.", card_private: "Жеке", card_research: "Ғыл."
-    }
-  };
+  if (window.feather) feather.replace();
+}
 
-  // Данные клиник
-  const clinics = [
-    { id: 1, name: "City Hospital №2", address: "Turar Ryskulov St, 6", type: "public",  lat: 51.1477, lng: 71.4216, notes: "Government hospital with mammography services" },
-    { id: 2, name: "City Polyclinic №9", address: "Mangilik El Ave, 16/1", type: "public",  lat: 51.0899, lng: 71.4165, notes: "Primary care facility with screening services" },
-    { id: 3, name: "Multidisciplinary Medical Center", address: "Manas St, 17", type: "private", lat: 51.1260, lng: 71.4000, notes: "Private clinic with digital mammography" },
-    { id: 4, name: "Presidential Clinic", address: "Mangilik El Ave, 80", type: "private", lat: 51.0954, lng: 71.4218, notes: "High-end private medical facility" },
-    { id: 5, name: "Big Tau Clinic", address: "Turan Ave, 50", type: "private", lat: 51.1325, lng: 71.4301, notes: "Modern private clinic with advanced equipment" },
-    { id: 6, name: "Sak Medical Centre", address: "Saryarka Ave, 42", type: "private", lat: 51.1428, lng: 71.4389, notes: "Specialized women's health center" },
-    { id: 7, name: "DiVera", address: "Kabanbay Batyr Ave, 47/2", type: "private", lat: 51.1187, lng: 71.4456, notes: "Private diagnostic center" },
-    { id: 8, name: "International Oncology Center 'UMIT'", address: "Abylay Khan Ave, 42/1", type: "research", lat: 51.1253, lng: 71.4328, notes: "Comprehensive cancer diagnosis and treatment" },
-    { id: 9, name: "Republican Diagnostic Center (UMC)", address: "Sygynak St, 46", type: "public", lat: 51.1356, lng: 71.4254, notes: "National-level diagnostic facility" },
-    { id:10, name: "Maternal and Child Health Research Center (UMC)", address: "Turan Ave, 32", type: "research", lat: 51.1298, lng: 71.4287, notes: "Specialized in women's and children's health" },
-    { id:11, name: "EMIRMED (Health Research Institute)", address: "Kuishi Dina St, 9", type: "research", lat: 51.1224, lng: 71.4193, notes: "Research institute with diagnostic services" },
-    { id:12, name: "Meyirim Medical Center", address: "Koshkarbayev St, 15", type: "private", lat: 51.1312, lng: 71.4356, notes: "Has digital mammography equipment" },
-    { id:13, name: "Emergency Medicine Research Institute", address: "Hussein bin Talal St, 14, 3rd floor", type: "research", lat: 51.1276, lng: 71.4372, notes: "Specialized diagnostic services" },
-    { id:14, name: "NROC (National Research Oncology Center)", address: "Kabanbay Batyr Ave, 53", type: "research", lat: 51.1201, lng: 71.4428, notes: "Modern equipment, integrated cancer programs" }
-  ];
+// ========== КАРТА ==========
+function initMap() {
+  if (map) return;
 
-  const articles = [
-    { id:1, title:"WHO — Breast cancer facts", url:"https://www.who.int/news-room/fact-sheets/detail/breast-cancer", source:"World Health Organization" },
-    { id:2, title:"NHS — Breast cancer overview", url:"https://www.nhs.uk/conditions/breast-cancer/", source:"UK National Health Service" },
-    { id:3, title:"ACS — Screening Guidelines", url:"https://www.cancer.org/healthy/find-cancer-early/breast-cancer-screening.html", source:"American Cancer Society" },
-    { id:4, title:"Breast self-examination guide", url:"https://www.breastcancer.org/screening-testing/breast-self-exam", source:"BreastCancer.org" },
-    { id:5, title:"Mammography: What to expect", url:"https://www.mayoclinic.org/tests-procedures/mammogram/about/pac-20384806", source:"Mayo Clinic" },
-    { id:6, title:"Reducing breast cancer risk", url:"https://www.cdc.gov/cancer/breast/basic_info/prevention.htm", source:"CDC" }
-  ];
+  const mapEl = document.getElementById('map');
+  if (!mapEl) return;
 
-  // Вспомогательные функции
-  function escapeHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;'); }
-  function $all(sel){ return Array.from(document.querySelectorAll(sel)); }
+  map = L.map('map').setView([51.128, 71.430], 12);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap'
+  }).addTo(map);
 
-  // Инициализация карты
-  let map; let markers = [];
-  window.__lastFilter = { search:'', type:'' };
-  let currentLanguage = 'en';
+  renderClinics();
+}
 
-  function initMap(){
-    if(map) return;
-    map = L.map('map').setView([51.169392,71.449074], 12);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution:'&copy; OpenStreetMap contributors' }).addTo(map);
-    renderClinicsOnMap();
-  }
+function renderClinics(search = '', type = '') {
+  if (!map) return;
 
-  function filterClinics({search='', type=''}){
-    const s = (search||'').toLowerCase(); const t = (type||'').toLowerCase();
-    return clinics.filter(c=>{
-      const mS = !s || c.name.toLowerCase().includes(s) || c.address.toLowerCase().includes(s) || (c.notes||'').toLowerCase().includes(s);
-      const mT = !t || c.type===t;
-      return mS && mT;
-    });
-  }
+  markers.forEach(m => map.removeLayer(m));
+  markers = [];
 
-  function renderClinicsOnMap(filter = window.__lastFilter){
-    window.__lastFilter = filter;
-    if(!map) return;
-    markers.forEach(m => map.removeLayer(m)); markers = [];
+  const filtered = clinics.filter(c => {
+    const matchSearch = !search || c.name.toLowerCase().includes(search.toLowerCase()) || c.address.toLowerCase().includes(search.toLowerCase());
+    const matchType = !type || c.type === type;
+    return matchSearch && matchType;
+  });
 
-    const list = filterClinics(filter);
-    const t = translations[currentLanguage] || translations.en;
+  filtered.forEach(clinic => {
+    const typeLabel = clinic.type === 'public' ? 'Гос.' : clinic.type === 'private' ? 'Частн.' : 'Научн.';
+    const marker = L.marker([clinic.lat, clinic.lng]).addTo(map);
+    marker.bindPopup(`
+      <b>${clinic.name}</b><br>
+      ${clinic.address}<br>
+      <span style="color:#888">${typeLabel}</span><br>
+      <a href="https://www.google.com/maps/dir/?api=1&destination=${clinic.lat},${clinic.lng}" target="_blank" style="color:#ec4899">Маршрут →</a>
+    `);
+    markers.push(marker);
+  });
 
-    list.forEach(clinic=>{
-      const marker = L.marker([clinic.lat, clinic.lng]).addTo(map);
-      const typeLabel = clinic.type==='public' ? t.card_public : clinic.type==='private' ? t.card_private : t.card_research;
-      const typeColor = clinic.type==='public' ? '#3b82f6' : clinic.type==='private' ? '#ec4899' : '#8b5cf6';
-      marker.bindPopup(`
-        <div class="space-y-2" style="min-width:200px;">
-          <h4 class="font-semibold text-gray-800">${escapeHtml(clinic.name)}</h4>
-          <p class="text-sm text-gray-600">${escapeHtml(clinic.address)}</p>
-          <div class="flex items-center gap-2">
-            <span class="inline-block w-3 h-3 rounded-full" style="background-color:${typeColor};"></span>
-            <span class="text-xs font-medium text-gray-700">${typeLabel}</span>
-          </div>
-          ${clinic.notes ? `<p class="text-xs text-gray-500 mt-2">${escapeHtml(clinic.notes)}</p>` : ''}
-          <div class="mt-2">
-            <a href="https://www.google.com/maps?q=${clinic.lat},${clinic.lng}" target="_blank" rel="noopener" class="inline-flex items-center gap-1 text-sm text-primary hover:underline">
-              <i data-feather="map-pin" class="w-3 h-3"></i>${t.get_directions}
-            </a>
-          </div>
+  // Список
+  const listEl = document.getElementById('clinics-list');
+  listEl.innerHTML = filtered.map(c => {
+    const badge = c.type === 'public' ? 'bg-blue-100 text-blue-700' : c.type === 'private' ? 'bg-pink-100 text-pink-700' : 'bg-purple-100 text-purple-700';
+    const typeLabel = c.type === 'public' ? 'Гос.' : c.type === 'private' ? 'Частн.' : 'Научн.';
+    return `
+      <div class="p-3 border border-gray-200 rounded-lg hover:border-primary transition cursor-pointer clinic-card" data-lat="${c.lat}" data-lng="${c.lng}">
+        <div class="flex justify-between items-start mb-1">
+          <p class="font-medium text-gray-800">${c.name}</p>
+          <span class="text-xs px-2 py-0.5 rounded-full ${badge}">${typeLabel}</span>
         </div>
-      `);
-      markers.push(marker);
-    });
+        <p class="text-sm text-gray-600">${c.address}</p>
+      </div>
+    `;
+  }).join('');
 
-    if(list.length>0){
-      const bounds = L.latLngBounds(list.map(c=>[c.lat,c.lng]));
-      map.fitBounds(bounds,{ padding:[50,50] });
-    }
-    if (window.feather && typeof feather.replace==='function') feather.replace();
-  }
-
-  function renderClinicsList(filter = window.__lastFilter){
-    const container = document.getElementById('clinics-list'); if(!container) return;
-    const list = filterClinics(filter);
-    const dict = translations[currentLanguage] || translations.en;
-
-    if(list.length===0){
-      container.innerHTML = `<div class="card p-4 text-center text-gray-500">${dict.no_results}</div>`;
-      return;
-    }
-
-    container.innerHTML = list.map(clinic=>{
-      let badgeClass, typeText;
-      if(clinic.type==='public'){ badgeClass='bg-blue-100 text-blue-800'; typeText=dict.card_public; }
-      else if(clinic.type==='private'){ badgeClass='bg-pink-100 text-pink-800'; typeText=dict.card_private; }
-      else { badgeClass='bg-purple-100 text-purple-800'; typeText=dict.card_research; }
-
-      return `
-        <div class="clinic-item card p-4" data-id="${clinic.id}">
-          <div class="flex justify-between items-start mb-2">
-            <h4 class="font-medium text-gray-800">${escapeHtml(clinic.name)}</h4>
-            <span class="text-xs px-2 py-1 rounded-full ${badgeClass}">${typeText}</span>
-          </div>
-          <p class="text-sm text-gray-600 mb-3">${escapeHtml(clinic.address)}</p>
-          ${clinic.notes ? `<p class="text-xs text-gray-500 mb-3">${escapeHtml(clinic.notes)}</p>` : ''}
-          <div class="flex flex-wrap gap-2">
-            <button class="focus-clinic px-3 py-1 text-xs bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition" data-i18n="show_on_map">${dict.show_on_map}</button>
-            <a href="https://www.google.com/maps?q=${clinic.lat},${clinic.lng}" target="_blank" rel="noopener" class="px-3 py-1 text-xs bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition">${dict.directions}</a>
-          </div>
-        </div>
-      `;
-    }).join('');
-
-    document.querySelectorAll('.focus-clinic').forEach(btn=>{
-      btn.addEventListener('click', function(){
-        const id = parseInt(this.closest('.clinic-item').getAttribute('data-id'));
-        const c = clinics.find(x=>x.id===id);
-        if(c && map){
-          map.setView([c.lat, c.lng], 15);
-          markers.forEach(m=>{ const p=m.getLatLng(); if(p.lat===c.lat && p.lng===c.lng) m.openPopup(); });
+  // Клик по карточке
+  document.querySelectorAll('.clinic-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const lat = parseFloat(card.dataset.lat);
+      const lng = parseFloat(card.dataset.lng);
+      map.setView([lat, lng], 15);
+      markers.forEach(m => {
+        const pos = m.getLatLng();
+        if (Math.abs(pos.lat - lat) < 0.001 && Math.abs(pos.lng - lng) < 0.001) {
+          m.openPopup();
         }
       });
     });
-    if (window.feather && typeof feather.replace==='function') feather.replace();
-  }
-
-  function renderArticlesList(){
-    const container = document.getElementById('articles-list'); if(!container) return;
-    const dict = translations[currentLanguage] || translations.en;
-    container.innerHTML = articles.map(a => `
-      <a href="${escapeHtml(a.url)}" target="_blank" rel="noopener" class="article-card block p-4 border border-gray-200 rounded-lg hover:border-primary transition">
-        <h4 class="font-medium text-gray-800 mb-1">${escapeHtml(a.title)}</h4>
-        <p class="text-xs text-gray-500">${escapeHtml(a.source)}</p>
-        <div class="mt-2 flex justify-between items-center">
-          <span class="text-xs text-primary">${dict.read_article || 'Read article'}</span>
-          <i data-feather="external-link" class="w-4 h-4 text-gray-400"></i>
-        </div>
-      </a>
-    `).join('');
-    if (window.feather && typeof feather.replace==='function') feather.replace();
-  }
-
-  // Инициализация и переключение языка
-  (function(){
-    const langFromStorage = localStorage.getItem('preferredLanguage');
-    const langFromBrowser = (navigator.language || navigator.userLanguage || 'en').slice(0,2).toLowerCase();
-    currentLanguage = (['en','ru','kz'].includes(langFromStorage||'')) ? langFromStorage
-                     : (['en','ru','kz'].includes(langFromBrowser) ? langFromBrowser : 'en');
-
-    const currentLangEl = document.getElementById('current-lang');
-    const currentCityEl = document.getElementById('current-city');
-
-    function applyTranslations(){
-      const dict = translations[currentLanguage] || translations.en;
-      // Обновление текста и плейсхолдеров
-      $all('[data-i18n]').forEach(el=>{
-        const key = el.getAttribute('data-i18n');
-        if (dict[key] != null) el.textContent = dict[key];
-      });
-      $all('[data-i18n-placeholder]').forEach(el=>{
-        const key = el.getAttribute('data-i18n-placeholder');
-        if (dict[key] != null) el.setAttribute('placeholder', dict[key]);
-      });
-      $all('[data-i18n-title]').forEach(el=>{
-        const key = el.getAttribute('data-i18n-title');
-        if (dict[key] != null) el.setAttribute('title', dict[key]);
-      });
-      if (currentLangEl) currentLangEl.textContent = currentLanguage.toUpperCase();
-      if (currentCityEl && dict.city) currentCityEl.textContent = dict.city;
-
-      // Обновление динамических элементов
-      try {
-        renderClinicsOnMap(window.__lastFilter || {search:'',type:''});
-        renderClinicsList(window.__lastFilter || {search:'',type:''});
-        renderArticlesList();
-      } catch(e){}
-    }
-
-    function setLanguage(lang){
-      if (!['en','ru','kz'].includes(lang)) return;
-      currentLanguage = lang;
-      localStorage.setItem('preferredLanguage', lang);
-      applyTranslations();
-    }
-
-    document.addEventListener('DOMContentLoaded', ()=>{
-      // Инициализация
-      AOS.init({ duration: 600, once: true });
-      if (window.feather && typeof feather.replace==='function') feather.replace();
-
-      // Меню мобильное
-      const mobileMenuButton = document.getElementById('mobile-menu-button');
-      const mobileMenu = document.getElementById('mobile-menu');
-      const closeMobileMenu = document.getElementById('close-mobile-menu');
-      mobileMenuButton?.addEventListener('click', ()=>{ mobileMenu.classList.remove('hidden'); document.body.style.overflow='hidden'; });
-      closeMobileMenu?.addEventListener('click', ()=>{ mobileMenu.classList.add('hidden'); document.body.style.overflow=''; });
-
-      // Переключение языков
-      const switcherBtn = document.getElementById('language-switcher');
-      const dropdown = document.getElementById('language-dropdown');
-      switcherBtn?.addEventListener('click', (e)=>{ e.stopPropagation(); dropdown?.classList.toggle('hidden'); });
-      document.addEventListener('click', ()=> dropdown?.classList.add('hidden'));
-      $all('#language-dropdown [data-lang]').forEach(btn=>{
-        btn.addEventListener('click', (e)=>{
-          e.stopPropagation();
-          const lang = btn.getAttribute('data-lang');
-          setLanguage(lang);
-          dropdown?.classList.add('hidden');
-        });
-      });
-
-      // Первичное применение
-      applyTranslations();
-
-      // Рендеринг статей
-      renderArticlesList();
-
-      // Фильтры
-      document.getElementById('btn-apply-filters')?.addEventListener('click', ()=>{
-        const s = document.getElementById('search-clinics').value;
-        const t = document.getElementById('filter-type').value;
-        const f = { search:s, type:t };
-        renderClinicsOnMap(f); renderClinicsList(f);
-      });
-      document.getElementById('search-clinics')?.addEventListener('keypress', (e)=>{ if(e.key==='Enter') document.getElementById('btn-apply-filters').click(); });
-
-      // Модальное окно добавления клиники
-      const addClinicModal = document.getElementById('add-clinic-modal');
-      document.getElementById('btn-add-clinic')?.addEventListener('click', ()=>{ addClinicModal.classList.remove('hidden'); document.body.style.overflow='hidden'; });
-      document.getElementById('close-add-clinic')?.addEventListener('click', closeModal);
-      document.getElementById('cancel-add-clinic')?.addEventListener('click', closeModal);
-      function closeModal(){ addClinicModal.classList.add('hidden'); document.body.style.overflow=''; }
-      document.getElementById('save-clinic')?.addEventListener('click', ()=>{
-        alert('Demo: here you would save the clinic to a backend or localStorage.');
-        closeModal();
-      });
-    });
-
-    // Объект переводов для динамических элементов
-    window.MammoCareI18n = { get lang(){return currentLanguage;}, setLanguage };
-  })();
-</script>
-
-<!-- Кнопка помощника AI -->
-<button id="ai-button" class="fixed bottom-5 right-5 z-50 bg-primary text-white px-4 py-3 rounded-full shadow-lg hover:bg-pink-600">
-  AI помощник
-</button>
-
-<!-- Модальное окно AI -->
-<div id="ai-modal" class="fixed inset-0 z-50 hidden modal-overlay flex items-end md:items-center justify-center p-4">
-  <div class="bg-white rounded-lg w-full max-w-md flex flex-col h-[70vh]">
-    <div class="p-4 border-b flex justify-between items-center">
-      <h3 class="font-semibold">AI помощник MammoCare</h3>
-      <button id="ai-close">✕</button>
-    </div>
-    <div id="ai-messages" class="flex-1 p-4 overflow-y-auto space-y-3 text-sm">
-      <div class="bg-gray-100 p-3 rounded">
-        Привет! Я виртуальный помощник. Могу объяснить информацию, помочь с клиниками и навигацией.
-      </div>
-    </div>
-    <div class="p-3 border-t flex gap-2">
-      <input id="ai-input" type="text" class="flex-1 border rounded px-3 py-2" placeholder="Задайте вопрос..." />
-      <button id="ai-send" class="bg-primary text-white px-4 rounded">Отправить</button>
-    </div>
-  </div>
-</div>
-
-<script>
-  // Работа AI помощника
-  document.addEventListener('DOMContentLoaded', () => {
-    const aiBtn = document.getElementById('ai-button');
-    const aiModal = document.getElementById('ai-modal');
-    const aiClose = document.getElementById('ai-close');
-    const aiInput = document.getElementById('ai-input');
-    const aiSend = document.getElementById('ai-send');
-    const aiMessages = document.getElementById('ai-messages');
-
-    aiBtn.addEventListener('click', () => {
-      aiModal.classList.remove('hidden');
-    });
-    aiClose.addEventListener('click', () => {
-      aiModal.classList.add('hidden');
-    });
-    aiSend.addEventListener('click', sendMessage);
-    aiInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') sendMessage();
-    });
-
-    function sendMessage() {
-      const text = aiInput.value.trim();
-      if (!text) return;
-      addMessage(text, 'user');
-      aiInput.value = '';
-
-      setTimeout(() => {
-        const response = generateAIResponse(text);
-        addMessage(response, 'ai');
-      }, 400);
-    }
-
-    function addMessage(text, type) {
-      const msg = document.createElement('div');
-      msg.className =
-        type === 'user'
-          ? 'bg-primary text-white p-3 rounded ml-auto max-w-[80%]'
-          : 'bg-gray-100 p-3 rounded max-w-[80%]';
-      msg.textContent = text;
-      aiMessages.appendChild(msg);
-      aiMessages.scrollTop = aiMessages.scrollHeight;
-    }
-
-    function generateAIResponse(input) {
-      const q = input.toLowerCase();
-      if (q.includes('бол') || q.includes('симптом')) {
-        return 'Я не врач, но боль или дискомфорт в груди могут иметь разные причины. Рекомендую обратиться в клинику и пройти обследование.';
-      }
-      if (q.includes('клиник') || q.includes('где пройти')) {
-        return 'Вы можете открыть раздел «Клиники», чтобы посмотреть ближайшие центры маммографии на карте.';
-      }
-      if (q.includes('маммограф')) {
-        return 'Маммография — это рентгенологическое исследование молочных желез для раннего выявления изменений.';
-      }
-      if (q.includes('самообслед')) {
-        return 'Самообследование груди рекомендуется проводить 1 раз в месяц. Подробную инструкцию вы найдёте в разделе «Ресурсы».';
-      }
-      return 'Я пока умею отвечать на базовые вопросы. Попробуйте задать вопрос о клиниках, маммографии или самообследовании.';
-    }
-  });
-</script>
-
-<!-- Скрипт для мобильного меню -->
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const openBtn = document.getElementById('mobile-menu-button');
-    const closeBtn = document.getElementById('close-mobile-menu');
-    const menu = document.getElementById('mobile-menu');
-
-    openBtn?.addEventListener('click', () => {
-      menu.classList.remove('hidden');
-      document.body.style.overflow = 'hidden';
-    });
-
-    closeBtn?.addEventListener('click', () => {
-      menu.classList.add('hidden');
-      document.body.style.overflow = '';
-    });
-
-    // Закрытие при клике на пункт меню
-    menu.querySelectorAll('a').forEach(link => {
-      link.addEventListener('click', () => {
-        menu.classList.add('hidden');
-        document.body.style.overflow = '';
-      });
-    });
-  });
-</script>
-
-<!-- ===== RISK MODAL ===== -->
-<div id="risk-modal" class="fixed inset-0 z-50 hidden bg-black/50 flex items-center justify-center p-4">
-  <div class="bg-white rounded-xl w-full max-w-md p-6 space-y-4">
-    <h2 class="text-lg font-bold">Оценка риска</h2>
-
-    <input type="number" id="modal-age" placeholder="Возраст" class="w-full border p-2 rounded">
-
-    <select id="modal-family" class="w-full border p-2 rounded">
-      <option value="0">Нет случаев рака в семье</option>
-      <option value="2">Есть случаи рака в семье</option>
-    </select>
-
-    <select id="modal-smoke" class="w-full border p-2 rounded">
-      <option value="0">Не курю</option>
-      <option value="1">Курю</option>
-    </select>
-
-    <select id="modal-symptoms" class="w-full border p-2 rounded">
-      <option value="0">Нет симптомов</option>
-      <option value="2">Есть симптомы</option>
-    </select>
-
-    <button onclick="calculateRisk()" class="w-full bg-primary text-white py-2 rounded">
-      Рассчитать
-    </button>
-
-    <p id="modal-riskResult" class="text-center font-medium"></p>
-  </div>
-</div>
-
-<!-- ===== CYCLE MODAL ===== -->
-<div id="cycle-modal" class="fixed inset-0 z-50 hidden bg-black/50 flex items-center justify-center p-4">
-  <div class="bg-white rounded-xl w-full max-w-md p-6 space-y-4">
-
-    <div class="flex justify-between">
-      <h2 class="font-bold">Трекер цикла</h2>
-      <button onclick="closeCycle()">✕</button>
-    </div>
-
-    <label class="block text-sm text-gray-600">Дата последних месячных:</label>
-    <input type="date" id="modal-lastPeriod" class="w-full border p-2 rounded">
-
-    <label class="block text-sm text-gray-600">Длина цикла (дни):</label>
-    <input type="number" id="modal-cycleLength" value="28" class="w-full border p-2 rounded">
-
-    <button onclick="calculateCycle()" class="w-full bg-primary text-white py-2 rounded">
-      Рассчитать
-    </button>
-
-    <p id="modal-cycleResult" class="text-center"></p>
-  </div>
-</div>
-
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-
-  // Показ сохраненных данных
-  let risk = localStorage.getItem("riskResult");
-  if (risk) {
-    document.getElementById("savedRisk").innerText = "Ваш риск: " + risk;
-  }
-
-  let cycle = localStorage.getItem("cycleResult");
-  if (cycle) {
-    document.getElementById("savedCycle").innerText = cycle;
-  }
-
-  // риск при первом входе
-  if (!localStorage.getItem("riskDone")) {
-    document.getElementById("risk-modal").classList.remove("hidden");
-  }
-
-  // открыть цикл
-  document.getElementById("open-cycle")?.addEventListener("click", (e) => {
-    e.preventDefault();
-    document.getElementById("cycle-modal").classList.remove("hidden");
   });
 
+  if (filtered.length > 0) {
+    const bounds = L.latLngBounds(filtered.map(c => [c.lat, c.lng]));
+    map.fitBounds(bounds, { padding: [30, 30] });
+  }
+}
+
+function renderArticles() {
+  const container = document.getElementById('articles-list');
+  container.innerHTML = articles.map(a => `
+    <a href="${a.url}" target="_blank" class="block p-4 border border-gray-200 rounded-lg hover:border-primary transition">
+      <p class="font-medium text-gray-800">${a.title}</p>
+      <p class="text-sm text-gray-500">${a.source}</p>
+    </a>
+  `).join('');
+}
+
+// ========== НАВИГАЦИЯ ==========
+function switchView(viewName) {
+  document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
+  document.getElementById('view-' + viewName)?.classList.add('active');
+
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.querySelectorAll(`[data-view="${viewName}"]`).forEach(n => n.classList.add('active'));
+
+  document.getElementById('mobile-menu').classList.add('hidden');
+
+  if (viewName === 'clinics') setTimeout(initMap, 100);
+  if (viewName === 'cycle') updateCycleUI();
+}
+
+// ========== ИНИЦИАЛИЗАЦИЯ ==========
+document.addEventListener('DOMContentLoaded', () => {
+  if (window.feather) feather.replace();
+
+  loadCycleData();
+  updateHomeStatus();
+  showNotifications();
+  renderArticles();
+
+  // Навигация
+  document.querySelectorAll('[data-view]').forEach(el => {
+    el.addEventListener('click', e => {
+      e.preventDefault();
+      switchView(el.dataset.view);
+    });
+  });
+
+  // Мобильное меню
+  document.getElementById('mobile-menu-btn')?.addEventListener('click', () => {
+    document.getElementById('mobile-menu').classList.remove('hidden');
+  });
+  document.getElementById('close-mobile-menu')?.addEventListener('click', () => {
+    document.getElementById('mobile-menu').classList.add('hidden');
+  });
+
+  // Сохранение настроек цикла
+  document.getElementById('save-cycle-settings')?.addEventListener('click', () => {
+    const lastPeriod = document.getElementById('setup-last-period').value;
+    const cycleLength = parseInt(document.getElementById('setup-cycle-length').value);
+    const periodLength = parseInt(document.getElementById('setup-period-length').value);
+
+    if (!lastPeriod) {
+      alert('Введите дату последних месячных');
+      return;
+    }
+
+    saveCycleData({
+      lastPeriod: new Date(lastPeriod),
+      cycleLength: cycleLength || 28,
+      periodLength: periodLength || 5
+    });
+
+    updateCycleUI();
+  });
+
+  // Редактирование настроек
+  document.getElementById('edit-cycle-settings')?.addEventListener('click', () => {
+    if (cycleData) {
+      document.getElementById('setup-last-period').value = cycleData.lastPeriod.toISOString().split('T')[0];
+      document.getElementById('setup-cycle-length').value = cycleData.cycleLength;
+      document.getElementById('setup-period-length').value = cycleData.periodLength;
+    }
+    document.getElementById('cycle-setup').classList.remove('hidden');
+    document.getElementById('cycle-calendar-container').classList.add('hidden');
+  });
+
+  // Навигация по календарю
+  document.getElementById('prev-month')?.addEventListener('click', () => {
+    currentCalendarDate.setMonth(currentCalendarDate.getMonth() - 1);
+    renderCalendar();
+    if (window.feather) feather.replace();
+  });
+
+  document.getElementById('next-month')?.addEventListener('click', () => {
+    currentCalendarDate.setMonth(currentCalendarDate.getMonth() + 1);
+    renderCalendar();
+    if (window.feather) feather.replace();
+  });
+
+  // Самообследование выполнено
+  document.getElementById('exam-done-btn')?.addEventListener('click', () => {
+    localStorage.setItem('lastExamDate', new Date().toISOString());
+    document.getElementById('exam-reminder').classList.add('hidden');
+    alert('Отлично! Данные сохранены. Следующее напоминание будет в следующем цикле.');
+  });
+
+  // Фильтры клиник
+  document.getElementById('search-clinics')?.addEventListener('input', e => {
+    renderClinics(e.target.value, document.getElementById('filter-type').value);
+  });
+  document.getElementById('filter-type')?.addEventListener('change', e => {
+    renderClinics(document.getElementById('search-clinics').value, e.target.value);
+  });
+
+  setTimeout(() => { if (window.feather) feather.replace(); }, 100);
 });
-
-// ===== РИСК =====
-function calculateRisk() {
-  let age = +document.getElementById("modal-age").value || 0;
-  let family = +document.getElementById("modal-family").value;
-  let smoke = +document.getElementById("modal-smoke").value;
-  let symptoms = +document.getElementById("modal-symptoms").value;
-
-  let score = family + smoke + symptoms;
-
-  if (age >= 30 && age < 45) score += 1;
-  if (age >= 45) score += 2;
-
-  let result =
-    score <= 2 ? "Низкий риск" :
-    score <= 5 ? "Средний риск" :
-    "Высокий риск";
-
-  document.getElementById("modal-riskResult").innerText = result;
-  document.getElementById("savedRisk").innerText = "Ваш риск: " + result;
-
-  localStorage.setItem("riskDone", "true");
-  localStorage.setItem("riskResult", result);
-
-  setTimeout(() => {
-    document.getElementById("risk-modal").classList.add("hidden");
-  }, 1200);
-}
-
-// ===== ЦИКЛ =====
-function calculateCycle() {
-  let lastValue = document.getElementById("modal-lastPeriod").value;
-  if (!lastValue) return alert("Введите дату");
-
-  let last = new Date(lastValue);
-  let cycle = +document.getElementById("modal-cycleLength").value || 28;
-
-  let next = new Date(last);
-  next.setDate(next.getDate() + cycle);
-
-  let ovulation = new Date(next);
-  ovulation.setDate(ovulation.getDate() - 14);
-
-  let result =
-    "Следующие: " + next.toLocaleDateString() +
-    " | Овуляция: " + ovulation.toLocaleDateString();
-
-  document.getElementById("modal-cycleResult").innerText = result;
-  document.getElementById("savedCycle").innerText = result;
-
-  localStorage.setItem("cycleResult", result);
-}
-
-function closeCycle() {
-  document.getElementById("cycle-modal").classList.add("hidden");
-}
 </script>
+
 </body>
 </html>
