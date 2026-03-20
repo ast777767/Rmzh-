@@ -342,7 +342,33 @@
       </div>
     </div>
   </section>
+<section id="view-learn" class="view-section space-y-6">
+  <div class="card p-6">
+    <h2 class="text-2xl font-bold mb-4">30-дневная программа</h2>
+    <div id="learning-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+  </div>
+</section>
+  <section id="view-account" class="view-section space-y-6">
+  <div class="card p-6">
+    <h2 class="text-xl font-bold mb-4">Личный кабинет</h2>
+    <p id="user-name">Вы не авторизованы</p>
 
+    <button id="login-btn" class="mt-4 px-4 py-2 bg-primary text-white rounded-lg">
+      Войти (demo)
+    </button>
+  </div>
+</section>
+  <section id="view-about" class="view-section space-y-6">
+  <div class="card p-6">
+    <h2 class="text-2xl font-bold mb-4">О проекте</h2>
+    <p>MammoCare — приложение для профилактики рака груди.</p>
+
+    <div class="mt-4">
+      <p>Instagram: @qyzqylttaspa</p>
+      <p>Email: teammammocare@outlook.com</p>
+    </div>
+  </div>
+</section>
   <!-- ===== КЛИНИКИ ===== -->
   <section id="view-clinics" class="view-section space-y-6">
     <div class="card p-6">
@@ -1187,6 +1213,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     updateCycleUI();
   });
+  handleRoute();
+renderLearning();
 
   document.getElementById('edit-cycle-settings')?.addEventListener('click', () => {
     if (cycleData) {
@@ -1197,7 +1225,10 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('cycle-setup').classList.remove('hidden');
     document.getElementById('cycle-calendar-container').classList.add('hidden');
   });
-
+document.getElementById('login-btn')?.addEventListener('click', () => {
+  localStorage.setItem('user', JSON.stringify({ name: 'User' }));
+  document.getElementById('user-name').textContent = 'User';
+});
   document.getElementById('prev-month')?.addEventListener('click', () => { currentCalendarDate.setMonth(currentCalendarDate.getMonth() - 1); renderCalendar(); feather.replace(); });
   document.getElementById('next-month')?.addEventListener('click', () => { currentCalendarDate.setMonth(currentCalendarDate.getMonth() + 1); renderCalendar(); feather.replace(); });
 
@@ -1205,7 +1236,10 @@ document.addEventListener('DOMContentLoaded', () => {
     localStorage.setItem('lastExamDate', new Date().toISOString());
     document.getElementById('exam-reminder').classList.add('hidden');
   });
-
+document.getElementById('login-btn')?.addEventListener('click', () => {
+  localStorage.setItem('user', JSON.stringify({ name: 'User' }));
+  document.getElementById('user-name').textContent = 'User';
+});
   // Клиники
   document.getElementById('search-clinics')?.addEventListener('input', e => renderClinics(e.target.value, document.getElementById('filter-type').value));
   document.getElementById('filter-type')?.addEventListener('change', e => renderClinics(document.getElementById('search-clinics').value, e.target.value));
@@ -1226,6 +1260,75 @@ document.addEventListener('DOMContentLoaded', () => {
 
   setTimeout(() => { if (window.feather) feather.replace(); }, 100);
 });
+  // ===== ОБУЧЕНИЕ =====
+
+const lessonContent = {
+  1: { title: "Добро пожаловать", points: 100 },
+  2: { title: "Самообследование груди", points: 150 },
+  3: { title: "Факторы риска", points: 150 },
+  4: { title: "Маммография", points: 150 },
+  5: { title: "Профилактика", points: 150 }
+};
+
+function getLearningProgress() {
+  return JSON.parse(localStorage.getItem('learningProgress') || '{"currentDay":1,"completed":[]}');
+}
+
+function saveLearningProgress(p) {
+  localStorage.setItem('learningProgress', JSON.stringify(p));
+}
+
+function renderLearning() {
+  const container = document.getElementById('learning-grid');
+  if (!container) return;
+
+  const progress = getLearningProgress();
+
+  container.innerHTML = Object.keys(lessonContent).map(day => {
+    const d = parseInt(day);
+
+    let status = 'locked';
+    if (progress.completed.includes(d)) status = 'completed';
+    else if (d <= progress.currentDay) status = 'available';
+
+    return `
+      <div class="card p-4 cursor-pointer"
+           onclick="openLesson(${d})">
+        <div class="flex justify-between">
+          <span>День ${d}</span>
+          <span>${status === 'completed' ? '✅' : status === 'locked' ? '🔒' : '▶️'}</span>
+        </div>
+        <h3 class="font-semibold mt-2">${lessonContent[d].title}</h3>
+        <p class="text-sm text-gray-500">+${lessonContent[d].points} XP</p>
+      </div>
+    `;
+  }).join('');
+}
+
+function openLesson(day) {
+  const progress = getLearningProgress();
+
+  if (day > progress.currentDay) {
+    alert('Урок заблокирован');
+    return;
+  }
+
+  alert(`Урок ${day} завершен`);
+
+  if (!progress.completed.includes(day)) {
+    progress.completed.push(day);
+    progress.currentDay = Math.max(progress.currentDay, day + 1);
+    saveLearningProgress(progress);
+  }
+
+  renderLearning();
+}
+  function handleRoute() {
+  const hash = window.location.hash.replace('#', '') || 'home';
+  switchView(hash);
+}
+
+window.addEventListener('hashchange', handleRoute);
 </script>
 
 </body>
