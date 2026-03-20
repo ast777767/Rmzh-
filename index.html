@@ -87,7 +87,7 @@
   </div>
 </div>
 
-<!-- ===== МОДАЛЬНОЕ ОКНО ОЦЕНКИ РИСКА ===== -->
+<!-- ===== МОДАЛЬНОЕ ОКНО ОЦЕНКИ РИСКА (РАСШИРЕННОЕ) ===== -->
 <div id="risk-modal" class="modal-overlay hidden">
   <div class="bg-white rounded-2xl w-full max-w-md p-6 max-h-[90vh] overflow-y-auto">
     <div class="text-center mb-6">
@@ -97,14 +97,29 @@
         </svg>
       </div>
       <h2 class="text-xl font-bold text-gray-800" data-i18n="risk_welcome">Добро пожаловать в MammoCare!</h2>
-      <p class="text-gray-600 mt-2" data-i18n="risk_subtitle">Ответьте на несколько вопросов для персонализации</p>
+      <p class="text-gray-600 mt-2" data-i18n="risk_subtitle">Ответьте на вопросы для точного расчета риска</p>
     </div>
 
     <div class="space-y-4">
+      <!-- Возраст -->
       <div>
         <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="risk_age">Ваш возраст</label>
         <input type="number" id="risk-age" placeholder="35" min="18" max="100" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary">
       </div>
+
+      <!-- Вес и Рост -->
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="risk_weight">Вес (кг)</label>
+          <input type="number" id="risk-weight" placeholder="65" min="30" max="200" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="risk_height">Рост (см)</label>
+          <input type="number" id="risk-height" placeholder="165" min="100" max="250" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary">
+        </div>
+      </div>
+
+      <!-- Наследственность -->
       <div>
         <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="risk_family">Случаи рака груди в семье</label>
         <select id="risk-family" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
@@ -114,6 +129,8 @@
           <option value="3" data-i18n="risk_opt_many">Несколько случаев</option>
         </select>
       </div>
+
+      <!-- Курение -->
       <div>
         <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="risk_smoke">Курение</label>
         <select id="risk-smoke" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
@@ -122,6 +139,18 @@
           <option value="2" data-i18n="risk_opt_smoke">Курю сейчас</option>
         </select>
       </div>
+
+      <!-- Гормоны (Новое) -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="risk_hormones">Прием гормональных препаратов</label>
+        <select id="risk-hormones" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+          <option value="0" data-i18n="risk_opt_no_hormones">Нет / Не принимаю</option>
+          <option value="1" data-i18n="risk_opt_contraceptives">Контрацептивы</option>
+          <option value="2" data-i18n="risk_opt_hrt">Гормонозаместительная терапия</option>
+        </select>
+      </div>
+
+      <!-- Жалобы -->
       <div>
         <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="risk_symptoms">Есть ли жалобы?</label>
         <select id="risk-symptoms" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
@@ -132,7 +161,7 @@
       </div>
 
       <button id="calculate-risk-btn" class="w-full py-3 bg-primary text-white rounded-lg hover:bg-pink-600 transition font-medium" data-i18n="btn_calc">
-        Рассчитать и продолжить
+        Рассчитать риск
       </button>
       <button id="skip-risk-btn" class="w-full py-2 text-gray-500 hover:text-gray-700 text-sm" data-i18n="btn_skip">
         Пропустить
@@ -500,6 +529,10 @@
             <span class="font-bold" id="account-risk-level">—</span>
           </div>
           <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+            <span class="text-gray-600" data-i18n="acc_bmi">ИМТ (Индекс массы тела)</span>
+            <span class="font-bold" id="account-bmi">—</span>
+          </div>
+          <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
             <span class="text-gray-600" data-i18n="acc_last_exam">Последнее обследование</span>
             <span class="font-bold" id="account-last-exam">—</span>
           </div>
@@ -548,7 +581,7 @@
 
 <!-- ===== СКРИПТЫ ===== -->
 <script>
-// ========== СЛОВАРЬ ПЕРЕВОДОВ ==========
+// ========== СЛОВАРЬ ПЕРЕВОДОВ (РАСШИРЕННЫЙ) ==========
 const translations = {
   ru: {
     title: "MammoCare — Маммография и здоровье груди",
@@ -560,14 +593,19 @@ const translations = {
     home_risk_label: "Ваш уровень риска", home_risk_recalc: "Пересчитать",
     card_cycle_day: "День цикла", card_cycle_config: "Настройте трекер",
     card_next_period: "Следующие месячные", card_progress: "Прогресс обучения", card_progress_status: "Начните 30-дневный курс",
-    risk_welcome: "Добро пожаловать в MammoCare!", risk_subtitle: "Ответьте на несколько вопросов для персонализации",
-    risk_age: "Ваш возраст", risk_family: "Случаи рака груди в семье", risk_smoke: "Курение", risk_symptoms: "Есть ли жалобы?",
+    risk_welcome: "Добро пожаловать в MammoCare!", risk_subtitle: "Ответьте на вопросы для точного расчета риска",
+    risk_age: "Ваш возраст", 
+    risk_weight: "Вес (кг)", risk_height: "Рост (см)",
+    risk_family: "Случаи рака груди в семье", risk_smoke: "Курение", 
+    risk_hormones: "Прием гормональных препаратов",
+    risk_symptoms: "Есть ли жалобы?",
     risk_opt_no: "Нет", risk_opt_distant: "У дальних родственников", risk_opt_close: "У мамы/сестры", risk_opt_many: "Несколько случаев",
     risk_opt_no_smoke: "Не курю", risk_opt_ex_smoke: "Курила раньше", risk_opt_smoke: "Курю сейчас",
+    risk_opt_no_hormones: "Нет / Не принимаю", risk_opt_contraceptives: "Контрацептивы", risk_opt_hrt: "Гормонозаместительная терапия",
     risk_opt_no_symptoms: "Нет жалоб", risk_opt_discomfort: "Иногда дискомфорт", risk_opt_pain: "Есть уплотнения/боль",
-    btn_calc: "Рассчитать и продолжить", btn_skip: "Пропустить", btn_continue: "Продолжить", btn_save_start: "Сохранить и начать", btn_done: "Выполнено",
+    btn_calc: "Рассчитать риск", btn_skip: "Пропустить", btn_continue: "Продолжить", btn_save_start: "Сохранить и начать", btn_done: "Выполнено",
     risk_low: "Низкий риск", risk_moderate: "Умеренный риск", risk_high: "Повышенный риск",
-    risk_adv_low: "Продолжайте наблюдение.", risk_adv_mod: "Рекомендована консультация врача.", risk_adv_high: "Срочно обратитесь к специалисту.",
+    risk_adv_low: "Продолжайте наблюдение и здоровый образ жизни.", risk_adv_mod: "Рекомендована консультация врача и обследование.", risk_adv_high: "Срочно обратитесь к специалисту (маммологу/онкологу).",
     learn_title: "30-дневная программа", learn_subtitle: "Укрепите здоровье груди шаг за шагом", learn_xp: "баллов (XP)",
     learn_info: "Накапливайте баллы! В будущем они дадут скидку на премиум-аккаунт. Один урок открывается раз в 24 часа.",
     lesson_open: "Доступно сейчас", lesson_waiting: "Откроется через", lesson_locked: "Доступно позже", lesson_completed: "Завершено",
@@ -589,7 +627,7 @@ const translations = {
     acc_welcome: "Добро пожаловать,", acc_user: "Пользователь", acc_level: "Уровень:", acc_xp: "Опыт (XP)",
     lvl_newbie: "Новичок", lvl_student: "Ученик", lvl_expert: "Знаток", lvl_master: "Эксперт",
     acc_achieve: "Достижения", acc_health: "Здоровье",
-    acc_risk_level: "Уровень риска", acc_last_exam: "Последнее обследование",
+    acc_risk_level: "Уровень риска", acc_bmi: "ИМТ (Индекс массы тела)", acc_last_exam: "Последнее обследование",
     acc_data_local: "Данные сохраняются локально на вашем устройстве.", acc_reset: "Сбросить все данные",
     acc_no_achieve: "Пока нет достижений",
     ach_risk: "Первый расчет риска", ach_cycle: "Настройка цикла",
@@ -597,8 +635,9 @@ const translations = {
     ai_response: "Спасибо за вопрос! В демо-режиме я могу ответить на вопросы о здоровье груди. Для полного функционала подключите AI API.",
     alert_setup: "Сначала выполните задачи:",
     alert_exam: "Отлично! Запись добавлена.", alert_next_lesson: "Урок пройден! Следующий откроется через 24 часа.",
-    alert_time_left: "Следующий урок будет доступен через 24 часа после прохождения предыдущего!",
-    h: "ч", m: "м"
+    alert_time_left: "Следующий урок будет доступен через 24 часа!",
+    h: "ч", m: "м",
+    bmi_normal: "Норма", bmi_high: "Избыточный вес", bmi_obese: "Ожирение"
   },
   kz: {
     title: "MammoCare — Маммография және сүт безінің денсаулығы",
@@ -610,14 +649,19 @@ const translations = {
     home_risk_label: "Сіздің тәуекел деңгейіңіз", home_risk_recalc: "Қайта есептеу",
     card_cycle_day: "Цикл күні", card_cycle_config: "Трекерді баптаңыз",
     card_next_period: "Келесі етеккір", card_progress: "Оқу барысы", card_progress_status: "30 күндік курсты бастаңыз",
-    risk_welcome: "MammoCare қош келдіңіз!", risk_subtitle: "Жеке баптау үшін бірнеше сұрақтарға жауап беріңіз",
-    risk_age: "Сіздің жасыңыз", risk_family: "Отбасында сүт безі рагы", risk_smoke: "Темекі тарту", risk_symptoms: "Шағымдар бар ма?",
+    risk_welcome: "MammoCare қош келдіңіз!", risk_subtitle: "Тәуекелді дәл есептеу үшін сұрақтарға жауап беріңіз",
+    risk_age: "Сіздің жасыңыз", 
+    risk_weight: "Салмақ (кг)", risk_height: "Бой (см)",
+    risk_family: "Отбасында сүт безі рагы", risk_smoke: "Темекі тарту", 
+    risk_hormones: "Гормоналды препараттарды қабылдау",
+    risk_symptoms: "Шағымдар бар ма?",
     risk_opt_no: "Жоқ", risk_opt_distant: "Алыс туыстарда", risk_opt_close: "Анасы/әпкесінде", risk_opt_many: "Бірнеше жағдай",
     risk_opt_no_smoke: "Тартпаймын", risk_opt_ex_smoke: "Бұрын тартқан", risk_opt_smoke: "Қазір тартамын",
+    risk_opt_no_hormones: "Жоқ / Қабылдамаймын", risk_opt_contraceptives: "Контрацептивтер", risk_opt_hrt: "Гормон алмастыру терапиясы",
     risk_opt_no_symptoms: "Шағым жоқ", risk_opt_discomfort: "Кейде жайсыздық", risk_opt_pain: "Түйіндер/ауырсыну бар",
-    btn_calc: "Есептеу және жалғастыру", btn_skip: "Өткізіп жіберу", btn_continue: "Жалғастыру", btn_save_start: "Сақтау және бастау", btn_done: "Орындалды",
+    btn_calc: "Тәуекелді есептеу", btn_skip: "Өткізіп жіберу", btn_continue: "Жалғастыру", btn_save_start: "Сақтау және бастау", btn_done: "Орындалды",
     risk_low: "Төмен тәуекел", risk_moderate: "Орташа тәуекел", risk_high: "Жоғары тәуекел",
-    risk_adv_low: "Бақылауды жалғастырыңыз.", risk_adv_mod: "Дәрігермен кеңесу ұсынылады.", risk_adv_high: "Дәрігерге жедел барыңыз.",
+    risk_adv_low: "Бақылауды және сау өмір салтын жалғастырыңыз.", risk_adv_mod: "Дәрігермен кеңесу және тексеру ұсынылады.", risk_adv_high: "Дәрігерге (маммолог/онколог) жедел барыңыз.",
     learn_title: "30 күндік бағдарлама", learn_subtitle: "Сүт безінің денсаулығын кезең-кезеңімен нығайтыңыз", learn_xp: "ұпай (XP)",
     learn_info: "Ұпай жинаңыз! Болашақта олар премиум-аккаунтқа жеңілдік береді. Бір сабақ 24 сағат сайын ашылады.",
     lesson_open: "Қазір қолжетімді", lesson_waiting: "Кейінірек ашылады", lesson_locked: "Кейінірек қолжетімді", lesson_completed: "Аяқталды",
@@ -639,7 +683,7 @@ const translations = {
     acc_welcome: "Қош келдіңіз,", acc_user: "Пайдаланушы", acc_level: "Деңгей:", acc_xp: "Тәжірибе (XP)",
     lvl_newbie: "Жаңа бастаушы", lvl_student: "Шәкірт", lvl_expert: "Білгір", lvl_master: "Сарапшы",
     acc_achieve: "Жетістіктер", acc_health: "Денсаулық",
-    acc_risk_level: "Тәуекел деңгейі", acc_last_exam: "Соңғы тексеру",
+    acc_risk_level: "Тәуекел деңгейі", acc_bmi: "ДМІ (Дене масса индексі)", acc_last_exam: "Соңғы тексеру",
     acc_data_local: "Деректер құрылғыңызда жергілікті сақталады.", acc_reset: "Барлық деректерді өшіру",
     acc_no_achieve: "Әлі жетістіктер жоқ",
     ach_risk: "Алғашқы тәуекел есебі", ach_cycle: "Цикл баптауы",
@@ -647,8 +691,9 @@ const translations = {
     ai_response: "Сұрағыңыз үшін рахмет! Демо режимінде мен сүт безі денсаулығы туралы сұрақтарға жауап бере аламын.",
     alert_setup: "Алдымен тапсырмаларды орындаңыз:",
     alert_exam: "Керемет! Жазба қосылды.", alert_next_lesson: "Сабақ аяқталды! Келесісі 24 сағаттан кейін ашылады.",
-    alert_time_left: "Келесі сабақ алдыңғысы аяқталғаннан кейін 24 сағаттан кейін қолжетімді болады!",
-    h: "с", m: "м"
+    alert_time_left: "Келесі сабақ 24 сағаттан кейін қолжетімді болады!",
+    h: "с", m: "м",
+    bmi_normal: "Қалыпты", bmi_high: "Артық салмақ", bmi_obese: "Семіздік"
   },
   en: {
     title: "MammoCare — Mammography & Breast Health",
@@ -660,23 +705,28 @@ const translations = {
     home_risk_label: "Your Risk Level", home_risk_recalc: "Recalculate",
     card_cycle_day: "Cycle Day", card_cycle_config: "Configure tracker",
     card_next_period: "Next Period", card_progress: "Learning Progress", card_progress_status: "Start 30-day course",
-    risk_welcome: "Welcome to MammoCare!", risk_subtitle: "Answer a few questions for personalization",
-    risk_age: "Your Age", risk_family: "Family history of breast cancer", risk_smoke: "Smoking", risk_symptoms: "Any complaints?",
+    risk_welcome: "Welcome to MammoCare!", risk_subtitle: "Answer questions for accurate risk calculation",
+    risk_age: "Your Age", 
+    risk_weight: "Weight (kg)", risk_height: "Height (cm)",
+    risk_family: "Family history of breast cancer", risk_smoke: "Smoking", 
+    risk_hormones: "Hormonal medication intake",
+    risk_symptoms: "Any complaints?",
     risk_opt_no: "No", risk_opt_distant: "Distant relatives", risk_opt_close: "Mother/Sister", risk_opt_many: "Multiple cases",
     risk_opt_no_smoke: "Non-smoker", risk_opt_ex_smoke: "Ex-smoker", risk_opt_smoke: "Current smoker",
+    risk_opt_no_hormones: "No / Not taking", risk_opt_contraceptives: "Contraceptives", risk_opt_hrt: "Hormone Replacement Therapy",
     risk_opt_no_symptoms: "No complaints", risk_opt_discomfort: "Occasional discomfort", risk_opt_pain: "Lumps/Pain present",
-    btn_calc: "Calculate & Continue", btn_skip: "Skip", btn_continue: "Continue", btn_save_start: "Save & Start", btn_done: "Done",
+    btn_calc: "Calculate Risk", btn_skip: "Skip", btn_continue: "Continue", btn_save_start: "Save & Start", btn_done: "Done",
     risk_low: "Low Risk", risk_moderate: "Moderate Risk", risk_high: "High Risk",
-    risk_adv_low: "Continue monitoring.", risk_adv_mod: "Doctor consultation recommended.", risk_adv_high: "Please see a specialist urgently.",
+    risk_adv_low: "Continue monitoring and maintaining a healthy lifestyle.", risk_adv_mod: "Doctor consultation and check-up recommended.", risk_adv_high: "Please see a specialist (mammologist/oncologist) urgently.",
     learn_title: "30-Day Program", learn_subtitle: "Strengthen breast health step by step", learn_xp: "points (XP)",
-    learn_info: "Earn points! In the future, they will provide a discount on the premium account. One lesson opens every 24 hours.",
+    learn_info: "Earn points! They will provide a discount on the premium account. One lesson opens every 24 hours.",
     lesson_open: "Available now", lesson_waiting: "Opens in", lesson_locked: "Available later", lesson_completed: "Completed",
     cycle_setup_title: "Cycle Tracker Setup", cycle_setup_desc: "Enter data for accurate phase calculation.",
     cycle_date: "Last Period Date", cycle_length: "Cycle Length (days)", period_length: "Period Length (days)",
     today: "Today", day: "Day",
     phase_menstruation: "Menstruation", phase_follicular: "Follicular Phase", phase_ovulation: "Ovulation", phase_luteal: "Luteal Phase",
     till_period: "until period", till_ovulation: "until ovulation",
-    exam_title: "Time for Breast Self-Exam!", exam_desc: "Now is the optimal period (day 5-7).",
+    exam_title: "Time for Breast Self-Exam!", exam_desc: "Optimal period (day 5-7).",
     mon: "Mon", tue: "Tue", wed: "Wed", thu: "Thu", fri: "Fri", sat: "Sat", sun: "Sun",
     legend_period: "Period", legend_ovulation: "Ovulation", legend_exam: "Self-exam",
     forecast: "3-Month Forecast", edit_settings: "Edit Settings",
@@ -689,7 +739,7 @@ const translations = {
     acc_welcome: "Welcome,", acc_user: "User", acc_level: "Level:", acc_xp: "Experience (XP)",
     lvl_newbie: "Newbie", lvl_student: "Student", lvl_expert: "Expert", lvl_master: "Master",
     acc_achieve: "Achievements", acc_health: "Health",
-    acc_risk_level: "Risk Level", acc_last_exam: "Last Exam",
+    acc_risk_level: "Risk Level", acc_bmi: "BMI (Body Mass Index)", acc_last_exam: "Last Exam",
     acc_data_local: "Data is saved locally on your device.", acc_reset: "Reset all data",
     acc_no_achieve: "No achievements yet",
     ach_risk: "First risk calculation", ach_cycle: "Cycle setup",
@@ -697,8 +747,9 @@ const translations = {
     ai_response: "Thanks for the question! In demo mode, I can answer questions about breast health.",
     alert_setup: "Complete the tasks first:",
     alert_exam: "Great! Record added.", alert_next_lesson: "Lesson passed! Next one opens in 24 hours.",
-    alert_time_left: "The next lesson will be available 24 hours after completing the previous one!",
-    h: "h", m: "m"
+    alert_time_left: "The next lesson will be available in 24 hours!",
+    h: "h", m: "m",
+    bmi_normal: "Normal", bmi_high: "Overweight", bmi_obese: "Obesity"
   }
 };
 
@@ -712,7 +763,7 @@ function applyTranslations() {
   document.querySelectorAll('[data-i18n]').forEach(el => {
     const key = el.getAttribute('data-i18n');
     if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
-      // handled by placeholder logic
+      // handled by placeholder
     } else {
       el.textContent = t(key);
     }
@@ -721,8 +772,6 @@ function applyTranslations() {
     const key = el.getAttribute('data-i18n-placeholder');
     el.placeholder = t(key);
   });
-  
-  // Update dynamic texts
   updateHomeStatus();
   updateAccountUI();
   renderLearningGrid();
@@ -732,11 +781,9 @@ function applyTranslations() {
 function setLanguage(lang) {
   currentLang = lang;
   saveLocal('appLang', lang);
-  
   const flags = { ru: '🇷🇺', kz: '🇰🇿', en: '🇬🇧' };
   $('current-lang-flag').textContent = flags[lang];
   $('current-lang-code').textContent = lang.toUpperCase();
-  
   applyTranslations();
   hide($('lang-dropdown'));
 }
@@ -749,7 +796,7 @@ const LESSIONS_CONFIG = [
   { id: 4, title_key: "l4_title", desc_key: "l4_desc", xp: 100, type: "read_quiz", content: { text_key: "l4_text", question_key: "l4_q", options_keys: ["l4_o1", "l4_o2", "l4_o3"], answer: 1 } },
 ];
 
-// Добавляем переводы для уроков в словарь (для краткости тут, обычно это в основном объекте)
+// Translations for lessons
 translations.ru.l1_title = "Начало пути"; translations.ru.l1_desc = "Рассчитайте риск и настройте цикл";
 translations.kz.l1_title = "Бастау"; translations.kz.l1_desc = "Тәуекелді есептеңіз және циклді баптаңыз";
 translations.en.l1_title = "Start"; translations.en.l1_desc = "Calculate risk and setup cycle";
@@ -759,19 +806,14 @@ translations.kz.l2_title = "Өзіндік тексеру"; translations.kz.l2_d
 translations.en.l2_title = "Self-exam"; translations.en.l2_desc = "Learn breast check technique";
 
 translations.ru.l3_title = "Месячные и здоровье"; translations.ru.l3_desc = "Как цикл влияет на риск?";
-translations.kz.l3_title = "Етеккір және денсаулық"; translations.kz.l3_desc = "Цикл тәуекелге қалай әсер етеді?";
-translations.en.l3_title = "Cycle & Health"; translations.en.l3_desc = "How does cycle affect risk?";
 translations.ru.l3_text = "Менструальный цикл напрямую влияет на состояние груди. В первой фазе (фолликулярной) уровень эстрогена растет, что может вызывать набухание. Раннее начало менструации (до 12 лет) и поздняя менопауза (после 55) увеличивают риск развития РМЖ.";
 translations.ru.l3_q = "Что увеличивает риск РМЖ?"; 
 translations.ru.l3_o1 = "Поздняя менопауза"; translations.ru.l3_o2 = "Раннее начало месячных"; translations.ru.l3_o3 = "Оба варианта";
 
 translations.ru.l4_title = "Питание"; translations.ru.l4_desc = "Продукты для здоровья груди";
-translations.kz.l4_title = "Тамақтану"; translations.kz.l4_desc = "Сүт безі денсаулығы үшін өнімдер";
-translations.en.l4_title = "Nutrition"; translations.en.l4_desc = "Foods for breast health";
 translations.ru.l4_text = "Антиоксиданты защищают клетки. Включите в рацион брокколи, ягоды, орехи и жирную рыбу.";
 translations.ru.l4_q = "Какой продукт полезен?"; 
 translations.ru.l4_o1 = "Фастфуд"; translations.ru.l4_o2 = "Брокколи"; translations.ru.l4_o3 = "Сахар";
-
 
 for (let i = 5; i <= 30; i++) {
   translations.ru[`l${i}_title`] = `День ${i}: Практика`;
@@ -788,7 +830,7 @@ for (let i = 5; i <= 30; i++) {
     xp: 50,
     type: "read_quiz",
     content: {
-      text: `Важно регулярно посещать врача. Маммография рекомендована женщинам старше 40 лет раз в 1-2 года. Самообследование стоит проводить ежемесячно на 5-7 день цикла.`,
+      text: `Важно регулярно посещать врача. Маммография рекомендована женщинам старше 40 лет раз в 1-2 года.`,
       question: "Как часто делать маммографию после 40 лет?",
       options: ["Каждый год", "Раз в 5 лет", "Только при боли"],
       answer: 0
@@ -833,7 +875,7 @@ function handleRoute() {
   switchView(hash);
 }
 
-// ========== СИСТЕМА ОБУЧЕНИЯ (24 ЧАСА) ==========
+// ========== СИСТЕМА ОБУЧЕНИЯ ==========
 function initLearning() {
   const saved = loadLocal('learningProgress');
   if (saved) learningProgress = saved;
@@ -855,7 +897,6 @@ function renderLearningGrid() {
   const container = $('learning-grid');
   if (!container) return;
   updateHomeXP();
-
   const now = Date.now();
   
   container.innerHTML = LESSIONS_CONFIG.map(lesson => {
@@ -867,45 +908,25 @@ function renderLearningGrid() {
     let statusText = t('lesson_locked');
 
     if (isCompleted) {
-        statusIcon = '✅';
-        statusClass = 'completed';
-        statusText = t('lesson_completed');
+        statusIcon = '✅'; statusClass = 'completed'; statusText = t('lesson_completed');
     } else {
         if (lesson.id === learningProgress.currentDay) {
             if (learningProgress.lastCompletedTime) {
                 const timePassed = now - learningProgress.lastCompletedTime;
                 const twentyFourHours = 24 * 60 * 60 * 1000; 
                 const timeLeft = twentyFourHours - timePassed;
-
                 if (timeLeft > 0) {
-                    statusIcon = '⏳';
-                    statusClass = 'waiting';
+                    statusIcon = '⏳'; statusClass = 'waiting';
                     const hours = Math.floor(timeLeft / (1000 * 60 * 60));
                     const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
                     statusText = `${t('lesson_waiting')} ${hours}${t('h')} ${minutes}${t('m')}`;
                     isLocked = true; 
-                } else {
-                    statusIcon = '▶️';
-                    statusClass = 'available';
-                    statusText = t('lesson_open');
-                    isAvailable = true;
-                }
-            } else {
-                statusIcon = '▶️';
-                statusClass = 'available';
-                statusText = t('lesson_open');
-                isAvailable = true;
-            }
-        } else if (lesson.id < learningProgress.currentDay) {
-             statusIcon = '✅';
-             statusClass = 'completed';
-        } else {
-            isLocked = true;
-        }
+                } else { statusIcon = '▶️'; statusClass = 'available'; statusText = t('lesson_open'); isAvailable = true; }
+            } else { statusIcon = '▶️'; statusClass = 'available'; statusText = t('lesson_open'); isAvailable = true; }
+        } else if (lesson.id < learningProgress.currentDay) { statusIcon = '✅'; statusClass = 'completed'; }
+        else { isLocked = true; }
     }
-
     const clickHandler = (isAvailable && !isLocked) ? `openLesson(${lesson.id})` : '';
-
     return `
       <div class="lesson-card card p-5 ${statusClass}" onclick="${clickHandler}">
         <div class="flex justify-between items-start mb-3">
@@ -923,82 +944,30 @@ function renderLearningGrid() {
 function openLesson(id) {
   const lesson = LESSIONS_CONFIG.find(l => l.id === id);
   if (!lesson) return;
-  
   const now = Date.now();
   if (learningProgress.lastCompletedTime) {
       const timePassed = now - learningProgress.lastCompletedTime;
-      if (timePassed < 24 * 60 * 60 * 1000) {
-          alert(t('alert_time_left'));
-          return;
-      }
+      if (timePassed < 24 * 60 * 60 * 1000) { alert(t('alert_time_left')); return; }
   }
-
   const container = $('lesson-content');
   
   if (lesson.type === 'task_setup') {
-    container.innerHTML = `
-      <div class="text-center mb-6">
-        <div class="w-16 h-16 bg-pink-100 rounded-full flex items-center justify-center mx-auto mb-4">
-          <i data-feather="play-circle" class="w-8 h-8 text-primary"></i>
-        </div>
-        <h2 class="text-xl font-bold">${t(lesson.title_key)}</h2>
-        <p class="text-gray-600 mt-2">${t(lesson.desc_key)}</p>
-      </div>
-      <div class="space-y-3">
-        <p class="p-3 bg-gray-50 rounded-lg text-sm">1. ${t('risk_welcome')}</p>
-        <p class="p-3 bg-gray-50 rounded-lg text-sm">2. ${t('cycle_setup_title')}</p>
-      </div>
-      <button onclick="checkSetupTasks(${id}, ${lesson.xp})" class="w-full mt-6 py-3 bg-primary text-white rounded-lg font-medium">
-        ${t('btn_done')}
-      </button>
-    `;
-  } 
-  else if (lesson.type === 'task_exam') {
-    container.innerHTML = `
-      <div class="text-center mb-6">
-        <div class="w-16 h-16 bg-cyan-100 rounded-full flex items-center justify-center mx-auto mb-4">
-          <i data-feather="search" class="w-8 h-8 text-cyan-600"></i>
-        </div>
-        <h2 class="text-xl font-bold">${t(lesson.title_key)}</h2>
-        <p class="text-gray-600 mt-2">${t(lesson.desc_key)}</p>
-      </div>
-      <div class="space-y-4 text-sm text-gray-700">
-        <p><b>${t('day')} 1:</b> ...</p>
-      </div>
-      <button onclick="completeTask(${id}, ${lesson.xp})" class="w-full mt-6 py-3 bg-cyan-600 text-white rounded-lg font-medium">
-        ${t('btn_done')}
-      </button>
-    `;
-  }
-  else if (lesson.type === 'read_quiz') {
-    // Use translations if keys exist, else fallback to hardcoded content
+    container.innerHTML = `<div class="text-center mb-6"><h2 class="text-xl font-bold">${t(lesson.title_key)}</h2><p class="text-gray-600 mt-2">${t(lesson.desc_key)}</p></div>
+      <button onclick="checkSetupTasks(${id}, ${lesson.xp})" class="w-full mt-6 py-3 bg-primary text-white rounded-lg font-medium">${t('btn_done')}</button>`;
+  } else if (lesson.type === 'task_exam') {
+     container.innerHTML = `<div class="text-center mb-6"><h2 class="text-xl font-bold">${t(lesson.title_key)}</h2></div>
+      <button onclick="completeTask(${id}, ${lesson.xp})" class="w-full mt-6 py-3 bg-cyan-600 text-white rounded-lg font-medium">${t('btn_done')}</button>`;
+  } else if (lesson.type === 'read_quiz') {
     const text = lesson.content.text_key ? t(lesson.content.text_key) : lesson.content.text;
     const question = lesson.content.question_key ? t(lesson.content.question_key) : lesson.content.question;
     const options = lesson.content.options_keys ? lesson.content.options_keys.map(k => t(k)) : lesson.content.options;
-
-    container.innerHTML = `
-      <div class="mb-4">
-        <h2 class="text-xl font-bold">${t(lesson.title_key)}</h2>
-        <p class="text-gray-600 mt-1">${t(lesson.desc_key)}</p>
-      </div>
-      <div class="p-4 bg-purple-50 rounded-lg text-sm text-gray-700 mb-6">
-        ${text}
-      </div>
-      <div class="border-t pt-4">
-        <p class="font-medium mb-3">Тест:</p>
-        <p class="font-bold mb-3">${question}</p>
+    container.innerHTML = `<div class="mb-4"><h2 class="text-xl font-bold">${t(lesson.title_key)}</h2></div>
+      <div class="p-4 bg-purple-50 rounded-lg text-sm text-gray-700 mb-6">${text}</div>
+      <div class="border-t pt-4"><p class="font-bold mb-3">${question}</p>
         <div class="space-y-2" id="quiz-options">
-          ${options.map((opt, idx) => `
-            <button onclick="checkQuiz(${id}, ${lesson.xp}, ${idx}, ${lesson.content.answer})" 
-                    class="w-full text-left p-3 border rounded-lg hover:bg-gray-50 transition">
-              ${opt}
-            </button>
-          `).join('')}
-        </div>
-      </div>
-    `;
+          ${options.map((opt, idx) => `<button onclick="checkQuiz(${id}, ${lesson.xp}, ${idx}, ${lesson.content.answer})" class="w-full text-left p-3 border rounded-lg hover:bg-gray-50 transition">${opt}</button>`).join('')}
+        </div></div>`;
   }
-
   show($('lesson-modal'));
   if (window.feather) feather.replace();
 }
@@ -1013,18 +982,8 @@ function checkSetupTasks(id, xp) {
 }
 
 function checkQuiz(id, xp, selected, correct) {
-  if (selected === correct) {
-    completeTask(id, xp);
-  } else {
-    const options = $('quiz-options').children;
-    for (let i = 0; i < options.length; i++) {
-        options[i].disabled = true;
-        if (i === selected) options[i].classList.add('bg-red-100', 'border-red-500');
-    }
-    alert('Неверно. Попробуйте еще раз.'); // Simple alert for demo
-    closeLessonModal();
-    openLesson(id); 
-  }
+  if (selected === correct) completeTask(id, xp);
+  else { alert('Неверно.'); closeLessonModal(); openLesson(id); }
 }
 
 function completeTask(id, xp) {
@@ -1040,21 +999,57 @@ function completeTask(id, xp) {
   }
 }
 
-// ========== РИСК ==========
+// ========== РИСК (РАСШИРЕННЫЙ) ==========
 function calculateRisk() {
+  // Get values
   const age = parseInt($('risk-age').value) || 30;
+  const weight = parseFloat($('risk-weight').value) || 0;
+  const height = parseFloat($('risk-height').value) || 0;
   const family = parseInt($('risk-family').value) || 0;
   const smoke = parseInt($('risk-smoke').value) || 0;
+  const hormones = parseInt($('risk-hormones').value) || 0;
   const symptoms = parseInt($('risk-symptoms').value) || 0;
-  let score = (age >= 40 ? 2 : age >= 30 ? 1 : 0) + family + smoke + symptoms;
 
-  let resultKey = score <= 2 ? "risk_low" : score <= 5 ? "risk_moderate" : "risk_high";
-  let adviceKey = score <= 2 ? "risk_adv_low" : score <= 5 ? "risk_adv_mod" : "risk_adv_high";
-  
-  // Save data for account
-  saveLocal('riskData', { score: score, level: resultKey });
+  let score = 0;
+
+  // Age factor
+  if (age >= 60) score += 3;
+  else if (age >= 40) score += 2;
+  else if (age >= 30) score += 1;
+
+  // BMI factor (Body Mass Index)
+  let bmi = 0;
+  if (weight > 0 && height > 0) {
+    bmi = weight / Math.pow(height / 100, 2);
+    if (bmi >= 30) score += 2; // Obesity
+    else if (bmi >= 25) score += 1; // Overweight
+  }
+
+  // Heredity
+  score += family;
+
+  // Lifestyle
+  score += smoke;
+  score += hormones;
+
+  // Symptoms
+  score += symptoms;
+
+  // Determine Level
+  let resultKey = score <= 3 ? "risk_low" : score <= 7 ? "risk_moderate" : "risk_high";
+  let adviceKey = score <= 3 ? "risk_adv_low" : score <= 7 ? "risk_adv_mod" : "risk_adv_high";
+
+  // Save Data
+  const riskData = {
+    score: score,
+    level: resultKey,
+    bmi: bmi ? bmi.toFixed(1) : null,
+    date: new Date().toISOString()
+  };
+  saveLocal('riskData', riskData);
   saveLocal('riskDone', true);
 
+  // Update UI
   $('risk-result-text').textContent = t(resultKey);
   $('risk-result-advice').textContent = t(adviceKey);
   $('risk-result').classList.remove('hidden');
@@ -1092,10 +1087,8 @@ function getDayPhase(date) {
   let periodStart = new Date(cycleData.lastPeriod);
   while (addDays(periodStart, cycleData.cycleLength) <= date) periodStart = addDays(periodStart, cycleData.cycleLength);
   while (periodStart > date) periodStart = addDays(periodStart, -cycleData.cycleLength);
-
   const cycleDay = daysBetween(periodStart, date) + 1;
   const ovulationDay = cycleData.cycleLength - 14;
-
   if (cycleDay <= cycleData.periodLength) return 'period';
   if (cycleDay === ovulationDay) return 'ovulation';
   if (cycleDay >= ovulationDay - 2 && cycleDay <= ovulationDay + 1) return 'fertile';
@@ -1107,10 +1100,8 @@ function updateCycleUI() {
   loadCycleData();
   if (!cycleData) { show($('cycle-setup')); hide($('cycle-calendar-container')); return; }
   hide($('cycle-setup')); show($('cycle-calendar-container'));
-
   const today = new Date();
   const cycleDay = getCycleDay(today);
-  
   $('current-cycle-day').textContent = cycleDay;
   
   let phaseKey = "phase_follicular";
@@ -1122,13 +1113,9 @@ function updateCycleUI() {
   let next = new Date(cycleData.lastPeriod);
   while (next <= today) next = addDays(next, cycleData.cycleLength);
   $('days-to-period').textContent = daysBetween(today, next);
-  
   const ovulationDate = addDays(next, -14);
   $('days-to-ovulation').textContent = Math.max(0, daysBetween(today, ovulationDate));
-
-  if (cycleDay >= 5 && cycleDay <= 7) show($('exam-reminder')); 
-  else hide($('exam-reminder'));
-
+  if (cycleDay >= 5 && cycleDay <= 7) show($('exam-reminder')); else hide($('exam-reminder'));
   updateHomeStatus();
   renderCalendar();
   renderForecast();
@@ -1140,11 +1127,10 @@ function updateHomeStatus() {
     $('home-cycle-day').textContent = cycleDay;
     let phaseKey = cycleDay <= cycleData.periodLength ? "phase_menstruation" : "phase_follicular";
     $('home-cycle-phase').textContent = t(phaseKey);
-    
     let next = new Date(cycleData.lastPeriod);
     while (next <= new Date()) next = addDays(next, cycleData.cycleLength);
     $('home-next-period').textContent = next.toLocaleDateString(currentLang === 'kz' ? 'kk-KZ' : currentLang === 'en' ? 'en-US' : 'ru-RU', { day: 'numeric', month: 'short' });
-    $('home-period-countdown').textContent = `${t('till_period').replace('до ', '').replace('етеккірге ', '').replace('until ', '')} ${daysBetween(new Date(), next)} ${t('day').toLowerCase()}.`;
+    $('home-period-countdown').textContent = `${t('till_period')} ${daysBetween(new Date(), next)} дн.`;
   }
 }
 
@@ -1158,14 +1144,11 @@ function renderCalendar() {
     en: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
   };
   $('calendar-month-year').textContent = `${months[currentLang][month]} ${year}`;
-  
   const firstDay = new Date(year, month, 1);
   const lastDay = new Date(year, month + 1, 0);
   let startDay = firstDay.getDay() - 1; if (startDay < 0) startDay = 6;
-
   const today = new Date();
   let html = '';
-
   for (let i = 0; i < startDay; i++) html += `<div class="calendar-day other-month"></div>`;
   for (let day = 1; day <= lastDay.getDate(); day++) {
     const date = new Date(year, month, day);
@@ -1180,16 +1163,12 @@ function renderCalendar() {
 }
 
 function renderForecast() {
-    const container = $('forecast-list');
-    if(!container || !cycleData) return;
-    
+    const container = $('forecast-list'); if(!container || !cycleData) return;
     let next = new Date(cycleData.lastPeriod);
     while (next <= new Date()) next = addDays(next, cycleData.cycleLength);
-    
     let html = '';
     for(let i=0; i<3; i++) {
-        const start = next;
-        const end = addDays(start, cycleData.periodLength - 1);
+        const start = next; const end = addDays(start, cycleData.periodLength - 1);
         html += `<div class="p-3 bg-gray-50 rounded-lg flex justify-between items-center">
             <span class="font-medium text-gray-700">${start.toLocaleDateString(currentLang === 'kz' ? 'kk-KZ' : currentLang === 'en' ? 'en-US' : 'ru-RU', { month: 'long' })}</span>
             <span class="text-sm text-gray-500">${start.getDate()} - ${end.getDate()}</span>
@@ -1210,8 +1189,7 @@ const clinics = [
 
 function initMap() {
   if (map) return;
-  const mapEl = $('map');
-  if (!mapEl) return;
+  const mapEl = $('map'); if (!mapEl) return;
   map = L.map('map').setView([51.128, 71.430], 12);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' }).addTo(map);
   renderClinics();
@@ -1219,20 +1197,15 @@ function initMap() {
 
 function renderClinics() {
   if (!map) return;
-  markers.forEach(m => map.removeLayer(m));
-  markers = [];
-  
+  markers.forEach(m => map.removeLayer(m)); markers = [];
   const search = $('search-clinics')?.value.toLowerCase() || '';
   const type = $('filter-type')?.value || '';
-
   const filtered = clinics.filter(c => {
     const matchSearch = !search || c.name.toLowerCase().includes(search) || c.address.toLowerCase().includes(search);
     const matchType = !type || c.type === type;
     return matchSearch && matchType;
   });
-
-  const typeText = (type) => type === 'public' ? t('clinic_public') : t('clinic_private');
-
+  const typeText = (tp) => tp === 'public' ? t('clinic_public') : t('clinic_private');
   const listEl = $('clinics-list');
   listEl.innerHTML = filtered.map(c => `
     <div class="p-3 border rounded-lg hover:border-primary cursor-pointer bg-white" onclick="focusClinic(${c.lat}, ${c.lng})">
@@ -1241,12 +1214,10 @@ function renderClinics() {
       <span class="text-xs ${c.type === 'public' ? 'text-blue-600' : 'text-purple-600'}">${typeText(c.type)}</span>
     </div>
   `).join('');
-
   filtered.forEach(c => {
     const marker = L.marker([c.lat, c.lng]).addTo(map).bindPopup(`<b>${c.name}</b><br>${c.address}`);
     markers.push(marker);
   });
-  
   if (filtered.length > 0) {
     const bounds = L.latLngBounds(filtered.map(c => [c.lat, c.lng]));
     map.fitBounds(bounds, {padding: [20, 20]});
@@ -1267,16 +1238,28 @@ function focusClinic(lat, lng) {
 function updateAccountUI() {
   const riskData = loadLocal('riskData');
   const riskDisplay = $('account-risk-level');
+  const bmiDisplay = $('account-bmi');
   
   if (riskData && riskData.level) {
     riskDisplay.textContent = t(riskData.level);
-    // Add colors
     riskDisplay.classList.remove('text-green-600', 'text-yellow-600', 'text-red-600');
     if (riskData.level === 'risk_low') riskDisplay.classList.add('text-green-600');
     else if (riskData.level === 'risk_moderate') riskDisplay.classList.add('text-yellow-600');
     else riskDisplay.classList.add('text-red-600');
+    
+    if(riskData.bmi) {
+        const bmiVal = parseFloat(riskData.bmi);
+        let bmiStatus = t('bmi_normal');
+        if(bmiVal >= 30) bmiStatus = t('bmi_obese');
+        else if(bmiVal >= 25) bmiStatus = t('bmi_high');
+        
+        bmiDisplay.textContent = `${riskData.bmi} (${bmiStatus})`;
+    } else {
+        bmiDisplay.textContent = "—";
+    }
   } else {
     riskDisplay.textContent = "—";
+    bmiDisplay.textContent = "—";
   }
 
   const xp = learningProgress.totalXp || 0;
@@ -1284,7 +1267,6 @@ function updateAccountUI() {
   if (xp >= 1000) levelKey = "lvl_master";
   else if (xp >= 500) levelKey = "lvl_expert";
   else if (xp >= 100) levelKey = "lvl_student";
-  
   $('user-level').textContent = t(levelKey);
   $('xp-progress-text').textContent = `${xp} / 1000 XP`;
   $('xp-progress-bar').style.width = `${Math.min(100, (xp/1000)*100)}%`;
@@ -1292,11 +1274,9 @@ function updateAccountUI() {
   const achievements = [];
   if (loadLocal('riskDone')) achievements.push({ icon: 'check-circle', text_key: 'ach_risk' });
   if (loadLocal('cycleData')) achievements.push({ icon: 'calendar', text_key: 'ach_cycle' });
-  
   $('achievements-container').innerHTML = achievements.length > 0 
     ? achievements.map(a => `<div class="flex items-center gap-2 p-2 bg-gray-50 rounded"><i data-feather="${a.icon}" class="w-4 h-4 text-green-500"></i><span class="text-sm">${t(a.text_key)}</span></div>`).join('')
     : `<p class="text-sm text-gray-400">${t('acc_no_achieve')}</p>`;
-    
   if (window.feather) feather.replace();
 }
 
@@ -1308,7 +1288,6 @@ function clearAllData() {
 document.addEventListener('DOMContentLoaded', () => {
   if (window.feather) feather.replace();
   
-  // Language Init
   const savedLang = loadLocal('appLang');
   if (savedLang) currentLang = savedLang;
   setLanguage(currentLang);
@@ -1361,11 +1340,9 @@ function sendAIMessage() {
     const input = $('ai-input');
     const text = input.value.trim();
     if(!text) return;
-    
     const container = $('ai-messages');
     container.innerHTML += `<div class="bg-primary text-white p-3 rounded-2xl rounded-tr-none ml-auto max-w-[80%]">${text}</div>`;
     input.value = '';
-    
     setTimeout(() => {
         container.innerHTML += `<div class="bg-white p-3 rounded-2xl rounded-tl-none max-w-[80%]">${t('ai_response')}</div>`;
         container.scrollTop = container.scrollHeight;
