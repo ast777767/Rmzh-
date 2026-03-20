@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -134,16 +135,16 @@
       </button>
 
       <nav class="hidden md:flex space-x-1">
-        <a href="#" class="nav-item active px-4 py-2 rounded-lg flex items-center gap-2" data-view="home">
+        <a href="#home" class="nav-item active px-4 py-2 rounded-lg flex items-center gap-2">
           <i data-feather="home" class="w-4 h-4"></i> <span data-i18n="nav_home">Главная</span>
         </a>
-        <a href="#" class="nav-item px-4 py-2 rounded-lg flex items-center gap-2" data-view="cycle">
+        <a href="#cycle" class="nav-item px-4 py-2 rounded-lg flex items-center gap-2">
           <i data-feather="calendar" class="w-4 h-4"></i> <span data-i18n="nav_cycle">Цикл</span>
         </a>
-        <a href="#" class="nav-item px-4 py-2 rounded-lg flex items-center gap-2" data-view="clinics">
+        <a href="#clinics" class="nav-item px-4 py-2 rounded-lg flex items-center gap-2">
           <i data-feather="map" class="w-4 h-4"></i> <span data-i18n="nav_clinics">Клиники</span>
         </a>
-        <a href="#" class="nav-item px-4 py-2 rounded-lg flex items-center gap-2" data-view="resources">
+        <a href="#resources" class="nav-item px-4 py-2 rounded-lg flex items-center gap-2">
           <i data-feather="book" class="w-4 h-4"></i> <span data-i18n="nav_resources">Ресурсы</span>
         </a>
       </nav>
@@ -173,16 +174,16 @@
       <button id="close-mobile-menu" class="text-gray-500"><i data-feather="x" class="w-6 h-6"></i></button>
     </div>
     <nav class="space-y-2">
-      <a href="#" class="nav-item active block px-4 py-3 rounded-lg" data-view="home">
+      <a href="#home" class="nav-item block px-4 py-3 rounded-lg">
         <i data-feather="home" class="w-5 h-5 inline mr-3"></i> <span data-i18n="nav_home">Главная</span>
       </a>
-      <a href="#" class="nav-item block px-4 py-3 rounded-lg" data-view="cycle">
+      <a href="#cycle" class="nav-item block px-4 py-3 rounded-lg">
         <i data-feather="calendar" class="w-5 h-5 inline mr-3"></i> <span data-i18n="nav_cycle">Цикл</span>
       </a>
-      <a href="#" class="nav-item block px-4 py-3 rounded-lg" data-view="clinics">
+      <a href="#clinics" class="nav-item block px-4 py-3 rounded-lg">
         <i data-feather="map" class="w-5 h-5 inline mr-3"></i> <span data-i18n="nav_clinics">Клиники</span>
       </a>
-      <a href="#" class="nav-item block px-4 py-3 rounded-lg" data-view="resources">
+      <a href="#resources" class="nav-item block px-4 py-3 rounded-lg">
         <i data-feather="book" class="w-5 h-5 inline mr-3"></i> <span data-i18n="nav_resources">Ресурсы</span>
       </a>
     </nav>
@@ -212,12 +213,12 @@
       <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-3" data-i18n="welcome">Добро пожаловать в MammoCare</h2>
       <p class="text-gray-600 mb-6" data-i18n="welcome_desc">Следите за здоровьем груди: трекер цикла, напоминания о самообследовании и карта клиник.</p>
       <div class="flex flex-wrap gap-3">
-        <button class="px-5 py-2.5 bg-primary text-white rounded-lg hover:bg-pink-600 transition" data-view="cycle" data-i18n="open_tracker">
+        <a href="#cycle" class="px-5 py-2.5 bg-primary text-white rounded-lg hover:bg-pink-600 transition cursor-pointer" data-i18n="open_tracker">
           Открыть трекер цикла
-        </button>
-        <button class="px-5 py-2.5 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition" data-view="clinics" data-i18n="find_clinic">
+        </a>
+        <a href="#clinics" class="px-5 py-2.5 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition cursor-pointer" data-i18n="find_clinic">
           Найти клинику
-        </button>
+        </a>
       </div>
     </div>
 
@@ -342,33 +343,36 @@
       </div>
     </div>
   </section>
-<section id="view-learn" class="view-section space-y-6">
-  <div class="card p-6">
-    <h2 class="text-2xl font-bold mb-4">30-дневная программа</h2>
-    <div id="learning-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
-  </div>
-</section>
-  <section id="view-account" class="view-section space-y-6">
-  <div class="card p-6">
-    <h2 class="text-xl font-bold mb-4">Личный кабинет</h2>
-    <p id="user-name">Вы не авторизованы</p>
 
-    <button id="login-btn" class="mt-4 px-4 py-2 bg-primary text-white rounded-lg">
-      Войти (demo)
-    </button>
-  </div>
-</section>
-  <section id="view-about" class="view-section space-y-6">
-  <div class="card p-6">
-    <h2 class="text-2xl font-bold mb-4">О проекте</h2>
-    <p>MammoCare — приложение для профилактики рака груди.</p>
-
-    <div class="mt-4">
-      <p>Instagram: @qyzqylttaspa</p>
-      <p>Email: teammammocare@outlook.com</p>
+  <!-- ===== ДОПОЛНИТЕЛЬНЫЕ СЕКЦИИ (ОБЩИЕ) ===== -->
+  <section id="view-learn" class="view-section space-y-6">
+    <div class="card p-6">
+      <h2 class="text-2xl font-bold mb-4">30-дневная программа</h2>
+      <div id="learning-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
     </div>
-  </div>
-</section>
+  </section>
+
+  <section id="view-account" class="view-section space-y-6">
+    <div class="card p-6">
+      <h2 class="text-xl font-bold mb-4">Личный кабинет</h2>
+      <p id="user-name">Вы не авторизованы</p>
+      <button id="login-btn" class="mt-4 px-4 py-2 bg-primary text-white rounded-lg">
+        Войти (demo)
+      </button>
+    </div>
+  </section>
+
+  <section id="view-about" class="view-section space-y-6">
+    <div class="card p-6">
+      <h2 class="text-2xl font-bold mb-4">О проекте</h2>
+      <p>MammoCare — приложение для профилактики рака груди.</p>
+      <div class="mt-4">
+        <p>Instagram: @qyzqylttaspa</p>
+        <p>Email: teammammocare@outlook.com</p>
+      </div>
+    </div>
+  </section>
+
   <!-- ===== КЛИНИКИ ===== -->
   <section id="view-clinics" class="view-section space-y-6">
     <div class="card p-6">
@@ -1150,13 +1154,33 @@ function generateAIResponse(input) {
 
 // ========== НАВИГАЦИЯ ==========
 function switchView(viewName) {
+  // Скрываем все секции
   document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
-  document.getElementById('view-' + viewName)?.classList.add('active');
+  // Показываем нужную
+  const activeSection = document.getElementById('view-' + viewName);
+  if (activeSection) activeSection.classList.add('active');
+
+  // Обновляем меню
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  document.querySelectorAll(`[data-view="${viewName}"]`).forEach(n => n.classList.add('active'));
+  // Ищем ссылки, которые ссылаются на эту вьюху (поддержка href="#viewname")
+  document.querySelectorAll(`.nav-item[href="#${viewName}"]`).forEach(n => n.classList.add('active'));
+
+  // Закрываем мобильное меню
   document.getElementById('mobile-menu').classList.add('hidden');
-  if (viewName === 'clinics') setTimeout(initMap, 100);
+
+  // Специфичная логика для вкладок
+  if (viewName === 'clinics') {
+    setTimeout(() => {
+      initMap();
+      if (map) map.invalidateSize(); // Исправление для Leaflet
+    }, 100);
+  }
   if (viewName === 'cycle') updateCycleUI();
+}
+
+function handleRoute() {
+  const hash = window.location.hash.replace('#', '') || 'home';
+  switchView(hash);
 }
 
 // ========== ИНИЦИАЛИЗАЦИЯ ==========
@@ -1168,6 +1192,13 @@ document.addEventListener('DOMContentLoaded', () => {
   showNotifications();
   renderArticles();
   initAI();
+  renderLearning();
+
+  // Маршрутизация при загрузке
+  handleRoute();
+
+  // Слушатель изменения хэша (кнопки назад/вперед)
+  window.addEventListener('hashchange', handleRoute);
 
   // Показать риск при первом входе
   if (!localStorage.getItem('riskDone')) {
@@ -1180,14 +1211,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Навигация
-  document.querySelectorAll('[data-view]').forEach(el => {
-    el.addEventListener('click', e => { e.preventDefault(); switchView(el.dataset.view); });
-  });
-
   // Мобильное меню
   document.getElementById('mobile-menu-btn')?.addEventListener('click', () => document.getElementById('mobile-menu').classList.remove('hidden'));
   document.getElementById('close-mobile-menu')?.addEventListener('click', () => document.getElementById('mobile-menu').classList.add('hidden'));
+  // Закрытие мобильного меню при клике на ссылку (делегирование или прямая ссылка с href)
+  document.querySelectorAll('#mobile-menu .nav-item').forEach(link => {
+    link.addEventListener('click', () => {
+       document.getElementById('mobile-menu').classList.add('hidden');
+    });
+  });
+
 
   // Язык
   document.getElementById('lang-btn')?.addEventListener('click', e => { e.stopPropagation(); document.getElementById('lang-dropdown').classList.toggle('hidden'); });
@@ -1213,8 +1246,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     updateCycleUI();
   });
-  handleRoute();
-renderLearning();
 
   document.getElementById('edit-cycle-settings')?.addEventListener('click', () => {
     if (cycleData) {
@@ -1225,10 +1256,12 @@ renderLearning();
     document.getElementById('cycle-setup').classList.remove('hidden');
     document.getElementById('cycle-calendar-container').classList.add('hidden');
   });
-document.getElementById('login-btn')?.addEventListener('click', () => {
-  localStorage.setItem('user', JSON.stringify({ name: 'User' }));
-  document.getElementById('user-name').textContent = 'User';
-});
+
+  document.getElementById('login-btn')?.addEventListener('click', () => {
+    localStorage.setItem('user', JSON.stringify({ name: 'User' }));
+    document.getElementById('user-name').textContent = 'User';
+  });
+
   document.getElementById('prev-month')?.addEventListener('click', () => { currentCalendarDate.setMonth(currentCalendarDate.getMonth() - 1); renderCalendar(); feather.replace(); });
   document.getElementById('next-month')?.addEventListener('click', () => { currentCalendarDate.setMonth(currentCalendarDate.getMonth() + 1); renderCalendar(); feather.replace(); });
 
@@ -1236,11 +1269,8 @@ document.getElementById('login-btn')?.addEventListener('click', () => {
     localStorage.setItem('lastExamDate', new Date().toISOString());
     document.getElementById('exam-reminder').classList.add('hidden');
   });
-document.getElementById('login-btn')?.addEventListener('click', () => {
-  localStorage.setItem('user', JSON.stringify({ name: 'User' }));
-  document.getElementById('user-name').textContent = 'User';
-});
-  // Клиники
+
+  // Клиники (поиск)
   document.getElementById('search-clinics')?.addEventListener('input', e => renderClinics(e.target.value, document.getElementById('filter-type').value));
   document.getElementById('filter-type')?.addEventListener('change', e => renderClinics(document.getElementById('search-clinics').value, e.target.value));
 
@@ -1260,8 +1290,8 @@ document.getElementById('login-btn')?.addEventListener('click', () => {
 
   setTimeout(() => { if (window.feather) feather.replace(); }, 100);
 });
-  // ===== ОБУЧЕНИЕ =====
 
+// ===== ОБУЧЕНИЕ =====
 const lessonContent = {
   1: { title: "Добро пожаловать", points: 100 },
   2: { title: "Самообследование груди", points: 150 },
@@ -1323,12 +1353,6 @@ function openLesson(day) {
 
   renderLearning();
 }
-  function handleRoute() {
-  const hash = window.location.hash.replace('#', '') || 'home';
-  switchView(hash);
-}
-
-window.addEventListener('hashchange', handleRoute);
 </script>
 
 </body>
