@@ -223,7 +223,7 @@
       </div>
     </div>
 
-    <!-- СТАТИСТИКА (НОВОЕ) -->
+    <!-- СТАТИСТИКА -->
     <div class="card p-6 bg-white border-l-4 border-primary">
       <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
         <i data-feather="bar-chart-2" class="w-5 h-5 text-primary"></i> <span data-i18n="stats_title">Статистика рака груди</span>
@@ -277,7 +277,7 @@
       </div>
     </div>
 
-    <!-- ПОЛЕЗНАЯ ИНФОРМАЦИЯ (НОВОЕ) -->
+    <!-- ПОЛЕЗНАЯ ИНФОРМАЦИЯ -->
     <div class="card p-6">
         <h3 class="text-lg font-bold text-gray-800 mb-4" data-i18n="useful_info_title">Полезная информация</h3>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -323,7 +323,7 @@
     <div id="learning-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
   </section>
 
-  <!-- ===== СТАТЬИ (НОВОЕ) ===== -->
+  <!-- ===== СТАТЬИ (ИСПРАВЛЕНО: РАБОЧИЕ ССЫЛКИ) ===== -->
   <section id="view-articles" class="view-section space-y-6">
     <div class="card p-6">
       <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2">
@@ -405,7 +405,7 @@
         </div>
       </div>
       
-      <!-- ВОССТАНОВЛЕН ПРОГНОЗ -->
+      <!-- ПРОГНОЗ -->
       <div class="card p-6">
         <h3 class="font-semibold text-gray-800 mb-4" data-i18n="forecast">Прогноз на 3 месяца</h3>
         <div id="forecast-list" class="space-y-3"></div>
@@ -417,7 +417,7 @@
     </div>
   </section>
 
-  <!-- ===== КЛИНИКИ ===== -->
+  <!-- ===== КЛИНИКИ (ИСПРАВЛЕНО: 10 КЛИНИК) ===== -->
   <section id="view-clinics" class="view-section space-y-6">
     <div class="card p-6">
       <h2 class="text-2xl font-bold text-gray-800 mb-2" data-i18n="clinics_title">Клиники маммографии</h2>
@@ -442,19 +442,19 @@
     </div>
   </section>
 
-  <!-- ===== О НАС (ВОССТАНОВЛЕНО) ===== -->
+  <!-- ===== О НАС ===== -->
   <section id="view-about" class="view-section space-y-6">
     <div class="card p-8 text-center bg-gradient-to-br from-pink-50 to-white">
       <div class="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4 text-primary">
         <svg class="w-10 h-10" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2M10.5 7H13.5L19 16L16.5 17.5L14 13V22H10V13L7.5 17.5L5 16L10.5 7Z" /></svg>
       </div>
       <h2 class="text-3xl font-bold text-gray-800 mb-2" data-i18n="about_title">О проекте MammoCare</h2>
-      <p class="text-lg text-gray-600 max-w-2xl mx-auto" data-i18n="about_desc">Мы боремся с раком молочной железы, предоставляя женщинам инструменты для ранней диагностики.</p>
+      <p class="text-lg text-gray-600 max-w-2xl mx-auto" data-i18n="about_desc">Мы боремся с раком молочной железы.</p>
     </div>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
       <div class="card p-6">
-        <h3 class="text-xl font-bold text-gray-800 mb-3 flex items-center gap-2"><i data-feather="target" class="w-5 h-5 text-primary"></i> <span data-i18n="mission_title">Наша миссия</span></h3>
-        <p class="text-gray-600" data-i18n="mission_desc">Снизить смертность от рака груди в Казахстане.</p>
+        <h3 class="text-xl font-bold text-gray-800 mb-3 flex items-center gap-2"><i data-feather="target" class="w-5 h-5 text-primary"></i> <span data-i18n="mission_title">Миссия</span></h3>
+        <p class="text-gray-600" data-i18n="mission_desc">Снизить смертность.</p>
       </div>
       <div class="card p-6">
         <h3 class="text-xl font-bold text-gray-800 mb-3 flex items-center gap-2"><i data-feather="mail" class="w-5 h-5 text-secondary"></i> <span data-i18n="contacts_title">Контакты</span></h3>
@@ -530,12 +530,27 @@
 
 <!-- ===== СКРИПТЫ ===== -->
 <script>
-// ========== СТАТЬИ ДАННЫЕ ==========
+// ========== СТАТЬИ ДАННЫЕ (ИСПРАВЛЕНО ССЫЛКИ) ==========
 const articlesData = [
-    { id: 1, title_key: "art_1_title", desc_key: "art_1_desc", link: "#" },
-    { id: 2, title_key: "art_2_title", desc_key: "art_2_desc", link: "#" },
-    { id: 3, title_key: "art_3_title", desc_key: "art_3_desc", link: "#" },
-    { id: 4, title_key: "art_4_title", desc_key: "art_4_desc", link: "#" },
+    { title_key: "art_1_title", desc_key: "art_1_desc", link: "https://www.who.int/ru/news-room/fact-sheets/detail/breast-cancer" },
+    { title_key: "art_2_title", desc_key: "art_2_desc", link: "https://ru.wikipedia.org/wiki/%D0%A0%D0%B0%D0%BA_%D0%BC%D0%BE%D0%BB%D0%BE%D1%87%D0%BD%D0%BE%D0%B9_%D0%B6%D0%B5%D0%BB%D0%B5%D0%B7%D1%8B" },
+    { title_key: "art_3_title", desc_key: "art_3_desc", link: "https://www.breastcancer.org/" },
+    { title_key: "art_4_title", desc_key: "art_4_desc", link: "https://www.mayoclinic.org/tests-procedures/mammogram/about/pac-20384806" },
+    { title_key: "art_5_title", desc_key: "art_5_desc", link: "https://www.cancer.org/cancer/breast-cancer.html" },
+];
+
+// ========== КЛИНИКИ ДАННЫЕ (ИСПРАВЛЕНО 10 ШТУК) ==========
+const clinicsData = [
+  { id: 1, name: "Городская больница №2", address: "ул. Турар Рыскулова, 6", type: "public", lat: 51.1477, lng: 71.4216 },
+  { id: 2, name: "Городская поликлиника №9", address: "пр. Мангилик Ел, 16/1", type: "public", lat: 51.0899, lng: 71.4165 },
+  { id: 3, name: "ННОЦ (Онкоцентр)", address: "пр. Кабанбай Батыра, 53", type: "research", lat: 51.1201, lng: 71.4428 },
+  { id: 4, name: "РДЦ (UMC)", address: "ул. Сыганак, 46", type: "public", lat: 51.1356, lng: 71.4254 },
+  { id: 5, name: "Клиника Big Tau", address: "пр. Туран, 50", type: "private", lat: 51.1325, lng: 71.4301 },
+  { id: 6, name: "Медцентр Sak", address: "пр. Сарыарка, 42", type: "private", lat: 51.1428, lng: 71.4389 },
+  { id: 7, name: "Президентская клиника", address: "пр. Мангилик Ел, 80", type: "private", lat: 51.0954, lng: 71.4218 },
+  { id: 8, name: "Онкоцентр UMIT", address: "пр. Абылай хана, 42/1", type: "private", lat: 51.1253, lng: 71.4328 },
+  { id: 9, name: "Медцентр EMIRMED", address: "ул. Куйши Дина, 9", type: "private", lat: 51.1224, lng: 71.4193 },
+  { id: 10, name: "Поликлиника №4", address: "ул. Ауэзова, 1", type: "public", lat: 51.1591, lng: 71.4182 }
 ];
 
 // ========== ПЕРЕВОДЫ ==========
@@ -544,21 +559,21 @@ const translations = {
     nav_home: "Главная", nav_learn: "Обучение", nav_articles: "Статьи", nav_cycle: "Цикл", nav_clinics: "Клиники", nav_about: "О нас", nav_account: "Аккаунт",
     mob_menu: "Меню", home_welcome: "Добро пожаловать в MammoCare", home_desc: "Следите за здоровьем груди.",
     btn_cycle: "Трекер", btn_clinic: "Клиники", home_risk_label: "Ваш риск", recalc: "Пересчитать",
-    stats_title: "Статистика рака груди", stats_kz: "🇰🇿 Казахстан", stats_kz_desc: "место по онкозаболеваемости у женщин", stats_world: "🌍 В мире", stats_world_desc: "случаев ежегодно", stats_fact: "Раннее обнаружение повышает выживаемость до 98%",
-    useful_info_title: "Полезно знать", info_self_title: "Самообследование", info_self_desc: "Проводите на 5-7 день цикла.", info_age_title: "Скрининг", info_age_desc: "Маммография рекомендована после 40 лет.", link_all_articles: "Читать все статьи →",
-    articles_title: "База знаний", art_1_title: "Как правильно проводить самообследование", art_1_desc: "Пошаговая техника.", art_2_title: "Факторы риска", art_2_desc: "На что обратить внимание.", art_3_title: "Мифы о раке", art_3_desc: "Развенчиваем заблуждения.", art_4_title: "Питание", art_4_desc: "Продукты для здоровья груди.",
+    stats_title: "Статистика рака груди", stats_kz: "🇰🇿 Казахстан", stats_kz_desc: "место по онкозаболеваемости", stats_world: "🌍 В мире", stats_world_desc: "случаев ежегодно", stats_fact: "Раннее обнаружение = 98% выживаемость",
+    useful_info_title: "Полезно знать", info_self_title: "Самообследование", info_self_desc: "Проводите на 5-7 день цикла.", info_age_title: "Скрининг", info_age_desc: "Маммография после 40 лет.", link_all_articles: "Читать все статьи →",
+    articles_title: "База знаний", art_1_title: "Рак груди: факты ВОЗ", art_1_desc: "Официальная информация.", art_2_title: "Рак молочной железы (Вики)", art_2_desc: "Полная энциклопедическая статья.", art_3_title: "BreastCancer.org", art_3_desc: "Международный ресурс.", art_4_title: "Маммография: подготовка", art_4_desc: "Как подготовиться к обследованию.", art_5_title: "Американское онкообщество", art_5_desc: "Подробные материалы.",
     risk_welcome: "Добро пожаловать!", risk_subtitle: "Ответьте на вопросы", risk_age: "Возраст", risk_weight: "Вес", risk_height: "Рост", risk_family: "Наследственность", risk_smoke: "Курение", risk_symptoms: "Жалобы",
     opt_no: "Нет", opt_distant: "Дальние", opt_close: "Мама/сестра", opt_no_smoke: "Не курю", opt_ex_smoke: "Бросила", opt_smoke: "Курю", opt_no_symptoms: "Нет", opt_discomfort: "Дискомфорт", opt_pain: "Уплотнения",
     btn_calc: "Рассчитать", btn_skip: "Пропустить", btn_continue: "Продолжить", btn_save: "Сохранить", btn_done: "Готово", btn_reset: "Сброс",
     risk_low: "Низкий риск", risk_moderate: "Умеренный риск", risk_high: "Высокий риск",
-    risk_adv_low: "Продолжайте здоровый образ жизни.", risk_adv_mod: "Рекомендована консультация.", risk_adv_high: "Срочно к врачу.",
-    learn_title: "30-дневная программа", learn_desc: "Укрепите здоровье", learn_info: "Один урок в 24 часа.",
+    risk_adv_low: "Продолжайте ЗОЖ.", risk_adv_mod: "Рекомендована консультация.", risk_adv_high: "Срочно к врачу.",
+    learn_title: "30-дневная программа", learn_desc: "Укрепите здоровье", learn_info: "Один урок в 24 часа. Накапливайте XP.",
     lesson_open: "Доступно", lesson_locked: "Заблокировано", lesson_completed: "Пройдено",
     cycle_title: "Настройка трекера", cycle_date: "Дата начала", cycle_len: "Цикл (дни)", period_len: "Месячные (дни)",
     today: "Сегодня", day: "День", till_period: "до месячных", till_ovulation: "до овуляции",
     exam_title: "Время самообследования!", exam_desc: "5-7 день цикла.",
     forecast: "Прогноз на 3 месяца",
-    clinics_title: "Клиники", clinics_desc: "Карта Астаны", list: "Список", filter_all: "Все", filter_public: "Гос", filter_private: "Частные",
+    clinics_title: "Клиники", clinics_desc: "Карта Астаны", list: "Список", filter_all: "Все", filter_public: "Гос.", filter_private: "Частные",
     about_title: "О проекте", about_desc: "Мы боремся с раком груди.", mission_title: "Миссия", mission_desc: "Снизить смертность.", contacts_title: "Контакты",
     acc_welcome: "Привет,", acc_user: "Пользователь",
     alert_exam: "Отлично!", alert_next_lesson: "Урок пройден! +{xp} XP. Следующий через 24 часа.", alert_time_left: "Ждите 24 часа.", alert_cycle_reset: "Данные цикла сброшены."
@@ -567,9 +582,9 @@ const translations = {
     nav_home: "Басты", nav_learn: "Оқыту", nav_articles: "Мақалалар", nav_cycle: "Цикл", nav_clinics: "Клиникалар", nav_about: "Біз туралы", nav_account: "Аккаунт",
     mob_menu: "Мәзір", home_welcome: "MammoCare қош келдіңіз", home_desc: "Сүт безі денсаулығын бақылаңыз.",
     btn_cycle: "Трекер", btn_clinic: "Клиникалар", home_risk_label: "Тәуекел", recalc: "Қайта",
-    stats_title: "Статистика", stats_kz: "🇰🇿 Қазақстан", stats_kz_desc: "әйелдер арасындағы орын", stats_world: "🌍 Әлемде", stats_world_desc: "жыл сайын", stats_fact: "Ерте анықтау 98%-ға көмектеседі",
+    stats_title: "Статистика", stats_kz: "🇰🇿 Қазақстан", stats_kz_desc: "онкология бойынша орын", stats_world: "🌍 Әлемде", stats_world_desc: "жыл сайын", stats_fact: "Ерте анықтау = 98% сауығу",
     useful_info_title: "Пайдалы білім", info_self_title: "Өзіндік тексеру", info_self_desc: "Цикл 5-7 күні.", info_age_title: "Скрининг", info_age_desc: "40 жастан маммография.", link_all_articles: "Мақалалар →",
-    articles_title: "Білім базасы", art_1_title: "Өзіндік тексеру", art_1_desc: "Техника.", art_2_title: "Тәуекел", art_2_desc: "Факторлар.", art_3_title: "Мифтер", art_3_desc: "Жоққа шығару.", art_4_title: "Тамақтану", art_4_desc: "Өнімдер.",
+    articles_title: "Білім базасы", art_1_title: "ДДҰ деректері", art_1_desc: "Ақпарат.", art_2_title: "Уикипедия", art_2_desc: "Толық мақала.", art_3_title: "Халықаралық ресурс", art_3_desc: "BreastCancer.org.", art_4_title: "Дайындық", art_4_desc: "Маммографияға дайындық.", art_5_title: "Онкоқоғам", art_5_desc: "Материалдар.",
     risk_welcome: "Қош келдіңіз!", risk_subtitle: "Сұрақтарға жауап", risk_age: "Жас", risk_weight: "Салмақ", risk_height: "Бой", risk_family: "Тұқым", risk_smoke: "Темекі", risk_symptoms: "Шағым",
     opt_no: "Жоқ", opt_distant: "Алыс", opt_close: "Ана/әпке", opt_no_smoke: "Тартпаймын", opt_ex_smoke: "Тастадым", opt_smoke: "Тартамын", opt_no_symptoms: "Жоқ", opt_discomfort: "Жайсыздық", opt_pain: "Түйін",
     btn_calc: "Есептеу", btn_skip: "Өткізу", btn_continue: "Жалғастыру", btn_save: "Сақтау", btn_done: "Дайын", btn_reset: "Тазалау",
@@ -587,9 +602,9 @@ const translations = {
     nav_home: "Home", nav_learn: "Learn", nav_articles: "Articles", nav_cycle: "Cycle", nav_clinics: "Clinics", nav_about: "About", nav_account: "Account",
     mob_menu: "Menu", home_welcome: "Welcome to MammoCare", home_desc: "Monitor breast health.",
     btn_cycle: "Tracker", btn_clinic: "Clinics", home_risk_label: "Risk", recalc: "Recalc",
-    stats_title: "Statistics", stats_kz: "🇰🇿 Kazakhstan", stats_kz_desc: "rank in female oncology", stats_world: "🌍 Worldwide", stats_world_desc: "cases annually", stats_fact: "Early detection increases survival to 98%",
-    useful_info_title: "Useful Info", info_self_title: "Self-Exam", info_self_desc: "Day 5-7 of cycle.", info_age_title: "Screening", info_age_desc: "Mammography after 40.", link_all_articles: "All articles →",
-    articles_title: "Knowledge Base", art_1_title: "Self-exam guide", art_1_desc: "Step-by-step.", art_2_title: "Risk factors", art_2_desc: "What to look for.", art_3_title: "Myths", art_3_desc: "Debunking.", art_4_title: "Nutrition", art_4_desc: "Breast health foods.",
+    stats_title: "Statistics", stats_kz: "🇰🇿 Kazakhstan", stats_kz_desc: "rank in female oncology", stats_world: "🌍 Worldwide", stats_world_desc: "cases annually", stats_fact: "Early detection = 98% survival",
+    useful_info_title: "Useful Info", info_self_title: "Self-Exam", info_self_desc: "Do it on day 5-7.", info_age_title: "Screening", info_age_desc: "Mammography after 40.", link_all_articles: "All articles →",
+    articles_title: "Knowledge Base", art_1_title: "WHO Facts", art_1_desc: "Official info.", art_2_title: "Wikipedia", art_2_desc: "Full article.", art_3_title: "BreastCancer.org", art_3_desc: "International resource.", art_4_title: "Preparation", art_4_desc: "How to prepare.", art_5_title: "Cancer Society", art_5_desc: "Detailed materials.",
     risk_welcome: "Welcome!", risk_subtitle: "Answer questions", risk_age: "Age", risk_weight: "Weight", risk_height: "Height", risk_family: "Heredity", risk_smoke: "Smoking", risk_symptoms: "Symptoms",
     opt_no: "No", opt_distant: "Distant", opt_close: "Mother/Sister", opt_no_smoke: "Non-smoker", opt_ex_smoke: "Ex-smoker", opt_smoke: "Smoker", opt_no_symptoms: "None", opt_discomfort: "Discomfort", opt_pain: "Lumps",
     btn_calc: "Calculate", btn_skip: "Skip", btn_continue: "Continue", btn_save: "Save", btn_done: "Done", btn_reset: "Reset",
@@ -638,7 +653,6 @@ for (let i = 1; i <= 30; i++) {
   translations.ru[`l${i}_title`] = `День ${i}`;
   translations.kz[`l${i}_title`] = `Күн ${i}`;
   translations.en[`l${i}_title`] = `Day ${i}`;
-  
   LESSONS.push({ id: i, title_key: `l${i}_title`, xp: 50 });
 }
 
@@ -875,7 +889,6 @@ function renderCalendar() {
   grid.innerHTML = html;
 }
 
-// ВОССТАНОВЛЕНА ФУНКЦИЯ ПРОГНОЗА
 function renderForecast() {
     const container = $('forecast-list'); if(!container || !cycleData) return;
     let next = new Date(cycleData.lastPeriod);
@@ -893,10 +906,40 @@ function renderForecast() {
 }
 
 // ========== CLINICS ==========
-const clinics = [ { id: 1, name: "Городская больница №2", address: "ул. Рыскулова", type: "public", lat: 51.1477, lng: 71.4216 }, { id: 2, name: "Clinic Big Tau", address: "пр. Туран", type: "private", lat: 51.1325, lng: 71.4301 } ];
-
 function initMap() { if (map) return; const mapEl = $('map'); if (!mapEl) return; map = L.map('map').setView([51.128, 71.430], 12); L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map); renderClinics(); }
-function renderClinics() { if (!map) return; markers.forEach(m => map.removeLayer(m)); markers = []; clinics.forEach(c => { const m = L.marker([c.lat, c.lng]).addTo(map).bindPopup(`<b>${c.name}</b>`); markers.push(m); }); $('clinics-list').innerHTML = clinics.map(c => `<div class="p-3 border rounded-lg hover:border-primary cursor-pointer bg-white" onclick="focusClinic(${c.lat}, ${c.lng})"><p class="font-medium">${c.name}</p><p class="text-xs text-gray-500">${c.address}</p></div>`).join(''); }
+
+function renderClinics() { 
+  if (!map) return; 
+  markers.forEach(m => map.removeLayer(m)); 
+  markers = []; 
+  
+  const search = $('search-clinics')?.value.toLowerCase() || '';
+  const type = $('filter-type')?.value || '';
+  
+  const filtered = clinicsData.filter(c => {
+    const matchSearch = !search || c.name.toLowerCase().includes(search) || c.address.toLowerCase().includes(search);
+    const matchType = !type || c.type === type;
+    return matchSearch && matchType;
+  });
+
+  filtered.forEach(c => { 
+    const m = L.marker([c.lat, c.lng]).addTo(map).bindPopup(`<b>${c.name}</b><br>${c.address}`); 
+    markers.push(m); 
+  }); 
+  
+  $('clinics-list').innerHTML = filtered.map(c => `
+    <div class="p-3 border rounded-lg hover:border-primary cursor-pointer bg-white" onclick="focusClinic(${c.lat}, ${c.lng})">
+      <p class="font-medium">${c.name}</p>
+      <p class="text-xs text-gray-500">${c.address}</p>
+    </div>
+  `).join('');
+  
+  if (filtered.length > 0) {
+    const bounds = L.latLngBounds(filtered.map(c => [c.lat, c.lng]));
+    map.fitBounds(bounds, {padding: [20, 20]});
+  }
+}
+
 function focusClinic(lat, lng) { if(map) { map.setView([lat, lng], 16); markers.forEach(m => { if(Math.abs(m.getLatLng().lat - lat) < 0.001) m.openPopup(); }); } }
 
 // ========== ACCOUNT ==========
@@ -959,10 +1002,7 @@ document.addEventListener('DOMContentLoaded', () => {
     updateCycleUI();
   });
   
-  // Fixed Reset Button
   $('reset-cycle-btn')?.addEventListener('click', resetCycleData);
-  
-  // Edit Settings Button
   $('edit-cycle-settings')?.addEventListener('click', () => { show($('cycle-setup')); hide($('cycle-calendar-container')); });
 
   $('prev-month')?.addEventListener('click', () => { currentCalendarDate.setMonth(currentCalendarDate.getMonth()-1); renderCalendar(); });
