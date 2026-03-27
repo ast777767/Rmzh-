@@ -71,23 +71,16 @@
 </head>
 
 <body class="bg-gray-50 min-h-screen flex flex-col">
+
+<!-- МОДАЛЬНОЕ ОКНО САМООБСЛЕДОВАНИЯ (ИСПРАВЛЕНО) -->
 <div id="selfexam-modal" class="modal-overlay hidden">
   <div class="bg-white rounded-2xl w-full max-w-md p-6 relative">
-
-    <!-- КНОПКА ЗАКРЫТИЯ -->
-    <button onclick="closeSelfExam()" 
-      class="absolute top-3 right-3 text-gray-400 hover:text-gray-600 text-xl">
-      ✕
-    </button>
-
+    <button onclick="closeSelfExam()" class="absolute top-3 right-3 text-gray-400 hover:text-gray-600 text-xl">✕</button>
     <h2 class="text-xl font-bold mb-4">Самообследование</h2>
     <div id="selfexam-step"></div>
   </div>
 </div>
-    <h2 class="text-xl font-bold mb-4">Самообследование</h2>
-    <div id="selfexam-step"></div>
-  </div>
-</div>
+
 <!-- МОДАЛЬНОЕ ОКНО УРОКА -->
 <div id="lesson-modal" class="modal-overlay hidden">
   <div class="bg-white rounded-2xl w-full max-w-lg p-6 max-h-[90vh] overflow-y-auto relative">
@@ -296,10 +289,12 @@
     <!-- ПОЛЕЗНАЯ ИНФОРМАЦИЯ -->
     <div class="card p-6">
         <h3 class="text-lg font-bold text-gray-800 mb-4" data-i18n="useful_info_title">Полезная информация</h3>
-      <button onclick="openSelfExam()"
-  class="mt-4 w-full py-3 bg-primary text-white rounded-lg">
-  Пройти самообследование
-</button>
+        
+        <!-- Кнопка Самообследования -->
+        <button onclick="openSelfExam()" class="mb-4 w-full py-3 bg-primary text-white rounded-lg font-medium hover:bg-pink-600 transition">
+          Пройти самообследование
+        </button>
+
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="flex gap-3 items-start">
                 <div class="p-2 bg-pink-100 rounded-lg text-primary mt-1"><i data-feather="check" class="w-4 h-4"></i></div>
@@ -343,7 +338,7 @@
     <div id="learning-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
   </section>
 
-  <!-- ===== СТАТЬИ (ИСПРАВЛЕНО: РАБОЧИЕ ССЫЛКИ) ===== -->
+  <!-- ===== СТАТЬИ ===== -->
   <section id="view-articles" class="view-section space-y-6">
     <div class="card p-6">
       <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2">
@@ -437,7 +432,7 @@
     </div>
   </section>
 
-  <!-- ===== КЛИНИКИ (ИСПРАВЛЕНО: 10 КЛИНИК) ===== -->
+  <!-- ===== КЛИНИКИ ===== -->
   <section id="view-clinics" class="view-section space-y-6">
     <div class="card p-6">
       <h2 class="text-2xl font-bold text-gray-800 mb-2" data-i18n="clinics_title">Клиники маммографии</h2>
@@ -550,7 +545,7 @@
 
 <!-- ===== СКРИПТЫ ===== -->
 <script>
-// ========== СТАТЬИ ДАННЫЕ (ИСПРАВЛЕНО ССЫЛКИ) ==========
+// ========== ДАННЫЕ ==========
 const articlesData = [
     { title_key: "art_1_title", desc_key: "art_1_desc", link: "https://www.who.int/ru/news-room/fact-sheets/detail/breast-cancer" },
     { title_key: "art_2_title", desc_key: "art_2_desc", link: "https://ru.wikipedia.org/wiki/%D0%A0%D0%B0%D0%BA_%D0%BC%D0%BE%D0%BB%D0%BE%D1%87%D0%BD%D0%BE%D0%B9_%D0%B6%D0%B5%D0%BB%D0%B5%D0%B7%D1%8B" },
@@ -559,7 +554,6 @@ const articlesData = [
     { title_key: "art_5_title", desc_key: "art_5_desc", link: "https://www.cancer.org/cancer/breast-cancer.html" },
 ];
 
-// ========== КЛИНИКИ ДАННЫЕ (ИСПРАВЛЕНО 10 ШТУК) ==========
 const clinicsData = [
   { id: 1, name: "Городская больница №2", address: "ул. Турар Рыскулова, 6", type: "public", lat: 51.1477, lng: 71.4216 },
   { id: 2, name: "Городская поликлиника №9", address: "пр. Мангилик Ел, 16/1", type: "public", lat: 51.0899, lng: 71.4165 },
@@ -581,7 +575,7 @@ const translations = {
     btn_cycle: "Трекер", btn_clinic: "Клиники", home_risk_label: "Ваш риск", recalc: "Пересчитать",
     stats_title: "Статистика рака груди", stats_kz: "🇰🇿 Казахстан", stats_kz_desc: "место по онкозаболеваемости", stats_world: "🌍 В мире", stats_world_desc: "случаев ежегодно", stats_fact: "Раннее обнаружение = 98% выживаемость",
     useful_info_title: "Полезно знать", info_self_title: "Самообследование", info_self_desc: "Проводите на 5-7 день цикла.", info_age_title: "Скрининг", info_age_desc: "Маммография после 40 лет.", link_all_articles: "Читать все статьи →",
-    articles_title: "База знаний", art_1_title: "Рак груди: факты ВОЗ", art_1_desc: "Официальная информация.", art_2_title: "Рак молочной железы (Вики)", art_2_desc: "Полная энциклопедическая статья.", art_3_title: "BreastCancer.org", art_3_desc: "Международный ресурс.", art_4_title: "Маммография: подготовка", art_4_desc: "Как подготовиться к обследованию.", art_5_title: "Американское онкообщество", art_5_desc: "Подробные материалы.",
+    articles_title: "База знаний", art_1_title: "Рак груди: факты ВОЗ", art_1_desc: "Официальная информация.", art_2_title: "Рак молочной железы (Вики)", art_2_desc: "Полная энциклопедическая статья.", art_3_title: "BreastCancer.org", art_3_desc: "Международный ресурс.", art_4_title: "Маммография: подготовка", art_4_desc: "Как подготовиться.", art_5_title: "Американское онкообщество", art_5_desc: "Подробные материалы.",
     risk_welcome: "Добро пожаловать!", risk_subtitle: "Ответьте на вопросы", risk_age: "Возраст", risk_weight: "Вес", risk_height: "Рост", risk_family: "Наследственность", risk_smoke: "Курение", risk_symptoms: "Жалобы",
     opt_no: "Нет", opt_distant: "Дальние", opt_close: "Мама/сестра", opt_no_smoke: "Не курю", opt_ex_smoke: "Бросила", opt_smoke: "Курю", opt_no_symptoms: "Нет", opt_discomfort: "Дискомфорт", opt_pain: "Уплотнения",
     btn_calc: "Рассчитать", btn_skip: "Пропустить", btn_continue: "Продолжить", btn_save: "Сохранить", btn_done: "Готово", btn_reset: "Сброс",
@@ -677,12 +671,14 @@ for (let i = 1; i <= 30; i++) {
 }
 
 // ========== VARS ==========
-  
 let cycleData = null;
 let currentCalendarDate = new Date();
 let map = null;
 let markers = [];
-let learningProgress = { completed: [], currentDay: 1, totalXp: 0, lastCompletedTime: // ===== SELF EXAM PRO =====
+// ИСПРАВЛЕНО: Корректное объявление переменной
+let learningProgress = { completed: [], currentDay: 1, totalXp: 0, lastCompletedTime: null };
+
+// ========== SELF EXAM LOGIC (ИСПРАВЛЕНО) ==========
 const examSteps = [
   { text: "Осмотрите грудь в зеркале", check: "Есть ли изменения формы?", risk: 2 },
   { text: "Поднимите руки вверх", check: "Есть ли втяжения кожи?", risk: 3 },
@@ -696,7 +692,6 @@ let examAnswers = [];
 
 function openSelfExam() {
   const last = loadLocal('lastExam');
-
   if (last) {
     const diff = Date.now() - last;
     if (diff < 86400000) {
@@ -704,7 +699,6 @@ function openSelfExam() {
       return;
     }
   }
-
   examStep = 0;
   examAnswers = [];
   show($('selfexam-modal'));
@@ -717,24 +711,20 @@ function closeSelfExam() {
 
 function renderExamStep() {
   const step = examSteps[examStep];
-
   $('selfexam-step').innerHTML = `
     <p class="font-medium mb-2">${step.text}</p>
     <p class="text-sm text-gray-600 mb-4">${step.check}</p>
-
     <div class="flex gap-2">
-      <button onclick="answerExam(0)" class="flex-1 py-2 bg-green-100 rounded">Нет</button>
-      <button onclick="answerExam(1)" class="flex-1 py-2 bg-red-100 rounded">Да</button>
+      <button onclick="answerExam(0)" class="flex-1 py-2 bg-green-100 rounded hover:bg-green-200">Нет</button>
+      <button onclick="answerExam(1)" class="flex-1 py-2 bg-red-100 rounded hover:bg-red-200">Да</button>
     </div>
-
-    <p class="text-xs mt-3">Шаг ${examStep + 1}/${examSteps.length}</p>
+    <p class="text-xs mt-3 text-gray-400">Шаг ${examStep + 1}/${examSteps.length}</p>
   `;
 }
 
 function answerExam(val) {
   examAnswers.push(val);
   examStep++;
-
   if (examStep >= examSteps.length) {
     finishExam();
   } else {
@@ -744,36 +734,26 @@ function answerExam(val) {
 
 function finishExam() {
   let score = 0;
-
   examAnswers.forEach((a, i) => {
     if (a === 1) score += examSteps[i].risk;
   });
 
   let result = "";
   let color = "";
-
-  if (score >= 8) {
-    result = "⚠️ Срочно к врачу";
-    color = "text-red-600";
-  } else if (score >= 4) {
-    result = "❗ Есть подозрения";
-    color = "text-yellow-600";
-  } else {
-    result = "✅ Всё нормально";
-    color = "text-green-600";
-  }
+  if (score >= 8) { result = "⚠️ Срочно к врачу"; color = "text-red-600"; }
+  else if (score >= 4) { result = "❗ Есть подозрения"; color = "text-yellow-600"; }
+  else { result = "✅ Всё нормально"; color = "text-green-600"; }
 
   saveLocal('lastExam', Date.now());
 
   $('selfexam-step').innerHTML = `
     <p class="font-bold ${color} mb-4 text-lg">${result}</p>
-
-    <button onclick="closeSelfExam()" 
-      class="w-full py-2 bg-gray-200 rounded-lg">
-      Закрыть
-    </button>
+    <button onclick="closeSelfExam()" class="w-full py-2 bg-gray-200 rounded-lg">Закрыть</button>
   `;
-}н
+}
+// ========== END SELF EXAM ==========
+
+
 // ========== UTILS ==========
 function $(id) { return document.getElementById(id); }
 function show(el) { el?.classList.remove('hidden'); }
@@ -1141,9 +1121,6 @@ function sendAIMessage() {
     container.innerHTML += `<div class="bg-primary text-white p-3 rounded-2xl rounded-tr-none ml-auto max-w-[80%]">${text}</div>`;
     input.value = '';
     setTimeout(() => { container.innerHTML += `<div class="bg-white p-3 rounded-2xl rounded-tl-none max-w-[80%]">Спасибо! Это демо-ответ.</div>`; container.scrollTop = container.scrollHeight; }, 1000);
-}
-  function closeSelfExam() {
-  hide($('selfexam-modal'));
 }
 </script>
 
