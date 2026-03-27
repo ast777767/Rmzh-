@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>MammoCare — Маммография и здоровье груди</title>
-  <meta name="description" content="Карта клиник маммографии в Астане, трекер цикла, оценка риска" />
+  <title>MammoCare — Здоровье груди</title>
+  <meta name="description" content="Профилактика рака груди, трекер цикла и карта клиник Астаны." />
   <meta name="theme-color" content="#ec4899" />
 
   <script src="https://cdn.tailwindcss.com"></script>
@@ -15,9 +15,7 @@
           colors: {
             primary: '#ec4899',
             secondary: '#8b5cf6',
-            period: '#ef4444',
-            ovulation: '#8b5cf6',
-            exam: '#06b6d4'
+            accent: '#06b6d4'
           }
         }
       }
@@ -36,136 +34,107 @@
     ::-webkit-scrollbar-track { background: #f1f1f1; }
     ::-webkit-scrollbar-thumb { background: #ec4899; border-radius: 3px; }
     
-    .card { border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); background: #fff; border: 1px solid #f1f5f9; }
+    .card { border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); background: #fff; border: 1px solid #f1f5f9; }
     .nav-item { transition: .2s }
     .nav-item:hover { background: #fdf2f8 }
-    .nav-item.active { background: #fce7f3; color: #ec4899; font-weight: 500; }
+    .nav-item.active { background: #fce7f3; color: #ec4899; font-weight: 600; }
     
-    #map { height: 400px; border-radius: 12px; z-index: 10; background: #f0f0f0; }
+    #map { height: 400px; border-radius: 12px; z-index: 10; background: #e5e7eb; }
     
     .view-section { display: none; }
     .view-section.active { display: block; }
     
     .calendar-day { 
       width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; 
-      border-radius: 50%; font-size: 14px; cursor: pointer; transition: all 0.2s; position: relative;
+      border-radius: 50%; font-size: 14px; cursor: pointer; transition: all 0.2s;
     }
-    .calendar-day:hover { background: #f1f5f9; }
-    .calendar-day.today { border: 2px solid #ec4899; font-weight: 600; z-index: 2; }
-    
+    .calendar-day:hover { background: #f3f4f6; }
+    .calendar-day.today { border: 2px solid #ec4899; font-weight: 600; }
     .calendar-day.period { background: #fecaca; color: #dc2626; font-weight: 500; }
     .calendar-day.ovulation { background: #ddd6fe; color: #7c3aed; font-weight: 500; }
     .calendar-day.fertile { background: #ede9fe; color: #8b5cf6; }
     .calendar-day.exam { background: #cffafe; color: #0891b2; }
-    .calendar-day.other-month { color: #cbd5e1; }
     
     .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 1rem; }
     
-    .pulse { animation: pulse 2s infinite; }
-    @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
-    
-    .lesson-card { transition: all 0.3s; }
-    .lesson-card:hover { transform: translateY(-2px); }
-    .lesson-card.locked { opacity: 0.6; filter: grayscale(0.5); cursor: not-allowed; }
+    .lesson-card { transition: all 0.3s; position: relative; overflow: hidden; }
+    .lesson-card:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+    .lesson-card.locked { opacity: 0.7; filter: grayscale(0.5); cursor: not-allowed; }
     .lesson-card.completed { border-color: #10b981; background: #f0fdf4; }
-    .lesson-card.waiting { opacity: 0.8; border-color: #f59e0b; background: #fffbeb; }
 
     .xp-bar { height: 8px; border-radius: 4px; background: #e5e7eb; overflow: hidden; }
-    .xp-bar-fill { height: 100%; background: linear-gradient(90deg, #ec4899, #8b5cf6); transition: width 0.5s; }
+    .xp-bar-fill { height: 100%; background: linear-gradient(90deg, #ec4899, #8b5cf6); transition: width 0.5s ease-out; }
+    
+    .pulse { animation: pulse 2s infinite; }
+    @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
   </style>
 </head>
 
 <body class="bg-gray-50 min-h-screen flex flex-col">
 
-<!-- ===== МОДАЛЬНОЕ ОКНО УРОКА ===== -->
+<!-- МОДАЛЬНОЕ ОКНО УРОКА -->
 <div id="lesson-modal" class="modal-overlay hidden">
   <div class="bg-white rounded-2xl w-full max-w-lg p-6 max-h-[90vh] overflow-y-auto relative">
-    <button onclick="closeLessonModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
+    <button onclick="closeLessonModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 z-10">
       <i data-feather="x" class="w-6 h-6"></i>
     </button>
     <div id="lesson-content"></div>
   </div>
 </div>
 
-<!-- ===== МОДАЛЬНОЕ ОКНО ОЦЕНКИ РИСКА (РАСШИРЕННОЕ) ===== -->
+<!-- МОДАЛЬНОЕ ОКНО ОЦЕНКИ РИСКА -->
 <div id="risk-modal" class="modal-overlay hidden">
   <div class="bg-white rounded-2xl w-full max-w-md p-6 max-h-[90vh] overflow-y-auto">
     <div class="text-center mb-6">
       <div class="w-16 h-16 bg-pink-100 rounded-full flex items-center justify-center mx-auto mb-4 text-primary">
-        <svg class="w-8 h-8" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2M10.5 7H13.5L19 16L16.5 17.5L14 13V22H10V13L7.5 17.5L5 16L10.5 7Z" />
-        </svg>
+        <svg class="w-8 h-8" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2M10.5 7H13.5L19 16L16.5 17.5L14 13V22H10V13L7.5 17.5L5 16L10.5 7Z" /></svg>
       </div>
-      <h2 class="text-xl font-bold text-gray-800" data-i18n="risk_welcome">Добро пожаловать в MammoCare!</h2>
-      <p class="text-gray-600 mt-2" data-i18n="risk_subtitle">Ответьте на вопросы для точного расчета риска</p>
+      <h2 class="text-xl font-bold text-gray-800" data-i18n="risk_welcome">Добро пожаловать!</h2>
+      <p class="text-gray-600 mt-2" data-i18n="risk_subtitle">Ответьте на вопросы для расчета</p>
     </div>
 
     <div class="space-y-4">
-      <!-- Возраст -->
       <div>
         <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="risk_age">Ваш возраст</label>
-        <input type="number" id="risk-age" placeholder="35" min="18" max="100" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary">
+        <input type="number" id="risk-age" placeholder="35" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary">
       </div>
-
-      <!-- Вес и Рост -->
       <div class="grid grid-cols-2 gap-3">
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="risk_weight">Вес (кг)</label>
-          <input type="number" id="risk-weight" placeholder="65" min="30" max="200" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary">
+          <input type="number" id="risk-weight" placeholder="65" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
         </div>
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="risk_height">Рост (см)</label>
-          <input type="number" id="risk-height" placeholder="165" min="100" max="250" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary">
+          <input type="number" id="risk-height" placeholder="165" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
         </div>
       </div>
-
-      <!-- Наследственность -->
       <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="risk_family">Случаи рака груди в семье</label>
+        <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="risk_family">Наследственность</label>
         <select id="risk-family" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
-          <option value="0" data-i18n="risk_opt_no">Нет</option>
-          <option value="1" data-i18n="risk_opt_distant">У дальних родственников</option>
-          <option value="2" data-i18n="risk_opt_close">У мамы/сестры</option>
-          <option value="3" data-i18n="risk_opt_many">Несколько случаев</option>
+          <option value="0" data-i18n="opt_no">Нет</option>
+          <option value="1" data-i18n="opt_distant">Дальние родственники</option>
+          <option value="2" data-i18n="opt_close">Мама/сестра</option>
         </select>
       </div>
-
-      <!-- Курение -->
       <div>
         <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="risk_smoke">Курение</label>
         <select id="risk-smoke" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
-          <option value="0" data-i18n="risk_opt_no_smoke">Не курю</option>
-          <option value="1" data-i18n="risk_opt_ex_smoke">Курила раньше</option>
-          <option value="2" data-i18n="risk_opt_smoke">Курю сейчас</option>
+          <option value="0" data-i18n="opt_no_smoke">Не курю</option>
+          <option value="1" data-i18n="opt_ex_smoke">Бросила</option>
+          <option value="2" data-i18n="opt_smoke">Курю</option>
         </select>
       </div>
-
-      <!-- Гормоны (Новое) -->
       <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="risk_hormones">Прием гормональных препаратов</label>
-        <select id="risk-hormones" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
-          <option value="0" data-i18n="risk_opt_no_hormones">Нет / Не принимаю</option>
-          <option value="1" data-i18n="risk_opt_contraceptives">Контрацептивы</option>
-          <option value="2" data-i18n="risk_opt_hrt">Гормонозаместительная терапия</option>
-        </select>
-      </div>
-
-      <!-- Жалобы -->
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="risk_symptoms">Есть ли жалобы?</label>
+        <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="risk_symptoms">Жалобы</label>
         <select id="risk-symptoms" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
-          <option value="0" data-i18n="risk_opt_no_symptoms">Нет жалоб</option>
-          <option value="1" data-i18n="risk_opt_discomfort">Иногда дискомфорт</option>
-          <option value="3" data-i18n="risk_opt_pain">Есть уплотнения/боль</option>
+          <option value="0" data-i18n="opt_no_symptoms">Нет</option>
+          <option value="1" data-i18n="opt_discomfort">Дискомфорт</option>
+          <option value="3" data-i18n="opt_pain">Уплотнения/боль</option>
         </select>
       </div>
 
-      <button id="calculate-risk-btn" class="w-full py-3 bg-primary text-white rounded-lg hover:bg-pink-600 transition font-medium" data-i18n="btn_calc">
-        Рассчитать риск
-      </button>
-      <button id="skip-risk-btn" class="w-full py-2 text-gray-500 hover:text-gray-700 text-sm" data-i18n="btn_skip">
-        Пропустить
-      </button>
+      <button id="calculate-risk-btn" class="w-full py-3 bg-primary text-white rounded-lg hover:bg-pink-600 font-medium" data-i18n="btn_calc">Рассчитать</button>
+      <button id="skip-risk-btn" class="w-full py-2 text-gray-500 hover:text-gray-700 text-sm" data-i18n="btn_skip">Пропустить</button>
     </div>
 
     <div id="risk-result" class="hidden mt-6 p-4 rounded-lg text-center">
@@ -182,9 +151,7 @@
     <div class="flex items-center justify-between">
       <a href="#home" class="flex items-center space-x-2">
         <div class="text-2xl text-primary">
-             <svg class="w-7 h-7" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2M10.5 7H13.5L19 16L16.5 17.5L14 13V22H10V13L7.5 17.5L5 16L10.5 7Z" />
-            </svg>
+             <svg class="w-7 h-7" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2M10.5 7H13.5L19 16L16.5 17.5L14 13V22H10V13L7.5 17.5L5 16L10.5 7Z" /></svg>
         </div>
         <h1 class="text-xl font-bold text-gray-800">MammoCare</h1>
       </a>
@@ -194,37 +161,25 @@
       </button>
 
       <nav class="hidden md:flex space-x-1">
-        <a href="#home" class="nav-item active px-4 py-2 rounded-lg flex items-center gap-2">
-          <i data-feather="home" class="w-4 h-4"></i> <span data-i18n="nav_home">Главная</span>
-        </a>
-        <a href="#learn" class="nav-item px-4 py-2 rounded-lg flex items-center gap-2">
-          <i data-feather="award" class="w-4 h-4"></i> <span data-i18n="nav_learn">Обучение</span>
-        </a>
-        <a href="#cycle" class="nav-item px-4 py-2 rounded-lg flex items-center gap-2">
-          <i data-feather="calendar" class="w-4 h-4"></i> <span data-i18n="nav_cycle">Цикл</span>
-        </a>
-        <a href="#clinics" class="nav-item px-4 py-2 rounded-lg flex items-center gap-2">
-          <i data-feather="map" class="w-4 h-4"></i> <span data-i18n="nav_clinics">Клиники</span>
-        </a>
-        <a href="#about" class="nav-item px-4 py-2 rounded-lg flex items-center gap-2">
-          <i data-feather="info" class="w-4 h-4"></i> <span data-i18n="nav_about">О нас</span>
-        </a>
+        <a href="#home" class="nav-item active px-4 py-2 rounded-lg flex items-center gap-2"><i data-feather="home" class="w-4 h-4"></i> <span data-i18n="nav_home">Главная</span></a>
+        <a href="#learn" class="nav-item px-4 py-2 rounded-lg flex items-center gap-2"><i data-feather="award" class="w-4 h-4"></i> <span data-i18n="nav_learn">Обучение</span></a>
+        <a href="#articles" class="nav-item px-4 py-2 rounded-lg flex items-center gap-2"><i data-feather="book-open" class="w-4 h-4"></i> <span data-i18n="nav_articles">Статьи</span></a>
+        <a href="#cycle" class="nav-item px-4 py-2 rounded-lg flex items-center gap-2"><i data-feather="calendar" class="w-4 h-4"></i> <span data-i18n="nav_cycle">Цикл</span></a>
+        <a href="#clinics" class="nav-item px-4 py-2 rounded-lg flex items-center gap-2"><i data-feather="map" class="w-4 h-4"></i> <span data-i18n="nav_clinics">Клиники</span></a>
+        <a href="#about" class="nav-item px-4 py-2 rounded-lg flex items-center gap-2"><i data-feather="info" class="w-4 h-4"></i> <span data-i18n="nav_about">О нас</span></a>
       </nav>
 
       <div class="flex items-center gap-2">
-        <a href="#account" class="p-2 hover:bg-gray-100 rounded-full relative">
-          <i data-feather="user" class="w-5 h-5 text-gray-600"></i>
-        </a>
+        <a href="#account" class="p-2 hover:bg-gray-100 rounded-full relative"><i data-feather="user" class="w-5 h-5 text-gray-600"></i></a>
         
         <div class="relative">
           <button id="lang-btn" class="flex items-center gap-1 px-3 py-2 border border-gray-200 rounded-lg hover:bg-gray-50">
             <span id="current-lang-flag">🇷🇺</span>
-            <span id="current-lang-code" class="text-sm font-medium hidden sm:inline">RU</span>
           </button>
           <div id="lang-dropdown" class="hidden absolute right-0 mt-2 w-36 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
-            <button class="w-full text-left px-3 py-2 hover:bg-gray-50 flex items-center gap-2" data-lang="ru">🇷🇺 Русский</button>
-            <button class="w-full text-left px-3 py-2 hover:bg-gray-50 flex items-center gap-2" data-lang="kz">🇰🇿 Қазақша</button>
-            <button class="w-full text-left px-3 py-2 hover:bg-gray-50 flex items-center gap-2" data-lang="en">🇬🇧 English</button>
+            <button onclick="setLanguage('ru')" class="w-full text-left px-3 py-2 hover:bg-gray-50">🇷🇺 Русский</button>
+            <button onclick="setLanguage('kz')" class="w-full text-left px-3 py-2 hover:bg-gray-50">🇰🇿 Қазақша</button>
+            <button onclick="setLanguage('en')" class="w-full text-left px-3 py-2 hover:bg-gray-50">🇬🇧 English</button>
           </div>
         </div>
       </div>
@@ -242,6 +197,7 @@
     <nav class="space-y-2">
       <a href="#home" class="nav-item block px-4 py-3 rounded-lg"><i data-feather="home" class="w-5 h-5 inline mr-3"></i> <span data-i18n="nav_home">Главная</span></a>
       <a href="#learn" class="nav-item block px-4 py-3 rounded-lg"><i data-feather="award" class="w-5 h-5 inline mr-3"></i> <span data-i18n="nav_learn">Обучение</span></a>
+      <a href="#articles" class="nav-item block px-4 py-3 rounded-lg"><i data-feather="book-open" class="w-5 h-5 inline mr-3"></i> <span data-i18n="nav_articles">Статьи</span></a>
       <a href="#cycle" class="nav-item block px-4 py-3 rounded-lg"><i data-feather="calendar" class="w-5 h-5 inline mr-3"></i> <span data-i18n="nav_cycle">Цикл</span></a>
       <a href="#clinics" class="nav-item block px-4 py-3 rounded-lg"><i data-feather="map" class="w-5 h-5 inline mr-3"></i> <span data-i18n="nav_clinics">Клиники</span></a>
       <a href="#about" class="nav-item block px-4 py-3 rounded-lg"><i data-feather="info" class="w-5 h-5 inline mr-3"></i> <span data-i18n="nav_about">О нас</span></a>
@@ -255,107 +211,149 @@
 
   <!-- ===== ГЛАВНАЯ ===== -->
   <section id="view-home" class="view-section active space-y-6">
-    <div id="notifications-container" class="space-y-3"></div>
-
+    
+    <!-- Карточка Риска -->
     <div id="risk-card" class="hidden card p-5 bg-gradient-to-r from-pink-50 to-red-50 border-pink-200">
       <div class="flex items-center justify-between">
         <div>
-          <p class="text-sm text-gray-600" data-i18n="home_risk_label">Ваш уровень риска</p>
+          <p class="text-sm text-gray-600" data-i18n="home_risk_label">Ваш риск</p>
           <p class="text-2xl font-bold" id="home-risk-level">—</p>
         </div>
-        <button id="recalculate-risk" class="text-sm text-primary hover:underline" data-i18n="home_risk_recalc">Пересчитать</button>
+        <button id="recalculate-risk" class="text-sm text-primary hover:underline" data-i18n="recalc">Пересчитать</button>
       </div>
     </div>
 
+    <!-- СТАТИСТИКА (НОВОЕ) -->
+    <div class="card p-6 bg-white border-l-4 border-primary">
+      <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+        <i data-feather="bar-chart-2" class="w-5 h-5 text-primary"></i> <span data-i18n="stats_title">Статистика рака груди</span>
+      </h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="p-4 bg-gray-50 rounded-lg">
+          <p class="text-sm font-bold text-gray-500 mb-1" data-i18n="stats_kz">🇰🇿 Казахстан</p>
+          <p class="text-3xl font-bold text-gray-800">1-е</p>
+          <p class="text-sm text-gray-600" data-i18n="stats_kz_desc">место по заболеваемости среди женщин</p>
+          <p class="text-xs text-gray-400 mt-2">~4 600 новых случаев ежегодно</p>
+        </div>
+        <div class="p-4 bg-gray-50 rounded-lg">
+          <p class="text-sm font-bold text-gray-500 mb-1" data-i18n="stats_world">🌍 В мире</p>
+          <p class="text-3xl font-bold text-gray-800">2.3 млн</p>
+          <p class="text-sm text-gray-600" data-i18n="stats_world_desc">случаев ежегодно (по данным ВОЗ)</p>
+          <p class="text-xs text-gray-400 mt-2">Каждую 8-ю женщину затрагивает диагноз</p>
+        </div>
+      </div>
+      <div class="mt-4 p-3 bg-green-50 rounded-lg text-sm text-green-700 flex items-center gap-2">
+        <i data-feather="check-circle" class="w-4 h-4"></i>
+        <span data-i18n="stats_fact">Раннее обнаружение повышает выживаемость до 98%</span>
+      </div>
+    </div>
+
+    <!-- Hero -->
     <div class="card p-8 bg-gradient-to-br from-pink-50 via-white to-purple-50">
       <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-3" data-i18n="home_welcome">Добро пожаловать в MammoCare</h2>
-      <p class="text-gray-600 mb-6" data-i18n="home_desc">Следите за здоровьем груди: трекер цикла, напоминания о самообследовании и карта клиник.</p>
+      <p class="text-gray-600 mb-6" data-i18n="home_desc">Следите за здоровьем груди: трекер цикла, напоминания и карта клиник.</p>
       <div class="flex flex-wrap gap-3">
-        <a href="#cycle" class="px-5 py-2.5 bg-primary text-white rounded-lg hover:bg-pink-600 transition cursor-pointer" data-i18n="home_btn_cycle">
-          Открыть трекер цикла
-        </a>
-        <a href="#clinics" class="px-5 py-2.5 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition cursor-pointer" data-i18n="home_btn_clinic">
-          Найти клинику
-        </a>
+        <a href="#cycle" class="px-5 py-2.5 bg-primary text-white rounded-lg hover:bg-pink-600 transition cursor-pointer" data-i18n="btn_cycle">Трекер</a>
+        <a href="#clinics" class="px-5 py-2.5 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition cursor-pointer" data-i18n="btn_clinic">Клиники</a>
       </div>
     </div>
 
+    <!-- Статус -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
       <div class="card p-5">
-        <div class="flex items-center gap-3 mb-3">
-          <div class="p-2 rounded-full bg-pink-100 text-primary"><i data-feather="calendar" class="w-5 h-5"></i></div>
-          <span class="font-medium text-gray-700" data-i18n="card_cycle_day">День цикла</span>
-        </div>
+        <div class="flex items-center gap-3 mb-3"><div class="p-2 rounded-full bg-pink-100 text-primary"><i data-feather="calendar" class="w-5 h-5"></i></div><span class="font-medium text-gray-700" data-i18n="card_cycle">День цикла</span></div>
         <p class="text-3xl font-bold text-gray-800" id="home-cycle-day">—</p>
-        <p class="text-sm text-gray-500" id="home-cycle-phase" data-i18n="card_cycle_config">Настройте трекер</p>
+        <p class="text-sm text-gray-500" id="home-cycle-phase" data-i18n="config">Настройте</p>
       </div>
-
       <div class="card p-5">
-        <div class="flex items-center gap-3 mb-3">
-          <div class="p-2 rounded-full bg-red-100 text-red-500"><i data-feather="droplet" class="w-5 h-5"></i></div>
-          <span class="font-medium text-gray-700" data-i18n="card_next_period">Следующие месячные</span>
-        </div>
+        <div class="flex items-center gap-3 mb-3"><div class="p-2 rounded-full bg-red-100 text-red-500"><i data-feather="droplet" class="w-5 h-5"></i></div><span class="font-medium text-gray-700" data-i18n="card_next">След. месячные</span></div>
         <p class="text-xl font-bold text-gray-800" id="home-next-period">—</p>
         <p class="text-sm text-gray-500" id="home-period-countdown"></p>
       </div>
-
       <div class="card p-5">
-        <div class="flex items-center gap-3 mb-3">
-          <div class="p-2 rounded-full bg-purple-100 text-purple-600"><i data-feather="award" class="w-5 h-5"></i></div>
-          <span class="font-medium text-gray-700" data-i18n="card_progress">Прогресс обучения</span>
-        </div>
+        <div class="flex items-center gap-3 mb-3"><div class="p-2 rounded-full bg-purple-100 text-purple-600"><i data-feather="award" class="w-5 h-5"></i></div><span class="font-medium text-gray-700" data-i18n="card_xp">Прогресс</span></div>
         <p class="text-xl font-bold text-gray-800" id="home-xp-display">0 XP</p>
-        <p class="text-sm text-gray-500" id="home-lesson-status" data-i18n="card_progress_status">Начните 30-дневный курс</p>
+        <p class="text-sm text-gray-500" data-i18n="card_xp_desc">Начните курс</p>
       </div>
+    </div>
+
+    <!-- ПОЛЕЗНАЯ ИНФОРМАЦИЯ (НОВОЕ) -->
+    <div class="card p-6">
+        <h3 class="text-lg font-bold text-gray-800 mb-4" data-i18n="useful_info_title">Полезная информация</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="flex gap-3 items-start">
+                <div class="p-2 bg-pink-100 rounded-lg text-primary mt-1"><i data-feather="check" class="w-4 h-4"></i></div>
+                <div>
+                    <h4 class="font-semibold text-gray-800" data-i18n="info_self_title">Самообследование</h4>
+                    <p class="text-sm text-gray-600" data-i18n="info_self_desc">Проводите на 5-7 день цикла. Это занимает 5 минут.</p>
+                </div>
+            </div>
+            <div class="flex gap-3 items-start">
+                <div class="p-2 bg-purple-100 rounded-lg text-secondary mt-1"><i data-feather="clock" class="w-4 h-4"></i></div>
+                <div>
+                    <h4 class="font-semibold text-gray-800" data-i18n="info_age_title">Скрининг</h4>
+                    <p class="text-sm text-gray-600" data-i18n="info_age_desc">Маммография рекомендована женщинам старше 40 лет.</p>
+                </div>
+            </div>
+        </div>
+        <div class="mt-4 text-right">
+             <a href="#articles" class="text-sm text-primary hover:underline font-medium" data-i18n="link_all_articles">Читать все статьи →</a>
+        </div>
     </div>
   </section>
 
   <!-- ===== ОБУЧЕНИЕ ===== -->
   <section id="view-learn" class="view-section space-y-6">
-    <div class="card p-6 bg-gradient-to-r from-purple-50 to-pink-50 border-purple-100">
+    <div class="card p-6 bg-gradient-to-r from-purple-50 to-pink-50">
       <div class="flex items-center justify-between flex-wrap gap-4">
         <div>
-          <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
-            <i data-feather="award" class="w-6 h-6 text-primary"></i> <span data-i18n="learn_title">30-дневная программа</span>
-          </h2>
-          <p class="text-gray-600 mt-1" data-i18n="learn_subtitle">Укрепите здоровье груди шаг за шагом</p>
+          <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-2"><i data-feather="award" class="w-6 h-6 text-primary"></i> <span data-i18n="learn_title">30-дневная программа</span></h2>
+          <p class="text-gray-600 mt-1" data-i18n="learn_desc">Укрепите здоровье шаг за шагом</p>
         </div>
         <div class="text-right">
           <p class="text-3xl font-bold text-primary" id="total-xp-header">0</p>
-          <p class="text-sm text-gray-500" data-i18n="learn_xp">баллов (XP)</p>
+          <p class="text-sm text-gray-500">XP</p>
         </div>
       </div>
-      
       <div class="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg text-sm text-yellow-800 flex items-start gap-2">
         <i data-feather="info" class="w-4 h-4 mt-0.5 flex-shrink-0"></i>
-        <span data-i18n="learn_info">Накапливайте баллы! В будущем они дадут скидку на премиум-аккаунт. Один урок открывается раз в 24 часа.</span>
+        <span data-i18n="learn_info">Один урок открывается раз в 24 часа. Накапливайте XP.</span>
       </div>
     </div>
     <div id="learning-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
   </section>
 
+  <!-- ===== СТАТЬИ (НОВОЕ) ===== -->
+  <section id="view-articles" class="view-section space-y-6">
+    <div class="card p-6">
+      <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+        <i data-feather="book-open" class="w-6 h-6 text-primary"></i> <span data-i18n="articles_title">База знаний</span>
+      </h2>
+      <div id="articles-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+    </div>
+  </section>
+
   <!-- ===== ТРЕКЕР ЦИКЛА ===== -->
   <section id="view-cycle" class="view-section space-y-6">
     <div id="cycle-setup" class="card p-6">
-      <h2 class="text-xl font-bold text-gray-800 mb-4" data-i18n="cycle_setup_title">Настройка трекера цикла</h2>
-      <p class="text-gray-600 mb-6" data-i18n="cycle_setup_desc">Введите данные для точного расчёта фаз цикла.</p>
-
+      <h2 class="text-xl font-bold text-gray-800 mb-4" data-i18n="cycle_title">Настройка трекера</h2>
       <div class="space-y-4 max-w-md">
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="cycle_date">Дата последних месячных</label>
           <input type="date" id="setup-last-period" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
         </div>
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="cycle_length">Длина цикла (дни)</label>
-          <input type="number" id="setup-cycle-length" value="28" min="21" max="40" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+          <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="cycle_len">Длина цикла (дни)</label>
+          <input type="number" id="setup-cycle-length" value="28" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
         </div>
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="period_length">Длина месячных (дни)</label>
-          <input type="number" id="setup-period-length" value="5" min="2" max="10" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+          <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="period_len">Длина месячных (дни)</label>
+          <input type="number" id="setup-period-length" value="5" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
         </div>
-        <button id="save-cycle-settings" class="w-full py-3 bg-primary text-white rounded-lg hover:bg-pink-600 font-medium" data-i18n="btn_save_start">
-          Сохранить и начать
-        </button>
+        <div class="flex gap-2">
+            <button id="save-cycle-settings" class="flex-1 py-3 bg-primary text-white rounded-lg hover:bg-pink-600 font-medium" data-i18n="btn_save">Сохранить</button>
+            <button id="reset-cycle-btn" class="py-3 px-4 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 font-medium text-sm" data-i18n="btn_reset">Сброс</button>
+        </div>
       </div>
     </div>
 
@@ -369,15 +367,11 @@
           </div>
           <div class="flex gap-4">
             <div class="text-center">
-              <div class="w-16 h-16 rounded-full bg-white shadow-md flex items-center justify-center mb-1">
-                <span class="text-2xl font-bold text-red-500" id="days-to-period">—</span>
-              </div>
+              <div class="w-16 h-16 rounded-full bg-white shadow flex items-center justify-center mb-1"><span class="text-2xl font-bold text-red-500" id="days-to-period">—</span></div>
               <p class="text-xs text-gray-600" data-i18n="till_period">до месячных</p>
             </div>
             <div class="text-center">
-              <div class="w-16 h-16 rounded-full bg-white shadow-md flex items-center justify-center mb-1">
-                <span class="text-2xl font-bold text-purple-500" id="days-to-ovulation">—</span>
-              </div>
+              <div class="w-16 h-16 rounded-full bg-white shadow flex items-center justify-center mb-1"><span class="text-2xl font-bold text-purple-500" id="days-to-ovulation">—</span></div>
               <p class="text-xs text-gray-600" data-i18n="till_ovulation">до овуляции</p>
             </div>
           </div>
@@ -388,10 +382,10 @@
         <div class="flex items-start gap-3">
           <div class="p-2 rounded-full bg-cyan-100 text-cyan-600 pulse"><i data-feather="bell" class="w-5 h-5"></i></div>
           <div class="flex-1">
-            <p class="font-medium text-cyan-800" data-i18n="exam_title">Время для самообследования груди!</p>
-            <p class="text-sm text-cyan-700" data-i18n="exam_desc">Сейчас оптимальный период (5-7 день цикла).</p>
+            <p class="font-medium text-cyan-800" data-i18n="exam_title">Время для самообследования!</p>
+            <p class="text-sm text-cyan-700" data-i18n="exam_desc">Оптимальный период (5-7 день).</p>
           </div>
-          <button id="exam-done-btn" class="px-3 py-1 bg-cyan-600 text-white text-sm rounded-lg" data-i18n="btn_done">Выполнено</button>
+          <button id="exam-done-btn" class="px-3 py-1 bg-cyan-600 text-white text-sm rounded-lg" data-i18n="btn_done">Готово</button>
         </div>
       </div>
 
@@ -402,25 +396,23 @@
           <button id="next-month" class="p-2 hover:bg-gray-100 rounded-lg"><i data-feather="chevron-right" class="w-5 h-5"></i></button>
         </div>
         <div class="grid grid-cols-7 gap-1 mb-2 text-center text-xs font-medium text-gray-500">
-            <div data-i18n="mon">Пн</div><div data-i18n="tue">Вт</div><div data-i18n="wed">Ср</div><div data-i18n="thu">Чт</div><div data-i18n="fri">Пт</div><div data-i18n="sat">Сб</div><div data-i18n="sun">Вс</div>
+            <div>Пн</div><div>Вт</div><div>Ср</div><div>Чт</div><div>Пт</div><div>Сб</div><div>Вс</div>
         </div>
         <div id="calendar-grid" class="grid grid-cols-7 gap-1"></div>
         <div class="flex flex-wrap gap-4 mt-6 pt-4 border-t border-gray-100">
-          <div class="flex items-center gap-2"><div class="w-4 h-4 rounded-full bg-red-200"></div><span class="text-sm text-gray-600" data-i18n="legend_period">Месячные</span></div>
-          <div class="flex items-center gap-2"><div class="w-4 h-4 rounded-full bg-purple-200"></div><span class="text-sm text-gray-600" data-i18n="legend_ovulation">Овуляция</span></div>
-          <div class="flex items-center gap-2"><div class="w-4 h-4 rounded-full bg-cyan-200"></div><span class="text-sm text-gray-600" data-i18n="legend_exam">Самообследование</span></div>
+          <div class="flex items-center gap-2"><div class="w-4 h-4 rounded-full bg-red-200"></div><span class="text-sm text-gray-600" data-i18n="leg_period">Месячные</span></div>
+          <div class="flex items-center gap-2"><div class="w-4 h-4 rounded-full bg-purple-200"></div><span class="text-sm text-gray-600" data-i18n="leg_ovulation">Овуляция</span></div>
         </div>
       </div>
-
+      
+      <!-- ВОССТАНОВЛЕН ПРОГНОЗ -->
       <div class="card p-6">
         <h3 class="font-semibold text-gray-800 mb-4" data-i18n="forecast">Прогноз на 3 месяца</h3>
         <div id="forecast-list" class="space-y-3"></div>
       </div>
 
       <div class="text-center">
-        <button id="edit-cycle-settings" class="text-sm text-gray-500 hover:text-primary">
-          <i data-feather="settings" class="w-4 h-4 inline"></i> <span data-i18n="edit_settings">Изменить настройки</span>
-        </button>
+        <button id="edit-cycle-settings" class="text-sm text-gray-500 hover:text-primary"><i data-feather="settings" class="w-4 h-4 inline"></i> <span data-i18n="edit_settings">Изменить</span></button>
       </div>
     </div>
   </section>
@@ -429,54 +421,43 @@
   <section id="view-clinics" class="view-section space-y-6">
     <div class="card p-6">
       <h2 class="text-2xl font-bold text-gray-800 mb-2" data-i18n="clinics_title">Клиники маммографии</h2>
-      <p class="text-gray-600 mb-6" data-i18n="clinics_desc">Найдите ближайший центр для скрининга в Астане.</p>
-
+      <p class="text-gray-600 mb-6" data-i18n="clinics_desc">Найдите ближайший центр в Астане.</p>
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div class="lg:col-span-2 space-y-4">
           <div class="flex gap-3">
-            <input type="text" id="search-clinics" class="flex-1 px-4 py-2 border border-gray-300 rounded-lg" data-i18n-placeholder="search_placeholder" placeholder="Поиск клиники...">
+            <input type="text" id="search-clinics" class="flex-1 px-4 py-2 border border-gray-300 rounded-lg" placeholder="Поиск...">
             <select id="filter-type" class="px-4 py-2 border border-gray-300 rounded-lg">
-              <option value="" data-i18n="filter_all">Все типы</option>
-              <option value="public" data-i18n="filter_public">Государственные</option>
+              <option value="" data-i18n="filter_all">Все</option>
+              <option value="public" data-i18n="filter_public">Гос.</option>
               <option value="private" data-i18n="filter_private">Частные</option>
             </select>
           </div>
-          <div id="map" class="w-full"></div>
+          <div id="map" class="w-full rounded-lg"></div>
         </div>
         <div>
-          <h3 class="font-semibold text-gray-800 mb-3" data-i18n="clinics_list">Список клиник</h3>
+          <h3 class="font-semibold text-gray-800 mb-3" data-i18n="list">Список</h3>
           <div id="clinics-list" class="space-y-3 max-h-[500px] overflow-y-auto pr-2"></div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ===== О НАС ===== -->
+  <!-- ===== О НАС (ВОССТАНОВЛЕНО) ===== -->
   <section id="view-about" class="view-section space-y-6">
     <div class="card p-8 text-center bg-gradient-to-br from-pink-50 to-white">
       <div class="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4 text-primary">
-        <svg class="w-10 h-10" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2M10.5 7H13.5L19 16L16.5 17.5L14 13V22H10V13L7.5 17.5L5 16L10.5 7Z" />
-        </svg>
+        <svg class="w-10 h-10" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2M10.5 7H13.5L19 16L16.5 17.5L14 13V22H10V13L7.5 17.5L5 16L10.5 7Z" /></svg>
       </div>
       <h2 class="text-3xl font-bold text-gray-800 mb-2" data-i18n="about_title">О проекте MammoCare</h2>
       <p class="text-lg text-gray-600 max-w-2xl mx-auto" data-i18n="about_desc">Мы боремся с раком молочной железы, предоставляя женщинам инструменты для ранней диагностики.</p>
     </div>
-
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
       <div class="card p-6">
-        <h3 class="text-xl font-bold text-gray-800 mb-3 flex items-center gap-2">
-          <i data-feather="target" class="w-5 h-5 text-primary"></i> <span data-i18n="mission_title">Наша миссия</span>
-        </h3>
-        <p class="text-gray-600" data-i18n="mission_desc">
-          Снизить смертность от рака груди в Казахстане через информирование и доступность инструментов мониторинга.
-        </p>
+        <h3 class="text-xl font-bold text-gray-800 mb-3 flex items-center gap-2"><i data-feather="target" class="w-5 h-5 text-primary"></i> <span data-i18n="mission_title">Наша миссия</span></h3>
+        <p class="text-gray-600" data-i18n="mission_desc">Снизить смертность от рака груди в Казахстане.</p>
       </div>
-      
       <div class="card p-6">
-        <h3 class="text-xl font-bold text-gray-800 mb-3 flex items-center gap-2">
-          <i data-feather="mail" class="w-5 h-5 text-secondary"></i> <span data-i18n="contacts_title">Контакты</span>
-        </h3>
+        <h3 class="text-xl font-bold text-gray-800 mb-3 flex items-center gap-2"><i data-feather="mail" class="w-5 h-5 text-secondary"></i> <span data-i18n="contacts_title">Контакты</span></h3>
         <div class="space-y-2 text-gray-600">
             <p>Instagram: <a href="https://instagram.com/qyzqylttaspa" target="_blank" class="text-primary font-medium">@qyzqylttaspa</a></p>
             <p>Email: <a href="mailto:teammammocare@outlook.com" class="text-primary font-medium">teammammocare@outlook.com</a></p>
@@ -489,60 +470,36 @@
   <section id="view-account" class="view-section space-y-6">
     <div class="card p-6 bg-gradient-to-r from-purple-500 to-pink-500 text-white">
       <div class="flex items-center gap-4">
-        <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center text-3xl">
-          👩‍💻
-        </div>
+        <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center text-3xl">👩‍💻</div>
         <div>
-          <p class="text-sm opacity-80" data-i18n="acc_welcome">Добро пожаловать,</p>
-          <h2 class="text-2xl font-bold" id="user-display-name" data-i18n="acc_user">Пользователь</h2>
-          <p class="text-sm opacity-80 mt-1"><span data-i18n="acc_level">Уровень:</span> <span id="user-level" data-i18n="lvl_newbie">Новичок</span></p>
+          <p class="text-sm opacity-80" data-i18n="acc_welcome">Привет,</p>
+          <h2 class="text-2xl font-bold" data-i18n="acc_user">Пользователь</h2>
+          <p class="text-sm opacity-80 mt-1">Уровень: <span id="user-level">Новичок</span></p>
         </div>
       </div>
-      
       <div class="mt-4">
-        <div class="flex justify-between text-sm mb-1">
-          <span data-i18n="acc_xp">Опыт (XP)</span>
-          <span id="xp-progress-text">0 / 1000</span>
-        </div>
-        <div class="w-full bg-white/20 rounded-full h-2">
-          <div id="xp-progress-bar" class="bg-white h-2 rounded-full" style="width: 0%"></div>
-        </div>
+        <div class="flex justify-between text-sm mb-1"><span>XP</span><span id="xp-progress-text">0 / 1000</span></div>
+        <div class="w-full bg-white/20 rounded-full h-2"><div id="xp-progress-bar" class="bg-white h-2 rounded-full" style="width: 0%"></div></div>
       </div>
     </div>
-
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
       <div class="card p-6">
-        <h3 class="font-bold text-gray-800 mb-4 flex items-center gap-2"><i data-feather="award" class="w-5 h-5 text-primary"></i> <span data-i18n="acc_achieve">Достижения</span></h3>
+        <h3 class="font-bold text-gray-800 mb-4 flex items-center gap-2"><i data-feather="award" class="w-5 h-5 text-primary"></i> Достижения</h3>
         <div id="achievements-container" class="space-y-3"></div>
       </div>
-      
       <div class="card p-6">
         <h3 class="font-bold text-gray-800 mb-4 flex items-center gap-2">
-            <svg class="w-5 h-5 text-primary" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2M10.5 7H13.5L19 16L16.5 17.5L14 13V22H10V13L7.5 17.5L5 16L10.5 7Z" />
-            </svg>
-            <span data-i18n="acc_health">Здоровье</span>
+            <svg class="w-5 h-5 text-primary" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2M10.5 7H13.5L19 16L16.5 17.5L14 13V22H10V13L7.5 17.5L5 16L10.5 7Z" /></svg>
+            Здоровье
         </h3>
         <div class="space-y-3">
-          <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-            <span class="text-gray-600" data-i18n="acc_risk_level">Уровень риска</span>
-            <span class="font-bold" id="account-risk-level">—</span>
-          </div>
-          <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-            <span class="text-gray-600" data-i18n="acc_bmi">ИМТ (Индекс массы тела)</span>
-            <span class="font-bold" id="account-bmi">—</span>
-          </div>
-          <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-            <span class="text-gray-600" data-i18n="acc_last_exam">Последнее обследование</span>
-            <span class="font-bold" id="account-last-exam">—</span>
-          </div>
+          <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg"><span class="text-gray-600">Риск</span><span class="font-bold" id="account-risk-level">—</span></div>
+          <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg"><span class="text-gray-600">ИМТ</span><span class="font-bold" id="account-bmi">—</span></div>
         </div>
       </div>
     </div>
-    
     <div class="card p-6 text-center">
-      <p class="text-gray-500 text-sm" data-i18n="acc_data_local">Данные сохраняются локально на вашем устройстве.</p>
-      <button onclick="clearAllData()" class="mt-2 text-red-500 hover:text-red-700 text-sm font-medium" data-i18n="acc_reset">Сбросить все данные</button>
+      <button onclick="clearAllData()" class="text-red-500 hover:text-red-700 text-sm font-medium">Сбросить все данные</button>
     </div>
   </section>
 
@@ -550,29 +507,21 @@
 
 <!-- Footer -->
 <footer class="bg-white border-t border-gray-100 py-4 mt-auto">
-  <div class="container mx-auto px-4 text-center text-sm text-gray-500">
-    © 2025 MammoCare • <a href="#about" class="hover:text-primary" data-i18n="nav_about">О нас</a>
-  </div>
+  <div class="container mx-auto px-4 text-center text-sm text-gray-500">© 2025 MammoCare • <a href="#about" class="hover:text-primary">О нас</a></div>
 </footer>
 
-<!-- AI ПОМОЩНИК -->
-<button id="ai-btn" class="fixed bottom-5 right-5 z-50 bg-primary text-white p-4 rounded-full shadow-lg hover:bg-pink-600 transition">
-  <i data-feather="message-circle" class="w-6 h-6"></i>
-</button>
-
+<!-- AI -->
+<button id="ai-btn" class="fixed bottom-5 right-5 z-50 bg-primary text-white p-4 rounded-full shadow-lg hover:bg-pink-600 transition"><i data-feather="message-circle" class="w-6 h-6"></i></button>
 <div id="ai-modal" class="hidden fixed inset-0 z-[1000] bg-black/50 flex items-end md:items-center justify-center p-0 md:p-4">
-  <div class="bg-white w-full md:max-w-md md:rounded-2xl flex flex-col h-[85vh] md:h-[600px]">
+  <div class="bg-white w-full md:max-w-md md:rounded-2xl flex flex-col h-[70vh] md:h-[500px]">
     <div class="p-4 border-b flex items-center justify-between bg-gradient-to-r from-pink-500 to-purple-500 text-white md:rounded-t-2xl">
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center"><i data-feather="cpu" class="w-5 h-5"></i></div>
-        <div><p class="font-semibold">MammoCare AI</p><p class="text-xs text-white/80" data-i18n="ai_online">Онлайн</p></div>
-      </div>
+      <div class="flex items-center gap-3"><div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center"><i data-feather="cpu" class="w-5 h-5"></i></div><div><p class="font-semibold">AI</p></div></div>
       <button id="ai-close" class="p-2 hover:bg-white/20 rounded-full"><i data-feather="x" class="w-5 h-5"></i></button>
     </div>
     <div id="ai-messages" class="flex-1 p-4 overflow-y-auto space-y-4 bg-gray-50"></div>
     <div class="p-4 border-t bg-white md:rounded-b-2xl">
       <div class="flex gap-2">
-        <input id="ai-input" type="text" class="flex-1 px-4 py-3 border border-gray-300 rounded-full focus:ring-2 focus:ring-primary" data-i18n-placeholder="ai_placeholder" placeholder="Задайте вопрос...">
+        <input id="ai-input" type="text" class="flex-1 px-4 py-3 border border-gray-300 rounded-full focus:ring-2 focus:ring-primary" placeholder="Вопрос...">
         <button id="ai-send" class="p-3 bg-primary text-white rounded-full hover:bg-pink-600 transition"><i data-feather="send" class="w-5 h-5"></i></button>
       </div>
     </div>
@@ -581,201 +530,97 @@
 
 <!-- ===== СКРИПТЫ ===== -->
 <script>
-// ========== СЛОВАРЬ ПЕРЕВОДОВ (РАСШИРЕННЫЙ) ==========
+// ========== СТАТЬИ ДАННЫЕ ==========
+const articlesData = [
+    { id: 1, title_key: "art_1_title", desc_key: "art_1_desc", link: "#" },
+    { id: 2, title_key: "art_2_title", desc_key: "art_2_desc", link: "#" },
+    { id: 3, title_key: "art_3_title", desc_key: "art_3_desc", link: "#" },
+    { id: 4, title_key: "art_4_title", desc_key: "art_4_desc", link: "#" },
+];
+
+// ========== ПЕРЕВОДЫ ==========
 const translations = {
   ru: {
-    title: "MammoCare — Маммография и здоровье груди",
-    nav_home: "Главная", nav_learn: "Обучение", nav_cycle: "Цикл", nav_clinics: "Клиники", nav_about: "О нас", nav_account: "Аккаунт",
-    mob_menu: "Меню",
-    home_welcome: "Добро пожаловать в MammoCare",
-    home_desc: "Следите за здоровьем груди: трекер цикла, напоминания о самообследовании и карта клиник.",
-    home_btn_cycle: "Открыть трекер цикла", home_btn_clinic: "Найти клинику",
-    home_risk_label: "Ваш уровень риска", home_risk_recalc: "Пересчитать",
-    card_cycle_day: "День цикла", card_cycle_config: "Настройте трекер",
-    card_next_period: "Следующие месячные", card_progress: "Прогресс обучения", card_progress_status: "Начните 30-дневный курс",
-    risk_welcome: "Добро пожаловать в MammoCare!", risk_subtitle: "Ответьте на вопросы для точного расчета риска",
-    risk_age: "Ваш возраст", 
-    risk_weight: "Вес (кг)", risk_height: "Рост (см)",
-    risk_family: "Случаи рака груди в семье", risk_smoke: "Курение", 
-    risk_hormones: "Прием гормональных препаратов",
-    risk_symptoms: "Есть ли жалобы?",
-    risk_opt_no: "Нет", risk_opt_distant: "У дальних родственников", risk_opt_close: "У мамы/сестры", risk_opt_many: "Несколько случаев",
-    risk_opt_no_smoke: "Не курю", risk_opt_ex_smoke: "Курила раньше", risk_opt_smoke: "Курю сейчас",
-    risk_opt_no_hormones: "Нет / Не принимаю", risk_opt_contraceptives: "Контрацептивы", risk_opt_hrt: "Гормонозаместительная терапия",
-    risk_opt_no_symptoms: "Нет жалоб", risk_opt_discomfort: "Иногда дискомфорт", risk_opt_pain: "Есть уплотнения/боль",
-    btn_calc: "Рассчитать риск", btn_skip: "Пропустить", btn_continue: "Продолжить", btn_save_start: "Сохранить и начать", btn_done: "Выполнено",
-    risk_low: "Низкий риск", risk_moderate: "Умеренный риск", risk_high: "Повышенный риск",
-    risk_adv_low: "Продолжайте наблюдение и здоровый образ жизни.", risk_adv_mod: "Рекомендована консультация врача и обследование.", risk_adv_high: "Срочно обратитесь к специалисту (маммологу/онкологу).",
-    learn_title: "30-дневная программа", learn_subtitle: "Укрепите здоровье груди шаг за шагом", learn_xp: "баллов (XP)",
-    learn_info: "Накапливайте баллы! В будущем они дадут скидку на премиум-аккаунт. Один урок открывается раз в 24 часа.",
-    lesson_open: "Доступно сейчас", lesson_waiting: "Откроется через", lesson_locked: "Доступно позже", lesson_completed: "Завершено",
-    cycle_setup_title: "Настройка трекера цикла", cycle_setup_desc: "Введите данные для точного расчёта фаз цикла.",
-    cycle_date: "Дата последних месячных", cycle_length: "Длина цикла (дни)", period_length: "Длина месячных (дни)",
-    today: "Сегодня", day: "День",
-    phase_menstruation: "Менструация", phase_follicular: "Фолликулярная фаза", phase_ovulation: "Овуляция", phase_luteal: "Лютеиновая фаза",
-    till_period: "до месячных", till_ovulation: "до овуляции",
-    exam_title: "Время для самообследования груди!", exam_desc: "Сейчас оптимальный период (5-7 день цикла).",
-    mon: "Пн", tue: "Вт", wed: "Ср", thu: "Чт", fri: "Пт", sat: "Сб", sun: "Вс",
-    legend_period: "Месячные", legend_ovulation: "Овуляция", legend_exam: "Самообследование",
-    forecast: "Прогноз на 3 месяца", edit_settings: "Изменить настройки",
-    clinics_title: "Клиники маммографии", clinics_desc: "Найдите ближайший центр для скрининга в Астане.",
-    search_placeholder: "Поиск клиники...", filter_all: "Все типы", filter_public: "Государственные", filter_private: "Частные",
-    clinics_list: "Список клиник", clinic_public: "Государственная", clinic_private: "Частная",
-    about_title: "О проекте MammoCare", about_desc: "Мы боремся с раком молочной железы, предоставляя женщинам инструменты для ранней диагностики.",
-    mission_title: "Наша миссия", mission_desc: "Снизить смертность от рака груди в Казахстане через информирование и доступность инструментов мониторинга.",
-    contacts_title: "Контакты",
-    acc_welcome: "Добро пожаловать,", acc_user: "Пользователь", acc_level: "Уровень:", acc_xp: "Опыт (XP)",
-    lvl_newbie: "Новичок", lvl_student: "Ученик", lvl_expert: "Знаток", lvl_master: "Эксперт",
-    acc_achieve: "Достижения", acc_health: "Здоровье",
-    acc_risk_level: "Уровень риска", acc_bmi: "ИМТ (Индекс массы тела)", acc_last_exam: "Последнее обследование",
-    acc_data_local: "Данные сохраняются локально на вашем устройстве.", acc_reset: "Сбросить все данные",
-    acc_no_achieve: "Пока нет достижений",
-    ach_risk: "Первый расчет риска", ach_cycle: "Настройка цикла",
-    ai_online: "Онлайн", ai_placeholder: "Задайте вопрос...",
-    ai_response: "Спасибо за вопрос! В демо-режиме я могу ответить на вопросы о здоровье груди. Для полного функционала подключите AI API.",
-    alert_setup: "Сначала выполните задачи:",
-    alert_exam: "Отлично! Запись добавлена.", alert_next_lesson: "Урок пройден! Следующий откроется через 24 часа.",
-    alert_time_left: "Следующий урок будет доступен через 24 часа!",
-    h: "ч", m: "м",
-    bmi_normal: "Норма", bmi_high: "Избыточный вес", bmi_obese: "Ожирение"
+    nav_home: "Главная", nav_learn: "Обучение", nav_articles: "Статьи", nav_cycle: "Цикл", nav_clinics: "Клиники", nav_about: "О нас", nav_account: "Аккаунт",
+    mob_menu: "Меню", home_welcome: "Добро пожаловать в MammoCare", home_desc: "Следите за здоровьем груди.",
+    btn_cycle: "Трекер", btn_clinic: "Клиники", home_risk_label: "Ваш риск", recalc: "Пересчитать",
+    stats_title: "Статистика рака груди", stats_kz: "🇰🇿 Казахстан", stats_kz_desc: "место по онкозаболеваемости у женщин", stats_world: "🌍 В мире", stats_world_desc: "случаев ежегодно", stats_fact: "Раннее обнаружение повышает выживаемость до 98%",
+    useful_info_title: "Полезно знать", info_self_title: "Самообследование", info_self_desc: "Проводите на 5-7 день цикла.", info_age_title: "Скрининг", info_age_desc: "Маммография рекомендована после 40 лет.", link_all_articles: "Читать все статьи →",
+    articles_title: "База знаний", art_1_title: "Как правильно проводить самообследование", art_1_desc: "Пошаговая техника.", art_2_title: "Факторы риска", art_2_desc: "На что обратить внимание.", art_3_title: "Мифы о раке", art_3_desc: "Развенчиваем заблуждения.", art_4_title: "Питание", art_4_desc: "Продукты для здоровья груди.",
+    risk_welcome: "Добро пожаловать!", risk_subtitle: "Ответьте на вопросы", risk_age: "Возраст", risk_weight: "Вес", risk_height: "Рост", risk_family: "Наследственность", risk_smoke: "Курение", risk_symptoms: "Жалобы",
+    opt_no: "Нет", opt_distant: "Дальние", opt_close: "Мама/сестра", opt_no_smoke: "Не курю", opt_ex_smoke: "Бросила", opt_smoke: "Курю", opt_no_symptoms: "Нет", opt_discomfort: "Дискомфорт", opt_pain: "Уплотнения",
+    btn_calc: "Рассчитать", btn_skip: "Пропустить", btn_continue: "Продолжить", btn_save: "Сохранить", btn_done: "Готово", btn_reset: "Сброс",
+    risk_low: "Низкий риск", risk_moderate: "Умеренный риск", risk_high: "Высокий риск",
+    risk_adv_low: "Продолжайте здоровый образ жизни.", risk_adv_mod: "Рекомендована консультация.", risk_adv_high: "Срочно к врачу.",
+    learn_title: "30-дневная программа", learn_desc: "Укрепите здоровье", learn_info: "Один урок в 24 часа.",
+    lesson_open: "Доступно", lesson_locked: "Заблокировано", lesson_completed: "Пройдено",
+    cycle_title: "Настройка трекера", cycle_date: "Дата начала", cycle_len: "Цикл (дни)", period_len: "Месячные (дни)",
+    today: "Сегодня", day: "День", till_period: "до месячных", till_ovulation: "до овуляции",
+    exam_title: "Время самообследования!", exam_desc: "5-7 день цикла.",
+    forecast: "Прогноз на 3 месяца",
+    clinics_title: "Клиники", clinics_desc: "Карта Астаны", list: "Список", filter_all: "Все", filter_public: "Гос", filter_private: "Частные",
+    about_title: "О проекте", about_desc: "Мы боремся с раком груди.", mission_title: "Миссия", mission_desc: "Снизить смертность.", contacts_title: "Контакты",
+    acc_welcome: "Привет,", acc_user: "Пользователь",
+    alert_exam: "Отлично!", alert_next_lesson: "Урок пройден! +{xp} XP. Следующий через 24 часа.", alert_time_left: "Ждите 24 часа.", alert_cycle_reset: "Данные цикла сброшены."
   },
   kz: {
-    title: "MammoCare — Маммография және сүт безінің денсаулығы",
-    nav_home: "Басты бет", nav_learn: "Оқыту", nav_cycle: "Цикл", nav_clinics: "Клиникалар", nav_about: "Біз туралы", nav_account: "Жеке кабинет",
-    mob_menu: "Мәзір",
-    home_welcome: "MammoCare қош келдіңіз!",
-    home_desc: "Сүт безінің денсаулығын бақылаңыз: цикл трекері, өзіндік тексеру еске салулары және клиникалар картасы.",
-    home_btn_cycle: "Цикл трекерін ашу", home_btn_clinic: "Клиника іздеу",
-    home_risk_label: "Сіздің тәуекел деңгейіңіз", home_risk_recalc: "Қайта есептеу",
-    card_cycle_day: "Цикл күні", card_cycle_config: "Трекерді баптаңыз",
-    card_next_period: "Келесі етеккір", card_progress: "Оқу барысы", card_progress_status: "30 күндік курсты бастаңыз",
-    risk_welcome: "MammoCare қош келдіңіз!", risk_subtitle: "Тәуекелді дәл есептеу үшін сұрақтарға жауап беріңіз",
-    risk_age: "Сіздің жасыңыз", 
-    risk_weight: "Салмақ (кг)", risk_height: "Бой (см)",
-    risk_family: "Отбасында сүт безі рагы", risk_smoke: "Темекі тарту", 
-    risk_hormones: "Гормоналды препараттарды қабылдау",
-    risk_symptoms: "Шағымдар бар ма?",
-    risk_opt_no: "Жоқ", risk_opt_distant: "Алыс туыстарда", risk_opt_close: "Анасы/әпкесінде", risk_opt_many: "Бірнеше жағдай",
-    risk_opt_no_smoke: "Тартпаймын", risk_opt_ex_smoke: "Бұрын тартқан", risk_opt_smoke: "Қазір тартамын",
-    risk_opt_no_hormones: "Жоқ / Қабылдамаймын", risk_opt_contraceptives: "Контрацептивтер", risk_opt_hrt: "Гормон алмастыру терапиясы",
-    risk_opt_no_symptoms: "Шағым жоқ", risk_opt_discomfort: "Кейде жайсыздық", risk_opt_pain: "Түйіндер/ауырсыну бар",
-    btn_calc: "Тәуекелді есептеу", btn_skip: "Өткізіп жіберу", btn_continue: "Жалғастыру", btn_save_start: "Сақтау және бастау", btn_done: "Орындалды",
-    risk_low: "Төмен тәуекел", risk_moderate: "Орташа тәуекел", risk_high: "Жоғары тәуекел",
-    risk_adv_low: "Бақылауды және сау өмір салтын жалғастырыңыз.", risk_adv_mod: "Дәрігермен кеңесу және тексеру ұсынылады.", risk_adv_high: "Дәрігерге (маммолог/онколог) жедел барыңыз.",
-    learn_title: "30 күндік бағдарлама", learn_subtitle: "Сүт безінің денсаулығын кезең-кезеңімен нығайтыңыз", learn_xp: "ұпай (XP)",
-    learn_info: "Ұпай жинаңыз! Болашақта олар премиум-аккаунтқа жеңілдік береді. Бір сабақ 24 сағат сайын ашылады.",
-    lesson_open: "Қазір қолжетімді", lesson_waiting: "Кейінірек ашылады", lesson_locked: "Кейінірек қолжетімді", lesson_completed: "Аяқталды",
-    cycle_setup_title: "Цикл трекерін баптау", cycle_setup_desc: "Дәл есептеу үшін деректерді енгізіңіз.",
-    cycle_date: "Соңғы етеккірдің күні", cycle_length: "Цикл ұзақтығы (күн)", period_length: "Етеккір ұзақтығы (күн)",
-    today: "Бүгін", day: "Күн",
-    phase_menstruation: "Етеккір", phase_follicular: "Фолликулалық фаза", phase_ovulation: "Овуляция", phase_luteal: "Лютеиндық фаза",
-    till_period: "етеккірге дейін", till_ovulation: "овуляцияға дейін",
-    exam_title: "Сүт безін өзіндік тексеру уақыты!", exam_desc: "Қазір оңтайлы кезең (5-7 күн).",
-    mon: "Дс", tue: "Сс", wed: "Ср", thu: "Бс", fri: "Жм", sat: "Сб", sun: "Жс",
-    legend_period: "Етеккір", legend_ovulation: "Овуляция", legend_exam: "Өзіндік тексеру",
-    forecast: "3 айлық болжам", edit_settings: "Баптауды өзгерту",
-    clinics_title: "Маммография клиникалары", clinics_desc: "Астанадағы ең жақын скрининг орталығын табыңыз.",
-    search_placeholder: "Клиника іздеу...", filter_all: "Барлық түрлер", filter_public: "Мемлекеттік", filter_private: "Жеке",
-    clinics_list: "Клиникалар тізімі", clinic_public: "Мемлекеттік", clinic_private: "Жеке",
-    about_title: "MammoCare жобасы туралы", about_desc: "Біз ерте диагностика құралдарын ұсына отырып, сүт безі рагымен күресеміз.",
-    mission_title: "Біздің міндетіміз", mission_desc: "Ақпараттандыру және бақылау құралдарының қолжетімділігі арқылы Қазақстандағы сүт безі рагынан қайтыс болуды азайту.",
-    contacts_title: "Байланыс",
-    acc_welcome: "Қош келдіңіз,", acc_user: "Пайдаланушы", acc_level: "Деңгей:", acc_xp: "Тәжірибе (XP)",
-    lvl_newbie: "Жаңа бастаушы", lvl_student: "Шәкірт", lvl_expert: "Білгір", lvl_master: "Сарапшы",
-    acc_achieve: "Жетістіктер", acc_health: "Денсаулық",
-    acc_risk_level: "Тәуекел деңгейі", acc_bmi: "ДМІ (Дене масса индексі)", acc_last_exam: "Соңғы тексеру",
-    acc_data_local: "Деректер құрылғыңызда жергілікті сақталады.", acc_reset: "Барлық деректерді өшіру",
-    acc_no_achieve: "Әлі жетістіктер жоқ",
-    ach_risk: "Алғашқы тәуекел есебі", ach_cycle: "Цикл баптауы",
-    ai_online: "Желіде", ai_placeholder: "Сұрақ қойыңыз...",
-    ai_response: "Сұрағыңыз үшін рахмет! Демо режимінде мен сүт безі денсаулығы туралы сұрақтарға жауап бере аламын.",
-    alert_setup: "Алдымен тапсырмаларды орындаңыз:",
-    alert_exam: "Керемет! Жазба қосылды.", alert_next_lesson: "Сабақ аяқталды! Келесісі 24 сағаттан кейін ашылады.",
-    alert_time_left: "Келесі сабақ 24 сағаттан кейін қолжетімді болады!",
-    h: "с", m: "м",
-    bmi_normal: "Қалыпты", bmi_high: "Артық салмақ", bmi_obese: "Семіздік"
+    nav_home: "Басты", nav_learn: "Оқыту", nav_articles: "Мақалалар", nav_cycle: "Цикл", nav_clinics: "Клиникалар", nav_about: "Біз туралы", nav_account: "Аккаунт",
+    mob_menu: "Мәзір", home_welcome: "MammoCare қош келдіңіз", home_desc: "Сүт безі денсаулығын бақылаңыз.",
+    btn_cycle: "Трекер", btn_clinic: "Клиникалар", home_risk_label: "Тәуекел", recalc: "Қайта",
+    stats_title: "Статистика", stats_kz: "🇰🇿 Қазақстан", stats_kz_desc: "әйелдер арасындағы орын", stats_world: "🌍 Әлемде", stats_world_desc: "жыл сайын", stats_fact: "Ерте анықтау 98%-ға көмектеседі",
+    useful_info_title: "Пайдалы білім", info_self_title: "Өзіндік тексеру", info_self_desc: "Цикл 5-7 күні.", info_age_title: "Скрининг", info_age_desc: "40 жастан маммография.", link_all_articles: "Мақалалар →",
+    articles_title: "Білім базасы", art_1_title: "Өзіндік тексеру", art_1_desc: "Техника.", art_2_title: "Тәуекел", art_2_desc: "Факторлар.", art_3_title: "Мифтер", art_3_desc: "Жоққа шығару.", art_4_title: "Тамақтану", art_4_desc: "Өнімдер.",
+    risk_welcome: "Қош келдіңіз!", risk_subtitle: "Сұрақтарға жауап", risk_age: "Жас", risk_weight: "Салмақ", risk_height: "Бой", risk_family: "Тұқым", risk_smoke: "Темекі", risk_symptoms: "Шағым",
+    opt_no: "Жоқ", opt_distant: "Алыс", opt_close: "Ана/әпке", opt_no_smoke: "Тартпаймын", opt_ex_smoke: "Тастадым", opt_smoke: "Тартамын", opt_no_symptoms: "Жоқ", opt_discomfort: "Жайсыздық", opt_pain: "Түйін",
+    btn_calc: "Есептеу", btn_skip: "Өткізу", btn_continue: "Жалғастыру", btn_save: "Сақтау", btn_done: "Дайын", btn_reset: "Тазалау",
+    risk_low: "Төмен", risk_moderate: "Орташа", risk_high: "Жоғары",
+    risk_adv_low: "Сау өмір.", risk_adv_mod: "Дәрігер кеңесі.", risk_adv_high: "Жедел дәрігер.",
+    cycle_title: "Баптау", cycle_date: "Күні", cycle_len: "Цикл", period_len: "Етеккір",
+    today: "Бүгін", day: "Күн", till_period: "етеккірге", till_ovulation: "овуляцияға",
+    exam_title: "Тексеру уақыты!", exam_desc: "5-7 күн.",
+    forecast: "Болжам",
+    clinics_title: "Клиникалар", clinics_desc: "Астана картасы", list: "Тізім",
+    about_title: "Жоба туралы", about_desc: "Біз күресеміз.", mission_title: "Міндет", mission_desc: "Азаюы.", contacts_title: "Байланыс",
+    alert_exam: "Керемет!", alert_next_lesson: "Сабақ аяқталды! +{xp} XP.", alert_time_left: "24 сағат.", alert_cycle_reset: "Цикл тазаланды."
   },
   en: {
-    title: "MammoCare — Mammography & Breast Health",
-    nav_home: "Home", nav_learn: "Learn", nav_cycle: "Cycle", nav_clinics: "Clinics", nav_about: "About", nav_account: "Account",
-    mob_menu: "Menu",
-    home_welcome: "Welcome to MammoCare",
-    home_desc: "Monitor breast health: cycle tracker, self-exam reminders, and clinic map.",
-    home_btn_cycle: "Open Cycle Tracker", home_btn_clinic: "Find Clinic",
-    home_risk_label: "Your Risk Level", home_risk_recalc: "Recalculate",
-    card_cycle_day: "Cycle Day", card_cycle_config: "Configure tracker",
-    card_next_period: "Next Period", card_progress: "Learning Progress", card_progress_status: "Start 30-day course",
-    risk_welcome: "Welcome to MammoCare!", risk_subtitle: "Answer questions for accurate risk calculation",
-    risk_age: "Your Age", 
-    risk_weight: "Weight (kg)", risk_height: "Height (cm)",
-    risk_family: "Family history of breast cancer", risk_smoke: "Smoking", 
-    risk_hormones: "Hormonal medication intake",
-    risk_symptoms: "Any complaints?",
-    risk_opt_no: "No", risk_opt_distant: "Distant relatives", risk_opt_close: "Mother/Sister", risk_opt_many: "Multiple cases",
-    risk_opt_no_smoke: "Non-smoker", risk_opt_ex_smoke: "Ex-smoker", risk_opt_smoke: "Current smoker",
-    risk_opt_no_hormones: "No / Not taking", risk_opt_contraceptives: "Contraceptives", risk_opt_hrt: "Hormone Replacement Therapy",
-    risk_opt_no_symptoms: "No complaints", risk_opt_discomfort: "Occasional discomfort", risk_opt_pain: "Lumps/Pain present",
-    btn_calc: "Calculate Risk", btn_skip: "Skip", btn_continue: "Continue", btn_save_start: "Save & Start", btn_done: "Done",
-    risk_low: "Low Risk", risk_moderate: "Moderate Risk", risk_high: "High Risk",
-    risk_adv_low: "Continue monitoring and maintaining a healthy lifestyle.", risk_adv_mod: "Doctor consultation and check-up recommended.", risk_adv_high: "Please see a specialist (mammologist/oncologist) urgently.",
-    learn_title: "30-Day Program", learn_subtitle: "Strengthen breast health step by step", learn_xp: "points (XP)",
-    learn_info: "Earn points! They will provide a discount on the premium account. One lesson opens every 24 hours.",
-    lesson_open: "Available now", lesson_waiting: "Opens in", lesson_locked: "Available later", lesson_completed: "Completed",
-    cycle_setup_title: "Cycle Tracker Setup", cycle_setup_desc: "Enter data for accurate phase calculation.",
-    cycle_date: "Last Period Date", cycle_length: "Cycle Length (days)", period_length: "Period Length (days)",
-    today: "Today", day: "Day",
-    phase_menstruation: "Menstruation", phase_follicular: "Follicular Phase", phase_ovulation: "Ovulation", phase_luteal: "Luteal Phase",
-    till_period: "until period", till_ovulation: "until ovulation",
-    exam_title: "Time for Breast Self-Exam!", exam_desc: "Optimal period (day 5-7).",
-    mon: "Mon", tue: "Tue", wed: "Wed", thu: "Thu", fri: "Fri", sat: "Sat", sun: "Sun",
-    legend_period: "Period", legend_ovulation: "Ovulation", legend_exam: "Self-exam",
-    forecast: "3-Month Forecast", edit_settings: "Edit Settings",
-    clinics_title: "Mammography Clinics", clinics_desc: "Find the nearest screening center in Astana.",
-    search_placeholder: "Search clinic...", filter_all: "All types", filter_public: "Public", filter_private: "Private",
-    clinics_list: "Clinic List", clinic_public: "Public", clinic_private: "Private",
-    about_title: "About MammoCare", about_desc: "We fight breast cancer by providing women with tools for early diagnosis.",
-    mission_title: "Our Mission", mission_desc: "Reduce breast cancer mortality in Kazakhstan through awareness and accessible monitoring tools.",
-    contacts_title: "Contacts",
-    acc_welcome: "Welcome,", acc_user: "User", acc_level: "Level:", acc_xp: "Experience (XP)",
-    lvl_newbie: "Newbie", lvl_student: "Student", lvl_expert: "Expert", lvl_master: "Master",
-    acc_achieve: "Achievements", acc_health: "Health",
-    acc_risk_level: "Risk Level", acc_bmi: "BMI (Body Mass Index)", acc_last_exam: "Last Exam",
-    acc_data_local: "Data is saved locally on your device.", acc_reset: "Reset all data",
-    acc_no_achieve: "No achievements yet",
-    ach_risk: "First risk calculation", ach_cycle: "Cycle setup",
-    ai_online: "Online", ai_placeholder: "Ask a question...",
-    ai_response: "Thanks for the question! In demo mode, I can answer questions about breast health.",
-    alert_setup: "Complete the tasks first:",
-    alert_exam: "Great! Record added.", alert_next_lesson: "Lesson passed! Next one opens in 24 hours.",
-    alert_time_left: "The next lesson will be available in 24 hours!",
-    h: "h", m: "m",
-    bmi_normal: "Normal", bmi_high: "Overweight", bmi_obese: "Obesity"
+    nav_home: "Home", nav_learn: "Learn", nav_articles: "Articles", nav_cycle: "Cycle", nav_clinics: "Clinics", nav_about: "About", nav_account: "Account",
+    mob_menu: "Menu", home_welcome: "Welcome to MammoCare", home_desc: "Monitor breast health.",
+    btn_cycle: "Tracker", btn_clinic: "Clinics", home_risk_label: "Risk", recalc: "Recalc",
+    stats_title: "Statistics", stats_kz: "🇰🇿 Kazakhstan", stats_kz_desc: "rank in female oncology", stats_world: "🌍 Worldwide", stats_world_desc: "cases annually", stats_fact: "Early detection increases survival to 98%",
+    useful_info_title: "Useful Info", info_self_title: "Self-Exam", info_self_desc: "Day 5-7 of cycle.", info_age_title: "Screening", info_age_desc: "Mammography after 40.", link_all_articles: "All articles →",
+    articles_title: "Knowledge Base", art_1_title: "Self-exam guide", art_1_desc: "Step-by-step.", art_2_title: "Risk factors", art_2_desc: "What to look for.", art_3_title: "Myths", art_3_desc: "Debunking.", art_4_title: "Nutrition", art_4_desc: "Breast health foods.",
+    risk_welcome: "Welcome!", risk_subtitle: "Answer questions", risk_age: "Age", risk_weight: "Weight", risk_height: "Height", risk_family: "Heredity", risk_smoke: "Smoking", risk_symptoms: "Symptoms",
+    opt_no: "No", opt_distant: "Distant", opt_close: "Mother/Sister", opt_no_smoke: "Non-smoker", opt_ex_smoke: "Ex-smoker", opt_smoke: "Smoker", opt_no_symptoms: "None", opt_discomfort: "Discomfort", opt_pain: "Lumps",
+    btn_calc: "Calculate", btn_skip: "Skip", btn_continue: "Continue", btn_save: "Save", btn_done: "Done", btn_reset: "Reset",
+    risk_low: "Low Risk", risk_moderate: "Moderate", risk_high: "High Risk",
+    risk_adv_low: "Healthy lifestyle.", risk_adv_mod: "Consult doctor.", risk_adv_high: "Urgent visit.",
+    cycle_title: "Setup", cycle_date: "Start Date", cycle_len: "Cycle (days)", period_len: "Period (days)",
+    today: "Today", day: "Day", till_period: "until period", till_ovulation: "until ovulation",
+    exam_title: "Self-exam time!", exam_desc: "Day 5-7.",
+    forecast: "Forecast",
+    clinics_title: "Clinics", clinics_desc: "Astana map", list: "List",
+    about_title: "About", about_desc: "We fight breast cancer.", mission_title: "Mission", mission_desc: "Reduce mortality.", contacts_title: "Contacts",
+    alert_exam: "Great!", alert_next_lesson: "Lesson done! +{xp} XP.", alert_time_left: "Wait 24h.", alert_cycle_reset: "Cycle data reset."
   }
 };
 
 let currentLang = 'ru';
 
-function t(key) {
-  return translations[currentLang][key] || translations['ru'][key] || key;
+function t(key, params) {
+  let str = translations[currentLang][key] || translations['ru'][key] || key;
+  if (params) { Object.keys(params).forEach(k => str = str.replace(`{${k}}`, params[k])); }
+  return str;
 }
 
 function applyTranslations() {
-  document.querySelectorAll('[data-i18n]').forEach(el => {
-    const key = el.getAttribute('data-i18n');
-    if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
-      // handled by placeholder
-    } else {
-      el.textContent = t(key);
-    }
-  });
-  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
-    const key = el.getAttribute('data-i18n-placeholder');
-    el.placeholder = t(key);
-  });
-  updateHomeStatus();
-  updateAccountUI();
+  document.querySelectorAll('[data-i18n]').forEach(el => { const key = el.getAttribute('data-i18n'); el.textContent = t(key); });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => { const key = el.getAttribute('data-i18n-placeholder'); el.placeholder = t(key); });
+  renderArticlesGrid();
   renderLearningGrid();
   if (cycleData) updateCycleUI();
+  updateHomeStatus();
+  updateAccountUI();
 }
 
 function setLanguage(lang) {
@@ -783,80 +628,37 @@ function setLanguage(lang) {
   saveLocal('appLang', lang);
   const flags = { ru: '🇷🇺', kz: '🇰🇿', en: '🇬🇧' };
   $('current-lang-flag').textContent = flags[lang];
-  $('current-lang-code').textContent = lang.toUpperCase();
-  applyTranslations();
   hide($('lang-dropdown'));
+  applyTranslations();
 }
 
-// ========== КОНФИГУРАЦИЯ ОБУЧЕНИЯ ==========
-const LESSIONS_CONFIG = [
-  { id: 1, title_key: "l1_title", desc_key: "l1_desc", xp: 100, type: "task_setup" },
-  { id: 2, title_key: "l2_title", desc_key: "l2_desc", xp: 150, type: "task_exam" },
-  { id: 3, title_key: "l3_title", desc_key: "l3_desc", xp: 100, type: "read_quiz", content: { text_key: "l3_text", question_key: "l3_q", options_keys: ["l3_o1", "l3_o2", "l3_o3"], answer: 2 } },
-  { id: 4, title_key: "l4_title", desc_key: "l4_desc", xp: 100, type: "read_quiz", content: { text_key: "l4_text", question_key: "l4_q", options_keys: ["l4_o1", "l4_o2", "l4_o3"], answer: 1 } },
-];
-
-// Translations for lessons
-translations.ru.l1_title = "Начало пути"; translations.ru.l1_desc = "Рассчитайте риск и настройте цикл";
-translations.kz.l1_title = "Бастау"; translations.kz.l1_desc = "Тәуекелді есептеңіз және циклді баптаңыз";
-translations.en.l1_title = "Start"; translations.en.l1_desc = "Calculate risk and setup cycle";
-
-translations.ru.l2_title = "Самообследование"; translations.ru.l2_desc = "Изучите технику проверки груди";
-translations.kz.l2_title = "Өзіндік тексеру"; translations.kz.l2_desc = "Сүт безін тексеру техникасы";
-translations.en.l2_title = "Self-exam"; translations.en.l2_desc = "Learn breast check technique";
-
-translations.ru.l3_title = "Месячные и здоровье"; translations.ru.l3_desc = "Как цикл влияет на риск?";
-translations.ru.l3_text = "Менструальный цикл напрямую влияет на состояние груди. В первой фазе (фолликулярной) уровень эстрогена растет, что может вызывать набухание. Раннее начало менструации (до 12 лет) и поздняя менопауза (после 55) увеличивают риск развития РМЖ.";
-translations.ru.l3_q = "Что увеличивает риск РМЖ?"; 
-translations.ru.l3_o1 = "Поздняя менопауза"; translations.ru.l3_o2 = "Раннее начало месячных"; translations.ru.l3_o3 = "Оба варианта";
-
-translations.ru.l4_title = "Питание"; translations.ru.l4_desc = "Продукты для здоровья груди";
-translations.ru.l4_text = "Антиоксиданты защищают клетки. Включите в рацион брокколи, ягоды, орехи и жирную рыбу.";
-translations.ru.l4_q = "Какой продукт полезен?"; 
-translations.ru.l4_o1 = "Фастфуд"; translations.ru.l4_o2 = "Брокколи"; translations.ru.l4_o3 = "Сахар";
-
-for (let i = 5; i <= 30; i++) {
-  translations.ru[`l${i}_title`] = `День ${i}: Практика`;
-  translations.kz[`l${i}_title`] = `Күн ${i}: Практика`;
-  translations.en[`l${i}_title`] = `Day ${i}: Practice`;
-  translations.ru[`l${i}_desc`] = "Закрепите знания тестом";
-  translations.kz[`l${i}_desc`] = "Білімді тестімен бекітіңіз";
-  translations.en[`l${i}_desc`] = "Reinforce knowledge with a test";
+// ========== LEARNING CONFIG ==========
+const LESSONS = [];
+for (let i = 1; i <= 30; i++) {
+  translations.ru[`l${i}_title`] = `День ${i}`;
+  translations.kz[`l${i}_title`] = `Күн ${i}`;
+  translations.en[`l${i}_title`] = `Day ${i}`;
   
-  LESSIONS_CONFIG.push({
-    id: i,
-    title_key: `l${i}_title`,
-    desc_key: `l${i}_desc`,
-    xp: 50,
-    type: "read_quiz",
-    content: {
-      text: `Важно регулярно посещать врача. Маммография рекомендована женщинам старше 40 лет раз в 1-2 года.`,
-      question: "Как часто делать маммографию после 40 лет?",
-      options: ["Каждый год", "Раз в 5 лет", "Только при боли"],
-      answer: 0
-    }
-  });
+  LESSONS.push({ id: i, title_key: `l${i}_title`, xp: 50 });
 }
 
-// ========== ПЕРЕМЕННЫЕ ==========
+// ========== VARS ==========
 let cycleData = null;
 let currentCalendarDate = new Date();
 let map = null;
 let markers = [];
 let learningProgress = { completed: [], currentDay: 1, totalXp: 0, lastCompletedTime: null };
 
-// ========== УТИЛИТЫ ==========
+// ========== UTILS ==========
 function $(id) { return document.getElementById(id); }
 function show(el) { el?.classList.remove('hidden'); }
 function hide(el) { el?.classList.add('hidden'); }
-
 function saveLocal(key, data) { localStorage.setItem(key, JSON.stringify(data)); }
 function loadLocal(key) { const data = localStorage.getItem(key); return data ? JSON.parse(data) : null; }
-
 function daysBetween(d1, d2) { return Math.round((d2 - d1) / (1000 * 60 * 60 * 24)); }
-function addDays(date, days) { const result = new Date(date); result.setDate(result.getDate() + days); return result; }
+function addDays(date, days) { const r = new Date(date); r.setDate(r.getDate() + days); return r; }
 
-// ========== НАВИГАЦИЯ ==========
+// ========== NAVIGATION ==========
 function switchView(viewName) {
   document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
   $('view-' + viewName)?.classList.add('active');
@@ -867,7 +669,7 @@ function switchView(viewName) {
   if (viewName === 'clinics') setTimeout(() => { initMap(); if(map) map.invalidateSize(); }, 100);
   if (viewName === 'cycle') updateCycleUI();
   if (viewName === 'learn') renderLearningGrid();
-  if (viewName === 'account') updateAccountUI();
+  if (viewName === 'articles') renderArticlesGrid();
 }
 
 function handleRoute() {
@@ -875,23 +677,22 @@ function handleRoute() {
   switchView(hash);
 }
 
-// ========== СИСТЕМА ОБУЧЕНИЯ ==========
-function initLearning() {
-  const saved = loadLocal('learningProgress');
-  if (saved) learningProgress = saved;
-  renderLearningGrid();
+// ========== ARTICLES ==========
+function renderArticlesGrid() {
+    const container = $('articles-grid');
+    if(!container) return;
+    container.innerHTML = articlesData.map(a => `
+        <a href="${a.link}" target="_blank" class="block p-4 border border-gray-200 rounded-lg hover:border-primary transition bg-white">
+            <h4 class="font-bold text-gray-800 mb-1">${t(a.title_key)}</h4>
+            <p class="text-sm text-gray-500">${t(a.desc_key)}</p>
+        </a>
+    `).join('');
 }
 
-function saveLearning() {
-  saveLocal('learningProgress', learningProgress);
-  updateHomeXP();
-}
-
-function updateHomeXP() {
-  const total = learningProgress.totalXp || 0;
-  if ($('home-xp-display')) $('home-xp-display').textContent = `${total} XP`;
-  if ($('total-xp-header')) $('total-xp-header').textContent = total;
-}
+// ========== LEARNING ==========
+function initLearning() { const saved = loadLocal('learningProgress'); if (saved) learningProgress = saved; renderLearningGrid(); }
+function saveLearning() { saveLocal('learningProgress', learningProgress); updateHomeXP(); }
+function updateHomeXP() { const total = learningProgress.totalXp || 0; $('home-xp-display').textContent = `${total} XP`; $('total-xp-header').textContent = total; }
 
 function renderLearningGrid() {
   const container = $('learning-grid');
@@ -899,92 +700,45 @@ function renderLearningGrid() {
   updateHomeXP();
   const now = Date.now();
   
-  container.innerHTML = LESSIONS_CONFIG.map(lesson => {
+  container.innerHTML = LESSONS.map(lesson => {
     const isCompleted = learningProgress.completed.includes(lesson.id);
-    let isAvailable = false;
-    let isLocked = false;
-    let statusIcon = '🔒';
-    let statusClass = 'locked';
-    let statusText = t('lesson_locked');
+    let statusClass = 'locked'; let click = ''; let statusText = t('lesson_locked');
 
-    if (isCompleted) {
-        statusIcon = '✅'; statusClass = 'completed'; statusText = t('lesson_completed');
-    } else {
-        if (lesson.id === learningProgress.currentDay) {
-            if (learningProgress.lastCompletedTime) {
-                const timePassed = now - learningProgress.lastCompletedTime;
-                const twentyFourHours = 24 * 60 * 60 * 1000; 
-                const timeLeft = twentyFourHours - timePassed;
-                if (timeLeft > 0) {
-                    statusIcon = '⏳'; statusClass = 'waiting';
-                    const hours = Math.floor(timeLeft / (1000 * 60 * 60));
-                    const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
-                    statusText = `${t('lesson_waiting')} ${hours}${t('h')} ${minutes}${t('m')}`;
-                    isLocked = true; 
-                } else { statusIcon = '▶️'; statusClass = 'available'; statusText = t('lesson_open'); isAvailable = true; }
-            } else { statusIcon = '▶️'; statusClass = 'available'; statusText = t('lesson_open'); isAvailable = true; }
-        } else if (lesson.id < learningProgress.currentDay) { statusIcon = '✅'; statusClass = 'completed'; }
-        else { isLocked = true; }
+    if (isCompleted) { statusClass = 'completed'; statusText = t('lesson_completed'); }
+    else if (lesson.id === learningProgress.currentDay) {
+        if (learningProgress.lastCompletedTime) {
+            const passed = now - learningProgress.lastCompletedTime;
+            if (passed < 86400000) { statusClass = 'locked'; }
+            else { statusClass = ''; statusText = t('lesson_open'); click = `openLesson(${lesson.id})`; }
+        } else { statusClass = ''; statusText = t('lesson_open'); click = `openLesson(${lesson.id})`; }
     }
-    const clickHandler = (isAvailable && !isLocked) ? `openLesson(${lesson.id})` : '';
+
     return `
-      <div class="lesson-card card p-5 ${statusClass}" onclick="${clickHandler}">
+      <div class="lesson-card card p-5 ${statusClass}" onclick="${click}">
         <div class="flex justify-between items-start mb-3">
-          <span class="text-3xl">${statusIcon}</span>
+          <span class="text-xl font-bold">${lesson.id}</span>
           <span class="bg-pink-100 text-pink-700 px-2 py-1 rounded-full text-xs font-bold">+${lesson.xp} XP</span>
         </div>
         <h3 class="font-bold text-gray-800 mb-1">${t(lesson.title_key)}</h3>
-        <p class="text-sm text-gray-500">${t(lesson.desc_key)}</p>
-        <p class="text-xs mt-2 ${isAvailable ? 'text-primary font-medium' : 'text-gray-400'}">${statusText}</p>
+        <p class="text-sm text-gray-500">${statusText}</p>
       </div>
     `;
   }).join('');
 }
 
 function openLesson(id) {
-  const lesson = LESSIONS_CONFIG.find(l => l.id === id);
+  const lesson = LESSONS.find(l => l.id === id);
   if (!lesson) return;
-  const now = Date.now();
-  if (learningProgress.lastCompletedTime) {
-      const timePassed = now - learningProgress.lastCompletedTime;
-      if (timePassed < 24 * 60 * 60 * 1000) { alert(t('alert_time_left')); return; }
-  }
   const container = $('lesson-content');
-  
-  if (lesson.type === 'task_setup') {
-    container.innerHTML = `<div class="text-center mb-6"><h2 class="text-xl font-bold">${t(lesson.title_key)}</h2><p class="text-gray-600 mt-2">${t(lesson.desc_key)}</p></div>
-      <button onclick="checkSetupTasks(${id}, ${lesson.xp})" class="w-full mt-6 py-3 bg-primary text-white rounded-lg font-medium">${t('btn_done')}</button>`;
-  } else if (lesson.type === 'task_exam') {
-     container.innerHTML = `<div class="text-center mb-6"><h2 class="text-xl font-bold">${t(lesson.title_key)}</h2></div>
-      <button onclick="completeTask(${id}, ${lesson.xp})" class="w-full mt-6 py-3 bg-cyan-600 text-white rounded-lg font-medium">${t('btn_done')}</button>`;
-  } else if (lesson.type === 'read_quiz') {
-    const text = lesson.content.text_key ? t(lesson.content.text_key) : lesson.content.text;
-    const question = lesson.content.question_key ? t(lesson.content.question_key) : lesson.content.question;
-    const options = lesson.content.options_keys ? lesson.content.options_keys.map(k => t(k)) : lesson.content.options;
-    container.innerHTML = `<div class="mb-4"><h2 class="text-xl font-bold">${t(lesson.title_key)}</h2></div>
-      <div class="p-4 bg-purple-50 rounded-lg text-sm text-gray-700 mb-6">${text}</div>
-      <div class="border-t pt-4"><p class="font-bold mb-3">${question}</p>
-        <div class="space-y-2" id="quiz-options">
-          ${options.map((opt, idx) => `<button onclick="checkQuiz(${id}, ${lesson.xp}, ${idx}, ${lesson.content.answer})" class="w-full text-left p-3 border rounded-lg hover:bg-gray-50 transition">${opt}</button>`).join('')}
-        </div></div>`;
-  }
+  container.innerHTML = `
+    <div class="text-center mb-6"><h2 class="text-xl font-bold">${t(lesson.title_key)}</h2></div>
+    <p class="mb-4">Задание выполнено?</p>
+    <button onclick="completeTask(${id}, ${lesson.xp})" class="w-full mt-6 py-3 bg-primary text-white rounded-lg font-medium">Да, завершить</button>
+  `;
   show($('lesson-modal'));
-  if (window.feather) feather.replace();
 }
 
 function closeLessonModal() { hide($('lesson-modal')); }
-
-function checkSetupTasks(id, xp) {
-  const riskDone = loadLocal('riskDone');
-  const cycleDone = loadLocal('cycleData');
-  if (riskDone && cycleDone) completeTask(id, xp);
-  else alert(`${t('alert_setup')}\n1. ${t('risk_welcome')}: ${riskDone ? '✅' : '❌'}\n2. ${t('cycle_setup_title')}: ${cycleDone ? '✅' : '❌'}`);
-}
-
-function checkQuiz(id, xp, selected, correct) {
-  if (selected === correct) completeTask(id, xp);
-  else { alert('Неверно.'); closeLessonModal(); openLesson(id); }
-}
 
 function completeTask(id, xp) {
   if (!learningProgress.completed.includes(id)) {
@@ -995,61 +749,36 @@ function completeTask(id, xp) {
     saveLearning();
     renderLearningGrid();
     closeLessonModal();
-    alert(t('alert_next_lesson'));
+    alert(t('alert_next_lesson', {xp: xp}));
   }
 }
 
-// ========== РИСК (РАСШИРЕННЫЙ) ==========
+// ========== RISK ==========
 function calculateRisk() {
-  // Get values
   const age = parseInt($('risk-age').value) || 30;
   const weight = parseFloat($('risk-weight').value) || 0;
   const height = parseFloat($('risk-height').value) || 0;
   const family = parseInt($('risk-family').value) || 0;
   const smoke = parseInt($('risk-smoke').value) || 0;
-  const hormones = parseInt($('risk-hormones').value) || 0;
   const symptoms = parseInt($('risk-symptoms').value) || 0;
 
   let score = 0;
-
-  // Age factor
-  if (age >= 60) score += 3;
-  else if (age >= 40) score += 2;
-  else if (age >= 30) score += 1;
-
-  // BMI factor (Body Mass Index)
+  if (age >= 60) score += 3; else if (age >= 40) score += 2; else if (age >= 30) score += 1;
+  
   let bmi = 0;
   if (weight > 0 && height > 0) {
     bmi = weight / Math.pow(height / 100, 2);
-    if (bmi >= 30) score += 2; // Obesity
-    else if (bmi >= 25) score += 1; // Overweight
+    if (bmi >= 30) score += 2; else if (bmi >= 25) score += 1;
   }
 
-  // Heredity
-  score += family;
+  score += family + smoke + symptoms;
 
-  // Lifestyle
-  score += smoke;
-  score += hormones;
-
-  // Symptoms
-  score += symptoms;
-
-  // Determine Level
   let resultKey = score <= 3 ? "risk_low" : score <= 7 ? "risk_moderate" : "risk_high";
   let adviceKey = score <= 3 ? "risk_adv_low" : score <= 7 ? "risk_adv_mod" : "risk_adv_high";
 
-  // Save Data
-  const riskData = {
-    score: score,
-    level: resultKey,
-    bmi: bmi ? bmi.toFixed(1) : null,
-    date: new Date().toISOString()
-  };
-  saveLocal('riskData', riskData);
+  saveLocal('riskData', { level: resultKey, bmi: bmi ? bmi.toFixed(1) : null });
   saveLocal('riskDone', true);
 
-  // Update UI
   $('risk-result-text').textContent = t(resultKey);
   $('risk-result-advice').textContent = t(adviceKey);
   $('risk-result').classList.remove('hidden');
@@ -1063,17 +792,9 @@ function updateHomeRisk(levelKey) {
     show($('risk-card'));
 }
 
-// ========== ЦИКЛ ==========
-function loadCycleData() {
-  const saved = loadLocal('cycleData');
-  if (saved) { cycleData = saved; cycleData.lastPeriod = new Date(cycleData.lastPeriod); }
-  return cycleData;
-}
-
-function saveCycleData(data) {
-  cycleData = data;
-  saveLocal('cycleData', { lastPeriod: data.lastPeriod.toISOString(), cycleLength: data.cycleLength, periodLength: data.periodLength });
-}
+// ========== CYCLE ==========
+function loadCycleData() { const saved = loadLocal('cycleData'); if (saved) { cycleData = saved; cycleData.lastPeriod = new Date(cycleData.lastPeriod); } return cycleData; }
+function saveCycleDataFn(data) { cycleData = data; saveLocal('cycleData', { lastPeriod: data.lastPeriod.toISOString(), cycleLength: data.cycleLength, periodLength: data.periodLength }); }
 
 function getCycleDay(date = new Date()) {
   if (!cycleData) return null;
@@ -1091,7 +812,6 @@ function getDayPhase(date) {
   const ovulationDay = cycleData.cycleLength - 14;
   if (cycleDay <= cycleData.periodLength) return 'period';
   if (cycleDay === ovulationDay) return 'ovulation';
-  if (cycleDay >= ovulationDay - 2 && cycleDay <= ovulationDay + 1) return 'fertile';
   if (cycleDay >= 5 && cycleDay <= 7) return 'exam';
   return null;
 }
@@ -1100,22 +820,20 @@ function updateCycleUI() {
   loadCycleData();
   if (!cycleData) { show($('cycle-setup')); hide($('cycle-calendar-container')); return; }
   hide($('cycle-setup')); show($('cycle-calendar-container'));
+
   const today = new Date();
   const cycleDay = getCycleDay(today);
   $('current-cycle-day').textContent = cycleDay;
   
-  let phaseKey = "phase_follicular";
-  if (cycleDay <= cycleData.periodLength) phaseKey = "phase_menstruation";
-  else if (cycleDay >= (cycleData.cycleLength - 14)) phaseKey = "phase_luteal";
-  else if (cycleDay >= (cycleData.cycleLength - 16) && cycleDay <= (cycleData.cycleLength - 13)) phaseKey = "phase_ovulation";
-  $('current-phase-name').textContent = t(phaseKey);
-
   let next = new Date(cycleData.lastPeriod);
   while (next <= today) next = addDays(next, cycleData.cycleLength);
   $('days-to-period').textContent = daysBetween(today, next);
+  
   const ovulationDate = addDays(next, -14);
   $('days-to-ovulation').textContent = Math.max(0, daysBetween(today, ovulationDate));
+  
   if (cycleDay >= 5 && cycleDay <= 7) show($('exam-reminder')); else hide($('exam-reminder'));
+  
   updateHomeStatus();
   renderCalendar();
   renderForecast();
@@ -1125,12 +843,10 @@ function updateHomeStatus() {
   const cycleDay = getCycleDay();
   if (cycleDay && cycleData) {
     $('home-cycle-day').textContent = cycleDay;
-    let phaseKey = cycleDay <= cycleData.periodLength ? "phase_menstruation" : "phase_follicular";
-    $('home-cycle-phase').textContent = t(phaseKey);
     let next = new Date(cycleData.lastPeriod);
     while (next <= new Date()) next = addDays(next, cycleData.cycleLength);
     $('home-next-period').textContent = next.toLocaleDateString(currentLang === 'kz' ? 'kk-KZ' : currentLang === 'en' ? 'en-US' : 'ru-RU', { day: 'numeric', month: 'short' });
-    $('home-period-countdown').textContent = `${t('till_period')} ${daysBetween(new Date(), next)} дн.`;
+    $('home-period-countdown').textContent = `${daysBetween(new Date(), next)} дн.`;
   }
 }
 
@@ -1138,18 +854,15 @@ function renderCalendar() {
   const grid = $('calendar-grid'); if (!grid) return;
   const year = currentCalendarDate.getFullYear();
   const month = currentCalendarDate.getMonth();
-  const months = { 
-    ru: ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"],
-    kz: ["Қаңтар", "Ақпан", "Наурыз", "Сәуір", "Мамыр", "Маусым", "Шілде", "Тамыз", "Қыркүйек", "Қазан", "Қараша", "Желтоқсан"],
-    en: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
-  };
+  const months = { ru: ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"], kz: ["Қаңтар", "Ақпан", "Наурыз", "Сәуір", "Мамыр", "Маусым", "Шілде", "Тамыз", "Қыркүйек", "Қазан", "Қараша", "Желтоқсан"], en: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"] };
   $('calendar-month-year').textContent = `${months[currentLang][month]} ${year}`;
+  
   const firstDay = new Date(year, month, 1);
   const lastDay = new Date(year, month + 1, 0);
   let startDay = firstDay.getDay() - 1; if (startDay < 0) startDay = 6;
   const today = new Date();
   let html = '';
-  for (let i = 0; i < startDay; i++) html += `<div class="calendar-day other-month"></div>`;
+  for (let i = 0; i < startDay; i++) html += `<div class="calendar-day"></div>`;
   for (let day = 1; day <= lastDay.getDate(); day++) {
     const date = new Date(year, month, day);
     const phase = getDayPhase(date);
@@ -1162,6 +875,7 @@ function renderCalendar() {
   grid.innerHTML = html;
 }
 
+// ВОССТАНОВЛЕНА ФУНКЦИЯ ПРОГНОЗА
 function renderForecast() {
     const container = $('forecast-list'); if(!container || !cycleData) return;
     let next = new Date(cycleData.lastPeriod);
@@ -1178,113 +892,44 @@ function renderForecast() {
     container.innerHTML = html;
 }
 
-// ========== КЛИНИКИ ==========
-const clinics = [
-  { id: 1, name: "Городская больница №2", address: "ул. Турар Рыскулова, 6", type: "public", lat: 51.1477, lng: 71.4216 },
-  { id: 2, name: "Городская поликлиника №9", address: "пр. Мангилик Ел, 16/1", type: "public", lat: 51.0899, lng: 71.4165 },
-  { id: 3, name: "Многопрофильный медцентр", address: "ул. Манаса, 17", type: "private", lat: 51.1260, lng: 71.4000 },
-  { id: 4, name: "Президентская клиника", address: "пр. Мангилик Ел, 80", type: "private", lat: 51.0954, lng: 71.4218 },
-  { id: 5, name: "Клиника Big Tau", address: "пр. Туран, 50", type: "private", lat: 51.1325, lng: 71.4301 }
-];
+// ========== CLINICS ==========
+const clinics = [ { id: 1, name: "Городская больница №2", address: "ул. Рыскулова", type: "public", lat: 51.1477, lng: 71.4216 }, { id: 2, name: "Clinic Big Tau", address: "пр. Туран", type: "private", lat: 51.1325, lng: 71.4301 } ];
 
-function initMap() {
-  if (map) return;
-  const mapEl = $('map'); if (!mapEl) return;
-  map = L.map('map').setView([51.128, 71.430], 12);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' }).addTo(map);
-  renderClinics();
-}
+function initMap() { if (map) return; const mapEl = $('map'); if (!mapEl) return; map = L.map('map').setView([51.128, 71.430], 12); L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map); renderClinics(); }
+function renderClinics() { if (!map) return; markers.forEach(m => map.removeLayer(m)); markers = []; clinics.forEach(c => { const m = L.marker([c.lat, c.lng]).addTo(map).bindPopup(`<b>${c.name}</b>`); markers.push(m); }); $('clinics-list').innerHTML = clinics.map(c => `<div class="p-3 border rounded-lg hover:border-primary cursor-pointer bg-white" onclick="focusClinic(${c.lat}, ${c.lng})"><p class="font-medium">${c.name}</p><p class="text-xs text-gray-500">${c.address}</p></div>`).join(''); }
+function focusClinic(lat, lng) { if(map) { map.setView([lat, lng], 16); markers.forEach(m => { if(Math.abs(m.getLatLng().lat - lat) < 0.001) m.openPopup(); }); } }
 
-function renderClinics() {
-  if (!map) return;
-  markers.forEach(m => map.removeLayer(m)); markers = [];
-  const search = $('search-clinics')?.value.toLowerCase() || '';
-  const type = $('filter-type')?.value || '';
-  const filtered = clinics.filter(c => {
-    const matchSearch = !search || c.name.toLowerCase().includes(search) || c.address.toLowerCase().includes(search);
-    const matchType = !type || c.type === type;
-    return matchSearch && matchType;
-  });
-  const typeText = (tp) => tp === 'public' ? t('clinic_public') : t('clinic_private');
-  const listEl = $('clinics-list');
-  listEl.innerHTML = filtered.map(c => `
-    <div class="p-3 border rounded-lg hover:border-primary cursor-pointer bg-white" onclick="focusClinic(${c.lat}, ${c.lng})">
-      <p class="font-medium text-gray-800">${c.name}</p>
-      <p class="text-sm text-gray-500">${c.address}</p>
-      <span class="text-xs ${c.type === 'public' ? 'text-blue-600' : 'text-purple-600'}">${typeText(c.type)}</span>
-    </div>
-  `).join('');
-  filtered.forEach(c => {
-    const marker = L.marker([c.lat, c.lng]).addTo(map).bindPopup(`<b>${c.name}</b><br>${c.address}`);
-    markers.push(marker);
-  });
-  if (filtered.length > 0) {
-    const bounds = L.latLngBounds(filtered.map(c => [c.lat, c.lng]));
-    map.fitBounds(bounds, {padding: [20, 20]});
-  }
-}
-
-function focusClinic(lat, lng) {
-    if(map) {
-        map.setView([lat, lng], 16);
-        markers.forEach(m => {
-            const pos = m.getLatLng();
-            if(Math.abs(pos.lat - lat) < 0.0001) m.openPopup();
-        });
-    }
-}
-
-// ========== АККАУНТ ==========
+// ========== ACCOUNT ==========
 function updateAccountUI() {
   const riskData = loadLocal('riskData');
-  const riskDisplay = $('account-risk-level');
-  const bmiDisplay = $('account-bmi');
-  
   if (riskData && riskData.level) {
-    riskDisplay.textContent = t(riskData.level);
-    riskDisplay.classList.remove('text-green-600', 'text-yellow-600', 'text-red-600');
-    if (riskData.level === 'risk_low') riskDisplay.classList.add('text-green-600');
-    else if (riskData.level === 'risk_moderate') riskDisplay.classList.add('text-yellow-600');
-    else riskDisplay.classList.add('text-red-600');
-    
-    if(riskData.bmi) {
-        const bmiVal = parseFloat(riskData.bmi);
-        let bmiStatus = t('bmi_normal');
-        if(bmiVal >= 30) bmiStatus = t('bmi_obese');
-        else if(bmiVal >= 25) bmiStatus = t('bmi_high');
-        
-        bmiDisplay.textContent = `${riskData.bmi} (${bmiStatus})`;
-    } else {
-        bmiDisplay.textContent = "—";
-    }
-  } else {
-    riskDisplay.textContent = "—";
-    bmiDisplay.textContent = "—";
-  }
+    $('account-risk-level').textContent = t(riskData.level);
+    $('account-bmi').textContent = riskData.bmi || "—";
+  } else { $('account-risk-level').textContent = "—"; $('account-bmi').textContent = "—"; }
 
   const xp = learningProgress.totalXp || 0;
-  let levelKey = "lvl_newbie";
-  if (xp >= 1000) levelKey = "lvl_master";
-  else if (xp >= 500) levelKey = "lvl_expert";
-  else if (xp >= 100) levelKey = "lvl_student";
-  $('user-level').textContent = t(levelKey);
-  $('xp-progress-text').textContent = `${xp} / 1000 XP`;
+  $('xp-progress-text').textContent = `${xp} / 1000`;
   $('xp-progress-bar').style.width = `${Math.min(100, (xp/1000)*100)}%`;
   
   const achievements = [];
-  if (loadLocal('riskDone')) achievements.push({ icon: 'check-circle', text_key: 'ach_risk' });
-  if (loadLocal('cycleData')) achievements.push({ icon: 'calendar', text_key: 'ach_cycle' });
-  $('achievements-container').innerHTML = achievements.length > 0 
-    ? achievements.map(a => `<div class="flex items-center gap-2 p-2 bg-gray-50 rounded"><i data-feather="${a.icon}" class="w-4 h-4 text-green-500"></i><span class="text-sm">${t(a.text_key)}</span></div>`).join('')
-    : `<p class="text-sm text-gray-400">${t('acc_no_achieve')}</p>`;
-  if (window.feather) feather.replace();
+  if (loadLocal('riskDone')) achievements.push("✅ Риск рассчитан");
+  if (loadLocal('cycleData')) achievements.push("✅ Цикл настроен");
+  $('achievements-container').innerHTML = achievements.length > 0 ? achievements.map(a => `<div class="p-2 bg-gray-50 rounded text-sm">${a}</div>`).join('') : "Нет данных";
 }
 
-function clearAllData() {
-  if(confirm('Вы уверены? Все данные будут удалены.')) { localStorage.clear(); location.reload(); }
+function clearAllData() { if(confirm('Сбросить всё?')) { localStorage.clear(); location.reload(); } }
+function resetCycleData() { 
+    if(confirm('Сбросить настройки цикла?')) { 
+        localStorage.removeItem('cycleData'); 
+        cycleData = null; 
+        show($('cycle-setup')); 
+        hide($('cycle-calendar-container')); 
+        updateHomeStatus(); 
+        alert(t('alert_cycle_reset'));
+    } 
 }
 
-// ========== ИНИЦИАЛИЗАЦИЯ ==========
+// ========== INIT ==========
 document.addEventListener('DOMContentLoaded', () => {
   if (window.feather) feather.replace();
   
@@ -1310,17 +955,20 @@ document.addEventListener('DOMContentLoaded', () => {
   $('save-cycle-settings')?.addEventListener('click', () => {
     const val = $('setup-last-period').value;
     if(!val) return alert('Введите дату');
-    saveCycleData({ lastPeriod: new Date(val), cycleLength: parseInt($('setup-cycle-length').value) || 28, periodLength: parseInt($('setup-period-length').value) || 5 });
+    saveCycleDataFn({ lastPeriod: new Date(val), cycleLength: parseInt($('setup-cycle-length').value) || 28, periodLength: parseInt($('setup-period-length').value) || 5 });
     updateCycleUI();
   });
+  
+  // Fixed Reset Button
+  $('reset-cycle-btn')?.addEventListener('click', resetCycleData);
+  
+  // Edit Settings Button
+  $('edit-cycle-settings')?.addEventListener('click', () => { show($('cycle-setup')); hide($('cycle-calendar-container')); });
 
   $('prev-month')?.addEventListener('click', () => { currentCalendarDate.setMonth(currentCalendarDate.getMonth()-1); renderCalendar(); });
   $('next-month')?.addEventListener('click', () => { currentCalendarDate.setMonth(currentCalendarDate.getMonth()+1); renderCalendar(); });
 
   $('lang-btn')?.addEventListener('click', (e) => { e.stopPropagation(); $('lang-dropdown').classList.toggle('hidden'); });
-  document.querySelectorAll('#lang-dropdown button').forEach(btn => {
-    btn.addEventListener('click', () => setLanguage(btn.getAttribute('data-lang')));
-  });
   document.addEventListener('click', () => hide($('lang-dropdown')));
 
   $('ai-btn')?.addEventListener('click', () => show($('ai-modal')));
@@ -1337,16 +985,11 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function sendAIMessage() {
-    const input = $('ai-input');
-    const text = input.value.trim();
-    if(!text) return;
+    const input = $('ai-input'); const text = input.value.trim(); if(!text) return;
     const container = $('ai-messages');
     container.innerHTML += `<div class="bg-primary text-white p-3 rounded-2xl rounded-tr-none ml-auto max-w-[80%]">${text}</div>`;
     input.value = '';
-    setTimeout(() => {
-        container.innerHTML += `<div class="bg-white p-3 rounded-2xl rounded-tl-none max-w-[80%]">${t('ai_response')}</div>`;
-        container.scrollTop = container.scrollHeight;
-    }, 1000);
+    setTimeout(() => { container.innerHTML += `<div class="bg-white p-3 rounded-2xl rounded-tl-none max-w-[80%]">Спасибо! Это демо-ответ.</div>`; container.scrollTop = container.scrollHeight; }, 1000);
 }
 </script>
 
