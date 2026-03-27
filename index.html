@@ -71,7 +71,23 @@
 </head>
 
 <body class="bg-gray-50 min-h-screen flex flex-col">
+<div id="selfexam-modal" class="modal-overlay hidden">
+  <div class="bg-white rounded-2xl w-full max-w-md p-6 relative">
 
+    <!-- КНОПКА ЗАКРЫТИЯ -->
+    <button onclick="closeSelfExam()" 
+      class="absolute top-3 right-3 text-gray-400 hover:text-gray-600 text-xl">
+      ✕
+    </button>
+
+    <h2 class="text-xl font-bold mb-4">Самообследование</h2>
+    <div id="selfexam-step"></div>
+  </div>
+</div>
+    <h2 class="text-xl font-bold mb-4">Самообследование</h2>
+    <div id="selfexam-step"></div>
+  </div>
+</div>
 <!-- МОДАЛЬНОЕ ОКНО УРОКА -->
 <div id="lesson-modal" class="modal-overlay hidden">
   <div class="bg-white rounded-2xl w-full max-w-lg p-6 max-h-[90vh] overflow-y-auto relative">
@@ -280,6 +296,10 @@
     <!-- ПОЛЕЗНАЯ ИНФОРМАЦИЯ -->
     <div class="card p-6">
         <h3 class="text-lg font-bold text-gray-800 mb-4" data-i18n="useful_info_title">Полезная информация</h3>
+      <button onclick="openSelfExam()"
+  class="mt-4 w-full py-3 bg-primary text-white rounded-lg">
+  Пройти самообследование
+</button>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="flex gap-3 items-start">
                 <div class="p-2 bg-pink-100 rounded-lg text-primary mt-1"><i data-feather="check" class="w-4 h-4"></i></div>
@@ -657,12 +677,103 @@ for (let i = 1; i <= 30; i++) {
 }
 
 // ========== VARS ==========
+  
 let cycleData = null;
 let currentCalendarDate = new Date();
 let map = null;
 let markers = [];
-let learningProgress = { completed: [], currentDay: 1, totalXp: 0, lastCompletedTime: null };
+let learningProgress = { completed: [], currentDay: 1, totalXp: 0, lastCompletedTime: // ===== SELF EXAM PRO =====
+const examSteps = [
+  { text: "Осмотрите грудь в зеркале", check: "Есть ли изменения формы?", risk: 2 },
+  { text: "Поднимите руки вверх", check: "Есть ли втяжения кожи?", risk: 3 },
+  { text: "Проверьте кожу", check: "Покраснение или шелушение?", risk: 2 },
+  { text: "Пальпация груди", check: "Есть ли уплотнения?", risk: 5 },
+  { text: "Проверьте подмышки", check: "Есть ли узлы?", risk: 4 }
+];
 
+let examStep = 0;
+let examAnswers = [];
+
+function openSelfExam() {
+  const last = loadLocal('lastExam');
+
+  if (last) {
+    const diff = Date.now() - last;
+    if (diff < 86400000) {
+      alert("Вы уже проходили тест сегодня");
+      return;
+    }
+  }
+
+  examStep = 0;
+  examAnswers = [];
+  show($('selfexam-modal'));
+  renderExamStep();
+}
+
+function closeSelfExam() {
+  hide($('selfexam-modal'));
+}
+
+function renderExamStep() {
+  const step = examSteps[examStep];
+
+  $('selfexam-step').innerHTML = `
+    <p class="font-medium mb-2">${step.text}</p>
+    <p class="text-sm text-gray-600 mb-4">${step.check}</p>
+
+    <div class="flex gap-2">
+      <button onclick="answerExam(0)" class="flex-1 py-2 bg-green-100 rounded">Нет</button>
+      <button onclick="answerExam(1)" class="flex-1 py-2 bg-red-100 rounded">Да</button>
+    </div>
+
+    <p class="text-xs mt-3">Шаг ${examStep + 1}/${examSteps.length}</p>
+  `;
+}
+
+function answerExam(val) {
+  examAnswers.push(val);
+  examStep++;
+
+  if (examStep >= examSteps.length) {
+    finishExam();
+  } else {
+    renderExamStep();
+  }
+}
+
+function finishExam() {
+  let score = 0;
+
+  examAnswers.forEach((a, i) => {
+    if (a === 1) score += examSteps[i].risk;
+  });
+
+  let result = "";
+  let color = "";
+
+  if (score >= 8) {
+    result = "⚠️ Срочно к врачу";
+    color = "text-red-600";
+  } else if (score >= 4) {
+    result = "❗ Есть подозрения";
+    color = "text-yellow-600";
+  } else {
+    result = "✅ Всё нормально";
+    color = "text-green-600";
+  }
+
+  saveLocal('lastExam', Date.now());
+
+  $('selfexam-step').innerHTML = `
+    <p class="font-bold ${color} mb-4 text-lg">${result}</p>
+
+    <button onclick="closeSelfExam()" 
+      class="w-full py-2 bg-gray-200 rounded-lg">
+      Закрыть
+    </button>
+  `;
+}н
 // ========== UTILS ==========
 function $(id) { return document.getElementById(id); }
 function show(el) { el?.classList.remove('hidden'); }
@@ -1030,6 +1141,9 @@ function sendAIMessage() {
     container.innerHTML += `<div class="bg-primary text-white p-3 rounded-2xl rounded-tr-none ml-auto max-w-[80%]">${text}</div>`;
     input.value = '';
     setTimeout(() => { container.innerHTML += `<div class="bg-white p-3 rounded-2xl rounded-tl-none max-w-[80%]">Спасибо! Это демо-ответ.</div>`; container.scrollTop = container.scrollHeight; }, 1000);
+}
+  function closeSelfExam() {
+  hide($('selfexam-modal'));
 }
 </script>
 
