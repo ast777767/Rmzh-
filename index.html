@@ -489,8 +489,8 @@
         <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center text-3xl">👩‍💻</div>
         <div>
           <p class="text-sm opacity-80" data-i18n="acc_welcome">Привет,</p>
-          <h2 class="text-2xl font-bold" data-i18n="acc_user">Пользователь</h2>
-          <p class="text-sm opacity-80 mt-1">Уровень: <span id="user-level">Новичок</span></p>
+          <h2 class="text-2xl font-bold" data-i18n="acc_user">Участник</h2>
+          <p class="text-sm opacity-80 mt-1">Уровень: <span id="user-level">Начинающая</span></p>
         </div>
       </div>
       <div class="mt-4">
@@ -523,7 +523,7 @@
 
 <!-- Footer -->
 <footer class="bg-white border-t border-gray-100 py-4 mt-auto">
-  <div class="container mx-auto px-4 text-center text-sm text-gray-500">© 2025 MammoCare • <a href="#about" class="hover:text-primary">О нас</a></div>
+  <div class="container mx-auto px-4 text-center text-sm text-gray-500">© 2026 MammoCare • <a href="#about" class="hover:text-primary">О нас</a></div>
 </footer>
 
 <!-- AI -->
@@ -572,10 +572,10 @@ const clinicsData = [
 const translations = {
   ru: {
     nav_home: "Главная", nav_learn: "Обучение", nav_articles: "Статьи", nav_cycle: "Цикл", nav_clinics: "Клиники", nav_about: "О нас", nav_account: "Аккаунт",
-    mob_menu: "Меню", home_welcome: "Добро пожаловать в MammoCare", home_desc: "Следите за здоровьем груди.",
+    mob_menu: "Меню", home_welcome: "Добро пожаловать в MammoCare", home_desc: "Обеспокоенность сегодня может спасти вашу жизнь завтра",
     btn_cycle: "Трекер", btn_clinic: "Клиники", home_risk_label: "Ваш риск", recalc: "Пересчитать",
-    stats_title: "Статистика рака груди", stats_kz: "🇰🇿 Казахстан", stats_kz_desc: "место по онкозаболеваемости", stats_world: "🌍 В мире", stats_world_desc: "случаев ежегодно", stats_fact: "Раннее обнаружение = 98% выживаемость",
-    useful_info_title: "Полезно знать", info_self_title: "Самообследование", info_self_desc: "Проводите на 5-7 день цикла.", info_age_title: "Скрининг", info_age_desc: "Маммография после 40 лет.", link_all_articles: "Читать все статьи →",
+    stats_title: "Статистика рака груди", stats_kz: "🇰🇿 Казахстан", stats_kz_desc: "место по онкозаболеваемости", stats_world: "🌍 В мире", stats_world_desc: "случаев ежегодно", stats_fact: "Раннее обнаружение = 98% благоприятный исход",
+    useful_info_title: "Полезно знать", info_self_title: "Самообследование", info_self_desc: "Проводите на 5-7 день цикла.", info_age_title: "Скрининг", info_age_desc: "Маммография после 30 лет.", link_all_articles: "Читать все статьи →",
     articles_title: "База знаний", art_1_title: "Рак груди: факты ВОЗ", art_1_desc: "Официальная информация.", art_2_title: "Рак молочной железы (Вики)", art_2_desc: "Полная энциклопедическая статья.", art_3_title: "BreastCancer.org", art_3_desc: "Международный ресурс.", art_4_title: "Маммография: подготовка", art_4_desc: "Как подготовиться.", art_5_title: "Американское онкообщество", art_5_desc: "Подробные материалы.",
     risk_welcome: "Добро пожаловать!", risk_subtitle: "Ответьте на вопросы", risk_age: "Возраст", risk_weight: "Вес", risk_height: "Рост", risk_family: "Наследственность", risk_smoke: "Курение", risk_symptoms: "Жалобы",
     opt_no: "Нет", opt_distant: "Дальние", opt_close: "Мама/сестра", opt_no_smoke: "Не курю", opt_ex_smoke: "Бросила", opt_smoke: "Курю", opt_no_symptoms: "Нет", opt_discomfort: "Дискомфорт", opt_pain: "Уплотнения",
@@ -589,7 +589,7 @@ const translations = {
     exam_title: "Время самообследования!", exam_desc: "5-7 день цикла.",
     forecast: "Прогноз на 3 месяца",
     clinics_title: "Клиники", clinics_desc: "Карта Астаны", list: "Список", filter_all: "Все", filter_public: "Гос.", filter_private: "Частные",
-    about_title: "О проекте", about_desc: "Мы боремся с раком груди.", mission_title: "Миссия", mission_desc: "Снизить смертность.", contacts_title: "Контакты",
+    about_title: "О проекте", about_desc: "Мы боремся с раком груди.", mission_title: "Миссия", mission_desc: "Повысить выживаемость женщин за счёт раннего выявления рака молочной железы, внедрения цифровых инструментов самоконтроля и доступной информации о здоровье.", contacts_title: "Контакты",
     acc_welcome: "Привет,", acc_user: "Пользователь",
     alert_exam: "Отлично!", alert_next_lesson: "Урок пройден! +{xp} XP. Следующий через 24 часа.", alert_time_left: "Ждите 24 часа.", alert_cycle_reset: "Данные цикла сброшены.",
     card_cycle_day: "День цикла", card_next: "След. месячные", card_progress: "Прогресс", card_start_learning: "Начните курс",
@@ -1244,16 +1244,109 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function sendAIMessage() {
-    const input = $('ai-input'); 
-    const text = input.value.trim(); 
-    if(!text) return;
-    const container = $('ai-messages');
-    container.innerHTML += `<div class="bg-primary text-white p-3 rounded-2xl rounded-tr-none ml-auto max-w-[80%]">${text}</div>`;
-    input.value = '';
-    setTimeout(() => { 
-        container.innerHTML += `<div class="bg-white p-3 rounded-2xl rounded-tl-none max-w-[80%]">Спасибо! Это демо-ответ.</div>`; 
-        container.scrollTop = container.scrollHeight; 
-    }, 1000);
+  const input = $('ai-input');
+  const text = input.value.trim();
+  if (!text) return;
+
+  const container = $('ai-messages');
+
+  // сообщение пользователя
+  container.insertAdjacentHTML('beforeend', `
+    <div class="bg-primary text-white p-3 rounded-2xl rounded-tr-none ml-auto max-w-[80%] break-words">
+      ${text}
+    </div>
+  `);
+
+  input.value = '';
+  container.scrollTop = container.scrollHeight;
+
+  // typing
+  const typingId = 'typing-' + Date.now();
+  container.insertAdjacentHTML('beforeend', `
+    <div id="${typingId}" class="bg-white p-3 rounded-2xl rounded-tl-none max-w-[80%] text-gray-400 italic">
+      Печатает...
+    </div>
+  `);
+
+  container.scrollTop = container.scrollHeight;
+
+  setTimeout(() => {
+    document.getElementById(typingId)?.remove();
+
+    const response = generateAIResponse(text);
+
+    container.insertAdjacentHTML('beforeend', `
+      <div class="bg-white p-3 rounded-2xl rounded-tl-none max-w-[80%]">
+        ${response}
+      </div>
+    `);
+
+    container.scrollTop = container.scrollHeight;
+  }, 1000 + Math.random() * 800);
+}
+
+  function generateAIResponse(text) {
+  const t = text.toLowerCase();
+
+  // 🔴 симптомы
+  if (t.includes("боль") || t.includes("уплот") || t.includes("шиш")) {
+    return `
+      Это может быть важный симптом.<br><br>
+      ⚠️ Если вы чувствуете уплотнение или боль — рекомендуется обратиться к врачу и сделать УЗИ или маммографию.<br><br>
+      Не откладывайте — ранняя диагностика критически важна.
+    `;
+  }
+
+  // 🩸 цикл
+  if (t.includes("цикл") || t.includes("месяч")) {
+    return `
+      Менструальный цикл в норме длится 21–35 дней.<br><br>
+      📅 Лучшее время для самообследования груди — 5–7 день цикла.<br><br>
+      В вашем приложении есть трекер — используйте его для точного контроля.
+    `;
+  }
+
+  // 🎗 рак
+  if (t.includes("рак") || t.includes("онко")) {
+    return `
+      Рак молочной железы — одно из самых распространённых заболеваний у женщин.<br><br>
+      ❗ Но при раннем выявлении выживаемость достигает 90–98%.<br><br>
+      Регулярные проверки — ключ к безопасности.
+    `;
+  }
+
+  // 🏥 клиники
+  if (t.includes("где") || t.includes("клиник") || t.includes("маммограф")) {
+    return `
+      Вы можете открыть раздел "Клиники" в приложении 📍<br><br>
+      Там показаны ближайшие центры маммографии в Астане с картой.
+    `;
+  }
+
+  // 💊 общий совет
+  if (t.includes("что делать") || t.includes("совет")) {
+    return `
+      Общие рекомендации:<br><br>
+      • Делайте самообследование раз в месяц<br>
+      • Проходите УЗИ/маммографию по возрасту<br>
+      • Следите за изменениями<br><br>
+      Если есть сомнения — лучше проверить.
+    `;
+  }
+
+  // ❤️ дефолт
+  const fallback = [
+    "Я могу помочь с вопросами о здоровье груди, симптомах и профилактике.",
+    "Задайте вопрос — я постараюсь дать полезную рекомендацию.",
+    "Вы можете спросить о симптомах, цикле или обследованиях.",
+    "Я здесь, чтобы помочь вам следить за здоровьем 💗"
+  ];
+
+  return fallback[Math.floor(Math.random() * fallback.length)];
+}
+  $('ai-input')?.addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') sendAIMessage();
+});
 }
 </script>
 
